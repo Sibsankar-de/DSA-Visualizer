@@ -3,6 +3,17 @@ import { useVisualizer } from '../hooks/useVisualizer';
 import { motion } from 'framer-motion';
 import { RefreshCw, Play, Pause, RotateCcw, Code2 } from 'lucide-react';
 import { bubbleSort } from '../algorithms/bubbleSort';
+import { selectionSort } from '../algorithms/selectionSort';
+
+const algorithmMap = {
+  'Bubble Sort': {
+    run: bubbleSort,
+  },
+  'Selection Sort': {
+    run: selectionSort,
+  },
+// Add your algorithm name and function to the run parameter.
+};
 
 export default function VisualizerPage({ name, codeSnippet }) {
   const { array, setArray, generateRandomArray } = useVisualizer();
@@ -29,7 +40,11 @@ export default function VisualizerPage({ name, codeSnippet }) {
     pauseSignal.current = false;
     setIsSorting(true);
     setIsPaused(false);
-    await bubbleSort(array, setArray, 30, stopSignal, pauseSignal);
+    if (!algorithmMap[name]){
+      console.log("algorithm name mismatch, please double check the name in the function parameter");
+      return;
+    }
+    await algorithmMap[name].run(array, setArray, 30, stopSignal, pauseSignal);
     if (!stopSignal.current && !pauseSignal.current) setIsSorting(false);
   };
 
