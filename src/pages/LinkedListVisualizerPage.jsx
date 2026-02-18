@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   Activity,
@@ -70,6 +70,48 @@ const nodeStatusClassMap = {
   middle: 'border-violet-400/45 bg-violet-500/20 text-violet-100',
 };
 
+const CPP_KEYWORDS = new Set([
+  'break',
+  'case',
+  'class',
+  'const',
+  'continue',
+  'default',
+  'do',
+  'else',
+  'enum',
+  'for',
+  'if',
+  'new',
+  'return',
+  'struct',
+  'switch',
+  'template',
+  'this',
+  'throw',
+  'typedef',
+  'using',
+  'virtual',
+  'while',
+]);
+
+const CPP_TYPES = new Set([
+  'bool',
+  'char',
+  'double',
+  'float',
+  'int',
+  'long',
+  'short',
+  'void',
+  'string',
+  'vector',
+  'std',
+]);
+
+const CPP_TOKEN_REGEX =
+  /\/\*[\s\S]*?\*\/|\/\/.*|"(?:\\.|[^"\\])*"|^\s*#.*$|\b\d+\b|\b[a-zA-Z_]\w*\b/gm;
+
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -80,6 +122,38 @@ function getRandomValue() {
 
 function getNodeStatusClass(status) {
   return nodeStatusClassMap[status] ?? nodeStatusClassMap.default;
+}
+
+function getCppTokenClass(token) {
+  if (token.startsWith('//') || token.startsWith('/*'))
+    return 'text-emerald-400/80 italic';
+  if (token.startsWith('"')) return 'text-amber-300';
+  if (token.trim().startsWith('#')) return 'text-fuchsia-400';
+  if (/^\d/.test(token)) return 'text-orange-300';
+  if (CPP_TYPES.has(token)) return 'text-cyan-300 font-bold';
+  if (CPP_KEYWORDS.has(token)) return 'text-sky-300 font-bold';
+  return 'text-slate-100';
+}
+
+function renderHighlightedCpp(code) {
+  const nodes = [];
+  let lastIndex = 0;
+  const safeCode = code || '';
+
+  for (const match of safeCode.matchAll(CPP_TOKEN_REGEX)) {
+    const token = match[0];
+    const start = match.index;
+    if (start > lastIndex) nodes.push(safeCode.slice(lastIndex, start));
+    nodes.push(
+      <span key={start} className={getCppTokenClass(token)}>
+        {token}
+      </span>,
+    );
+    lastIndex = start + token.length;
+  }
+
+  if (lastIndex < safeCode.length) nodes.push(safeCode.slice(lastIndex));
+  return nodes;
 }
 
 function createLinkedListState(size) {
@@ -98,6 +172,22 @@ function createLinkedListState(size) {
     nextLinks,
     headIndex: size > 0 ? 0 : null,
   };
+}
+
+function getFocusPointer(markers, nodes) {
+  const priority = ['current', 'head', 'slow', 'fast', 'middle', 'prev', 'next'];
+  for (const key of priority) {
+    const pointerIndex = markers[key];
+    if (pointerIndex !== null && pointerIndex !== undefined && nodes[pointerIndex]) {
+      return {
+        key,
+        label: markerLabels[key],
+        index: pointerIndex,
+        value: nodes[pointerIndex].value,
+      };
+    }
+  }
+  return null;
 }
 
 export default function LinkedListVisualizerPage() {
@@ -121,6 +211,8 @@ export default function LinkedListVisualizerPage() {
 
   const stopSignal = useRef(false);
   const pauseSignal = useRef(false);
+  const nodeViewportRef = useRef(null);
+  const nodeItemRefs = useRef({});
 
   const MotionSection = motion.section;
   const MotionButton = motion.button;
@@ -406,6 +498,27 @@ export default function LinkedListVisualizerPage() {
       .filter((item) => item.value !== undefined);
   }, [markers, nodes]);
 
+  const focusPointer = getFocusPointer(markers, nodes);
+  const focusIndex = focusPointer?.index ?? null;
+
+  useEffect(() => {
+    if (focusIndex === null) return;
+
+    const viewport = nodeViewportRef.current;
+    const focusedNode = nodeItemRefs.current[focusIndex];
+    if (!viewport || !focusedNode) return;
+
+    const targetLeft =
+      focusedNode.offsetLeft - viewport.clientWidth / 2 + focusedNode.clientWidth / 2;
+    const maxLeft = Math.max(0, viewport.scrollWidth - viewport.clientWidth);
+    const clampedLeft = Math.min(maxLeft, Math.max(0, targetLeft));
+
+    viewport.scrollTo({
+      left: clampedLeft,
+      behavior: isRunning ? 'smooth' : 'auto',
+    });
+  }, [focusIndex, isRunning]);
+
   return (
     <div className="font-body relative mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:py-12">
       <div className="pointer-events-none absolute inset-0 -z-20 bg-[radial-gradient(circle_at_20%_0%,rgba(56,189,248,0.2),transparent_32%),radial-gradient(circle_at_82%_10%,rgba(59,130,246,0.16),transparent_34%),linear-gradient(to_bottom,rgba(15,23,42,0.95),rgba(15,23,42,0.6))]" />
@@ -611,7 +724,10 @@ export default function LinkedListVisualizerPage() {
           </div>
 
           <div className="min-w-0 rounded-2xl border border-white/10 bg-slate-900/45">
-            <div className="ll-scrollbar h-[170px] w-full max-w-full overflow-x-auto overflow-y-hidden px-2 pb-3 pt-7">
+            <div
+              ref={nodeViewportRef}
+              className="ll-scrollbar h-[170px] w-full max-w-full overflow-x-auto overflow-y-hidden px-2 pb-3 pt-7"
+            >
               <div className="flex h-full min-w-max items-start gap-3 pr-4">
               {nodeRenderOrder.map((nodeIndex, orderIndex) => {
                 const node = nodes[nodeIndex];
@@ -622,12 +738,25 @@ export default function LinkedListVisualizerPage() {
                 const nextIndex = nextLinks[nodeIndex];
 
                 return (
-                  <div key={node.id} className="flex items-center gap-2">
+                  <div
+                    key={node.id}
+                    ref={(element) => {
+                      if (element) nodeItemRefs.current[nodeIndex] = element;
+                    }}
+                    className="flex items-center gap-2"
+                  >
                     <MotionDiv
                       layout
                       transition={{ type: 'spring', stiffness: 250, damping: 28 }}
                       className={`relative mt-2 min-w-[112px] rounded-xl border px-3 py-3 text-center shadow-lg ${getNodeStatusClass(node.status)}`}
                     >
+                      {focusPointer?.index === nodeIndex && (
+                        <motion.div
+                          layoutId="active-pointer-focus"
+                          transition={{ type: 'spring', stiffness: 320, damping: 30 }}
+                          className="pointer-events-none absolute -inset-1 rounded-xl border-2 border-cyan-300/80 shadow-[0_0_0_6px_rgba(34,211,238,0.16)]"
+                        />
+                      )}
                       {labels.length > 0 && (
                         <div className="absolute -top-5 left-1/2 z-20 flex max-w-[130px] -translate-x-1/2 flex-wrap justify-center gap-1">
                           {labels.map((label) => (
@@ -669,7 +798,10 @@ export default function LinkedListVisualizerPage() {
                 pointerSummary.map((pointer) => (
                   <span
                     key={pointer.key}
-                    className="rounded-lg border border-cyan-400/30 bg-cyan-500/10 px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-cyan-100"
+                    className={`rounded-lg px-2.5 py-1 text-xs font-semibold uppercase tracking-wide ${focusPointer?.key === pointer.key
+                      ? 'border border-amber-400/50 bg-amber-500/20 text-amber-100'
+                      : 'border border-cyan-400/30 bg-cyan-500/10 text-cyan-100'
+                      }`}
                   >
                     {pointer.label}: {pointer.value}
                   </span>
@@ -740,8 +872,19 @@ export default function LinkedListVisualizerPage() {
             </button>
           </div>
         </div>
-        <div className="max-h-[500px] overflow-auto bg-[#020617] p-6 font-code text-sm leading-relaxed text-slate-200">
-          <pre>{activeAlgorithm.codeSnippet}</pre>
+        <div className="ll-scrollbar max-h-[500px] overflow-auto bg-[#020617] p-6 font-code text-sm leading-relaxed">
+          <pre>
+            <code>
+              {activeAlgorithm.codeSnippet.split('\n').map((line, index) => (
+                <div key={`${selectedAlgorithm}-line-${index}`} className="flex rounded px-2 hover:bg-white/5">
+                  <span className="w-8 shrink-0 select-none pr-4 text-right text-xs text-slate-600">
+                    {index + 1}
+                  </span>
+                  <span className="text-slate-300">{renderHighlightedCpp(line)}</span>
+                </div>
+              ))}
+            </code>
+          </pre>
         </div>
       </section>
     </div>

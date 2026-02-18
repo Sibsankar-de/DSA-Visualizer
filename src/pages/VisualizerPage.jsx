@@ -776,7 +776,7 @@ export default function VisualizerPage({ name, codeSnippet }) {
             </button>
           </div>
         </div>
-        <div className="max-h-[500px] overflow-auto bg-[#020617] p-6 font-code text-sm leading-relaxed">
+        <div className="ll-scrollbar max-h-[500px] overflow-auto bg-[#020617] p-6 font-code text-sm leading-relaxed">
           <pre>
             <code>
               {codeSnippet.split("\n").map((line, i) => (
