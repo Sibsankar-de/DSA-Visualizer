@@ -89,3 +89,62 @@ int main() {
     }
     return 0;
 }`;
+
+export const reverseLinkedListPython = `class Node:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+
+def reverse_list(head):
+    prev = None
+    curr = head
+    while curr:
+        next_node = curr.next
+        curr.next = prev
+        prev = curr
+        curr = next_node
+    return prev
+
+def print_list(head):
+    temp = head
+    while temp:
+        print(temp.data, end=" -> " if temp.next else "")
+        temp = temp.next
+    print()
+
+if __name__ == "__main__":
+    head = Node(10)
+    head.next = Node(20)
+    head.next.next = Node(30)
+    
+    print("Original:", end=" ")
+    print_list(head)
+    
+    head = reverse_list(head)
+    
+    print("Reversed:", end=" ")
+    print_list(head)`;
+
+export const middleNodePython = `class Node:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+
+def find_middle(head):
+    slow = head
+    fast = head
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+    return slow
+
+if __name__ == "__main__":
+    head = Node(1)
+    head.next = Node(2)
+    head.next.next = Node(3)
+    head.next.next.next = Node(4)
+    head.next.next.next.next = Node(5)
+    
+    middle = find_middle(head)
+    if middle:
+        print("Middle node value:", middle.data)`;

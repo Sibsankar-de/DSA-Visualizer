@@ -13,7 +13,7 @@ import {
   RotateCcw,
   Shuffle,
 } from 'lucide-react';
-import { middleNodeCPP, reverseLinkedListCPP } from '../algorithms/linkedList';
+import { middleNodeCPP, reverseLinkedListCPP, middleNodePython, reverseLinkedListPython } from '../algorithms/linkedList';
 
 const EMPTY_MARKERS = {
   head: null,
@@ -49,7 +49,8 @@ const linkedListAlgorithms = {
       'Iteratively reverse each next pointer using prev, current, and next pointers.',
     complexity: 'O(n)',
     space: 'O(1)',
-    codeSnippet: reverseLinkedListCPP,
+    cppSnippet: reverseLinkedListCPP,
+    pythonSnippet: reverseLinkedListPython,
   },
   middle: {
     title: 'Middle Node (Slow/Fast)',
@@ -57,7 +58,8 @@ const linkedListAlgorithms = {
       'Move slow by one step and fast by two steps until fast reaches the tail.',
     complexity: 'O(n)',
     space: 'O(1)',
-    codeSnippet: middleNodeCPP,
+    cppSnippet: middleNodeCPP,
+    pythonSnippet: middleNodePython,
   },
 };
 
@@ -70,7 +72,7 @@ const nodeStatusClassMap = {
   middle: 'border-violet-400/45 bg-violet-500/20 text-violet-100',
 };
 
-const CPP_KEYWORDS = new Set([
+const CODE_KEYWORDS = new Set([
   'break',
   'case',
   'class',
@@ -93,9 +95,10 @@ const CPP_KEYWORDS = new Set([
   'using',
   'virtual',
   'while',
+  'def', 'print', 'len', 'range', 'in', 'and', 'or', 'not', 'is', 'elif', 'try', 'except', 'finally', 'with', 'as', 'pass', 'None', 'True', 'False'
 ]);
 
-const CPP_TYPES = new Set([
+const CODE_TYPES = new Set([
   'bool',
   'char',
   'double',
@@ -107,9 +110,10 @@ const CPP_TYPES = new Set([
   'string',
   'vector',
   'std',
+  'list', 'dict', 'set', 'tuple', 'map', 'input'
 ]);
 
-const CPP_TOKEN_REGEX =
+const TOKEN_REGEX =
   /\/\*[\s\S]*?\*\/|\/\/.*|"(?:\\.|[^"\\])*"|^\s*#.*$|\b\d+\b|\b[a-zA-Z_]\w*\b/gm;
 
 function sleep(ms) {
@@ -130,17 +134,17 @@ function getCppTokenClass(token) {
   if (token.startsWith('"')) return 'text-amber-300';
   if (token.trim().startsWith('#')) return 'text-fuchsia-400';
   if (/^\d/.test(token)) return 'text-orange-300';
-  if (CPP_TYPES.has(token)) return 'text-cyan-300 font-bold';
-  if (CPP_KEYWORDS.has(token)) return 'text-sky-300 font-bold';
+  if (CODE_TYPES.has(token)) return 'text-cyan-300 font-bold';
+  if (CODE_KEYWORDS.has(token)) return 'text-sky-300 font-bold';
   return 'text-slate-100';
 }
 
-function renderHighlightedCpp(code) {
+function renderHighlightedCode(code) {
   const nodes = [];
   let lastIndex = 0;
   const safeCode = code || '';
 
-  for (const match of safeCode.matchAll(CPP_TOKEN_REGEX)) {
+  for (const match of safeCode.matchAll(TOKEN_REGEX)) {
     const token = match[0];
     const start = match.index;
     if (start > lastIndex) nodes.push(safeCode.slice(lastIndex, start));
@@ -208,6 +212,7 @@ export default function LinkedListVisualizerPage() {
   const [stepCount, setStepCount] = useState(0);
   const [statusMessage, setStatusMessage] = useState('Generate data and start an algorithm run.');
   const [copyState, setCopyState] = useState('idle');
+  const [selectedLanguage, setSelectedLanguage] = useState('C++');
 
   const stopSignal = useRef(false);
   const pauseSignal = useRef(false);
@@ -219,6 +224,7 @@ export default function LinkedListVisualizerPage() {
   const MotionDiv = motion.div;
 
   const activeAlgorithm = linkedListAlgorithms[selectedAlgorithm];
+  const activeCodeSnippet = selectedLanguage === 'C++' ? activeAlgorithm.cppSnippet : activeAlgorithm.pythonSnippet;
 
   const waitWithControl = useCallback(async (durationMs) => {
     let elapsed = 0;
@@ -443,23 +449,24 @@ export default function LinkedListVisualizerPage() {
   const handleCopyCode = useCallback(async () => {
     if (!navigator?.clipboard) return;
     try {
-      await navigator.clipboard.writeText(activeAlgorithm.codeSnippet);
+      await navigator.clipboard.writeText(activeCodeSnippet);
       setCopyState('copied');
       setTimeout(() => setCopyState('idle'), 1400);
     } catch {
       setCopyState('idle');
     }
-  }, [activeAlgorithm.codeSnippet]);
+  }, [activeCodeSnippet]);
 
   const handleDownloadCode = useCallback(() => {
-    const blob = new Blob([activeAlgorithm.codeSnippet], { type: 'text/plain' });
+    const extension = selectedLanguage === 'C++' ? '.cpp' : '.py';
+    const blob = new Blob([activeCodeSnippet], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `${activeAlgorithm.title.replace(/\s+/g, '')}.cpp`;
+    link.download = `${activeAlgorithm.title.replace(/\s+/g, '')}${extension}`;
     link.click();
     URL.revokeObjectURL(url);
-  }, [activeAlgorithm.codeSnippet, activeAlgorithm.title]);
+  }, [activeCodeSnippet, activeAlgorithm.title, selectedLanguage]);
 
   const listTraversal = useMemo(() => {
     if (headIndex === null) return { order: [], hasCycle: false };
@@ -729,61 +736,61 @@ export default function LinkedListVisualizerPage() {
               className="ll-scrollbar h-[170px] w-full max-w-full overflow-x-auto overflow-y-hidden px-2 pb-3 pt-7"
             >
               <div className="flex h-full min-w-max items-start gap-3 pr-4">
-              {nodeRenderOrder.map((nodeIndex, orderIndex) => {
-                const node = nodes[nodeIndex];
-                if (!node) return null;
-                const labels = Object.entries(markers)
-                  .filter(([, markerIndex]) => markerIndex === nodeIndex)
-                  .map(([markerKey]) => markerLabels[markerKey]);
-                const nextIndex = nextLinks[nodeIndex];
+                {nodeRenderOrder.map((nodeIndex, orderIndex) => {
+                  const node = nodes[nodeIndex];
+                  if (!node) return null;
+                  const labels = Object.entries(markers)
+                    .filter(([, markerIndex]) => markerIndex === nodeIndex)
+                    .map(([markerKey]) => markerLabels[markerKey]);
+                  const nextIndex = nextLinks[nodeIndex];
 
-                return (
-                  <div
-                    key={node.id}
-                    ref={(element) => {
-                      if (element) nodeItemRefs.current[nodeIndex] = element;
-                    }}
-                    className="flex items-center gap-2"
-                  >
-                    <MotionDiv
-                      layout
-                      transition={{ type: 'spring', stiffness: 250, damping: 28 }}
-                      className={`relative mt-2 min-w-[112px] rounded-xl border px-3 py-3 text-center shadow-lg ${getNodeStatusClass(node.status)}`}
+                  return (
+                    <div
+                      key={node.id}
+                      ref={(element) => {
+                        if (element) nodeItemRefs.current[nodeIndex] = element;
+                      }}
+                      className="flex items-center gap-2"
                     >
-                      {focusPointer?.index === nodeIndex && (
-                        <motion.div
-                          layoutId="active-pointer-focus"
-                          transition={{ type: 'spring', stiffness: 320, damping: 30 }}
-                          className="pointer-events-none absolute -inset-1 rounded-xl border-2 border-cyan-300/80 shadow-[0_0_0_6px_rgba(34,211,238,0.16)]"
-                        />
+                      <MotionDiv
+                        layout
+                        transition={{ type: 'spring', stiffness: 250, damping: 28 }}
+                        className={`relative mt-2 min-w-[112px] rounded-xl border px-3 py-3 text-center shadow-lg ${getNodeStatusClass(node.status)}`}
+                      >
+                        {focusPointer?.index === nodeIndex && (
+                          <motion.div
+                            layoutId="active-pointer-focus"
+                            transition={{ type: 'spring', stiffness: 320, damping: 30 }}
+                            className="pointer-events-none absolute -inset-1 rounded-xl border-2 border-cyan-300/80 shadow-[0_0_0_6px_rgba(34,211,238,0.16)]"
+                          />
+                        )}
+                        {labels.length > 0 && (
+                          <div className="absolute -top-5 left-1/2 z-20 flex max-w-[130px] -translate-x-1/2 flex-wrap justify-center gap-1">
+                            {labels.map((label) => (
+                              <span
+                                key={`${node.id}-${label}`}
+                                className="rounded-full border border-slate-700 bg-slate-900/90 px-2 py-0.5 text-[10px] font-semibold uppercase text-slate-100"
+                              >
+                                {label}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                        <p className="text-[10px] uppercase tracking-wider text-slate-200/90">
+                          Node {nodeIndex + 1}
+                        </p>
+                        <p className="mt-1 text-xl font-bold">{node.value}</p>
+                        <p className="mt-1 text-[10px] font-semibold uppercase tracking-wide text-slate-100/85">
+                          next:{' '}
+                          {nextIndex === null ? 'null' : nodes[nextIndex]?.value ?? 'null'}
+                        </p>
+                      </MotionDiv>
+                      {orderIndex < nodeRenderOrder.length - 1 && (
+                        <span className="self-center text-sm font-bold text-slate-500">-&gt;</span>
                       )}
-                      {labels.length > 0 && (
-                        <div className="absolute -top-5 left-1/2 z-20 flex max-w-[130px] -translate-x-1/2 flex-wrap justify-center gap-1">
-                          {labels.map((label) => (
-                            <span
-                              key={`${node.id}-${label}`}
-                              className="rounded-full border border-slate-700 bg-slate-900/90 px-2 py-0.5 text-[10px] font-semibold uppercase text-slate-100"
-                            >
-                              {label}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                      <p className="text-[10px] uppercase tracking-wider text-slate-200/90">
-                        Node {nodeIndex + 1}
-                      </p>
-                      <p className="mt-1 text-xl font-bold">{node.value}</p>
-                      <p className="mt-1 text-[10px] font-semibold uppercase tracking-wide text-slate-100/85">
-                        next:{' '}
-                        {nextIndex === null ? 'null' : nodes[nextIndex]?.value ?? 'null'}
-                      </p>
-                    </MotionDiv>
-                    {orderIndex < nodeRenderOrder.length - 1 && (
-                      <span className="self-center text-sm font-bold text-slate-500">-&gt;</span>
-                    )}
-                  </div>
-                );
-              })}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -849,8 +856,15 @@ export default function LinkedListVisualizerPage() {
           <div className="flex items-center gap-3">
             <Code2 size={20} className="text-blue-400" />
             <span className="text-sm font-bold uppercase tracking-widest text-slate-200">
-              C++ Source
+              {selectedLanguage} Source
             </span>
+            <div className="ml-4 flex rounded-lg bg-white/5 p-1 border border-white/10">
+              {["C++", "Python"].map((lang) => (
+                <button key={lang} onClick={() => setSelectedLanguage(lang)} className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${selectedLanguage === lang ? "bg-blue-600 text-white" : "text-slate-400 hover:text-white"}`}>
+                  {lang}
+                </button>
+              ))}
+            </div>
           </div>
           <div className="flex gap-2">
             <button
@@ -875,12 +889,12 @@ export default function LinkedListVisualizerPage() {
         <div className="ll-scrollbar max-h-[500px] overflow-auto bg-[#020617] p-6 font-code text-sm leading-relaxed">
           <pre>
             <code>
-              {activeAlgorithm.codeSnippet.split('\n').map((line, index) => (
+              {activeCodeSnippet.split('\n').map((line, index) => (
                 <div key={`${selectedAlgorithm}-line-${index}`} className="flex rounded px-2 hover:bg-white/5">
                   <span className="w-8 shrink-0 select-none pr-4 text-right text-xs text-slate-600">
                     {index + 1}
                   </span>
-                  <span className="text-slate-300">{renderHighlightedCpp(line)}</span>
+                  <span className="text-slate-300">{renderHighlightedCode(line)}</span>
                 </div>
               ))}
             </code>

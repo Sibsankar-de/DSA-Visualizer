@@ -8,17 +8,17 @@ export const linearSearch = async (array, setArray, speed, stopSignal, pauseSign
     // Pick a random target from the existing array
     let randomIndex = Math.floor(Math.random() * n);
     let target = arr[randomIndex].value;
-    
-    arr[randomIndex].status = 'target'; 
+
+    arr[randomIndex].status = 'target';
     setArray([...arr]);
 
     console.log(`Linear Search Target: ${target}`);
 
     for (let i = 0; i < n; i++) {
-        
+
         // --- STOP & PAUSE LOGIC ---
         if (stopSignal.current) return;
-        
+
         // Handle pause functionality
         while (pauseSignal.current) {
             if (stopSignal.current) return;
@@ -34,9 +34,9 @@ export const linearSearch = async (array, setArray, speed, stopSignal, pauseSign
         if (arr[i].value === target) {
             arr[i].status = 'sorted'; // Mark as Found (Green)
             setArray([...arr]);
-            
-            await sleep(1000); 
-            return; 
+
+            await sleep(1000);
+            return;
         }
 
         // If no match, reset status to default (Blue)
@@ -96,3 +96,18 @@ public class Main {
         System.out.println(result == -1 ? "Not found" : "Found at index: " + result);
     }
 }`;
+
+export const linearSearchPython = `def linear_search(arr, target):
+    for i in range(len(arr)):
+        if arr[i] == target:
+            return i
+    return -1
+
+if __name__ == "__main__":
+    arr = list(map(int, input("Enter elements: ").split()))
+    target = int(input("Enter target: "))
+    result = linear_search(arr, target)
+    if result != -1:
+        print(f"Element found at index: {result}")
+    else:
+        print("Element not found")`;

@@ -11,13 +11,13 @@ import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 
 // UPDATED IMPORTS: Including both CPP and Java versions
-import { bubbleSortCPP, bubbleSortJava } from './algorithms/bubbleSort';
-import { selectionSortCPP, selectionSortJava } from './algorithms/selectionSort';
-import { quickSortCPP, quickSortJava } from './algorithms/quickSort';
-import { linearSearchCPP, linearSearchJava } from './algorithms/linearSearch';
-import { radixSortCPP, radixSortJava } from './algorithms/radixSort';
-import { heapSortCPP, heapSortJava } from './algorithms/heapSort';
-import { insertionSortCPP, insertionSortJava } from './algorithms/insertionSort';
+import { bubbleSortCPP, bubbleSortJava, bubbleSortPython } from './algorithms/bubbleSort';
+import { selectionSortCPP, selectionSortJava, selectionSortPython } from './algorithms/selectionSort';
+import { quickSortCPP, quickSortJava, quickSortPython } from './algorithms/quickSort';
+import { linearSearchCPP, linearSearchJava, linearSearchPython } from './algorithms/linearSearch';
+import { radixSortCPP, radixSortJava, radixSortPython } from './algorithms/radixSort';
+import { heapSortCPP, heapSortJava, heapSortPython } from './algorithms/heapSort';
+import { insertionSortCPP, insertionSortJava, insertionSortPython } from './algorithms/insertionSort';
 
 export default function App() {
   return (
@@ -34,34 +34,34 @@ export default function App() {
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
 
-            {/* UPDATED ROUTES: Passing both cppSnippet and javaSnippet */}
+            {/* UPDATED ROUTES: Passing both cppSnippet, javaSnippet, and pythonSnippet */}
             <Route
               path="/visualizer/bubble-sort"
-              element={<VisualizerPage name="Bubble Sort" cppSnippet={bubbleSortCPP} javaSnippet={bubbleSortJava} />}
+              element={<VisualizerPage name="Bubble Sort" cppSnippet={bubbleSortCPP} javaSnippet={bubbleSortJava} pythonSnippet={bubbleSortPython} />}
             />
             <Route
               path="/visualizer/selection-sort"
-              element={<VisualizerPage name="Selection Sort" cppSnippet={selectionSortCPP} javaSnippet={selectionSortJava} />}
+              element={<VisualizerPage name="Selection Sort" cppSnippet={selectionSortCPP} javaSnippet={selectionSortJava} pythonSnippet={selectionSortPython} />}
             />
             <Route
               path="/visualizer/quick-sort"
-              element={<VisualizerPage name="Quick Sort" cppSnippet={quickSortCPP} javaSnippet={quickSortJava} />}
+              element={<VisualizerPage name="Quick Sort" cppSnippet={quickSortCPP} javaSnippet={quickSortJava} pythonSnippet={quickSortPython} />}
             />
             <Route
               path="/visualizer/linear-search"
-              element={<VisualizerPage name="Linear Search" cppSnippet={linearSearchCPP} javaSnippet={linearSearchJava} />}
+              element={<VisualizerPage name="Linear Search" cppSnippet={linearSearchCPP} javaSnippet={linearSearchJava} pythonSnippet={linearSearchPython} />}
             />
             <Route
               path="/visualizer/radix-sort"
-              element={<VisualizerPage name="Radix Sort" cppSnippet={radixSortCPP} javaSnippet={radixSortJava} />}
+              element={<VisualizerPage name="Radix Sort" cppSnippet={radixSortCPP} javaSnippet={radixSortJava} pythonSnippet={radixSortPython} />}
             />
             <Route
               path="/visualizer/heap-sort"
-              element={<VisualizerPage name="Heap Sort" cppSnippet={heapSortCPP} javaSnippet={heapSortJava} />}
+              element={<VisualizerPage name="Heap Sort" cppSnippet={heapSortCPP} javaSnippet={heapSortJava} pythonSnippet={heapSortPython} />}
             />
-            <Route 
-              path="/visualizer/insertion-sort" 
-              element={<VisualizerPage name="Insertion Sort" cppSnippet={insertionSortCPP} javaSnippet={insertionSortJava} />} 
+            <Route
+              path="/visualizer/insertion-sort"
+              element={<VisualizerPage name="Insertion Sort" cppSnippet={insertionSortCPP} javaSnippet={insertionSortJava} pythonSnippet={insertionSortPython} />}
             />
             <Route
               path="/visualizer/linked-list"

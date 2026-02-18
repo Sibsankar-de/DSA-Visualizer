@@ -2,12 +2,12 @@ import { sleep } from '../utils/helpers';
 
 export const quickSort = async (array, setArray, speed, stopSignal, pauseSignal) => {
     let arr = array.map(item => ({ ...item }));
-    
+
     // Main Recursive Function
     const solve = async (low, high) => {
         if (low < high) {
             let pivotIdx = await partition(arr, low, high, setArray, speed, stopSignal, pauseSignal);
-            
+
             if (pivotIdx === -1) return; // Stop if signal received
 
             await solve(low, pivotIdx - 1);
@@ -20,7 +20,7 @@ export const quickSort = async (array, setArray, speed, stopSignal, pauseSignal)
     };
 
     await solve(0, arr.length - 1);
-    
+
     // Ensure everything is marked sorted at the end
     if (!stopSignal.current) {
         arr.forEach(item => item.status = 'sorted');
@@ -36,10 +36,10 @@ const partition = async (arr, low, high, setArray, speed, stopSignal, pauseSigna
     let i = low - 1;
 
     for (let j = low; j < high; j++) {
-        
+
         // STOP & PAUSE LOGIC 
         if (stopSignal.current) return -1;
-        
+
         while (pauseSignal.current) {
             if (stopSignal.current) return -1;
             await sleep(100);
@@ -54,12 +54,12 @@ const partition = async (arr, low, high, setArray, speed, stopSignal, pauseSigna
             // Swapping Visualization
             arr[i].status = 'swapping';
             arr[j].status = 'swapping';
-            
+
             [arr[i].value, arr[j].value] = [arr[j].value, arr[i].value];
-            
+
             setArray([...arr]);
             await sleep(speed);
-            
+
             arr[i].status = 'default';
         }
         arr[j].status = 'default';
@@ -73,7 +73,7 @@ const partition = async (arr, low, high, setArray, speed, stopSignal, pauseSigna
 
     // Pivot placement swap
     [arr[i + 1].value, arr[high].value] = [arr[high].value, arr[i + 1].value];
-    
+
     arr[high].status = 'default';
     arr[i + 1].status = 'sorted'; // Pivot is now in its correct place
     setArray([...arr]);
@@ -155,3 +155,24 @@ public class Main {
         for (int i : arr) System.out.print(i + " ");
     }
 }`;
+
+export const quickSortPython = `def partition(arr, low, high):
+    pivot = arr[high]
+    i = low - 1
+    for j in range(low, high):
+        if arr[j] < pivot:
+            i += 1
+            arr[i], arr[j] = arr[j], arr[i]
+    arr[i + 1], arr[high] = arr[high], arr[i + 1]
+    return i + 1
+
+def quick_sort(arr, low, high):
+    if low < high:
+        pi = partition(arr, low, high)
+        quick_sort(arr, low, pi - 1)
+        quick_sort(arr, pi + 1, high)
+
+if __name__ == "__main__":
+    arr = list(map(int, input("Enter elements: ").split()))
+    quick_sort(arr, 0, len(arr) - 1)
+    print("Sorted array:", *arr)`;

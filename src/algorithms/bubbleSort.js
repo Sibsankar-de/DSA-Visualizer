@@ -1,44 +1,44 @@
 import { sleep } from '../utils/helpers';
 
 export const bubbleSort = async (array, setArray, speed, stopSignal, pauseSignal) => {
-  let arr = array.map(item => ({ ...item }));
-  let n = arr.length;
+    let arr = array.map(item => ({ ...item }));
+    let n = arr.length;
 
-  for (let i = 0; i < n; i++) {
-    for (let j = 0; j < n - i - 1; j++) {
-      
-      // 1. CHECK FOR STOP
-      if (stopSignal.current) return;
+    for (let i = 0; i < n; i++) {
+        for (let j = 0; j < n - i - 1; j++) {
 
-      // 2. CHECK FOR PAUSE (The Wait Loop)
-      while (pauseSignal.current) {
-        if (stopSignal.current) return; // Allow reset while paused
-        await sleep(100); // Wait 100ms and check again
-      }
+            // 1. CHECK FOR STOP
+            if (stopSignal.current) return;
 
-      arr[j].status = 'comparing';
-      arr[j + 1].status = 'comparing';
-      setArray([...arr]);
-      await sleep(speed);
+            // 2. CHECK FOR PAUSE (The Wait Loop)
+            while (pauseSignal.current) {
+                if (stopSignal.current) return; // Allow reset while paused
+                await sleep(100); // Wait 100ms and check again
+            }
 
-      if (arr[j].value > arr[j + 1].value) {
-        arr[j].status = 'swapping';
-        arr[j + 1].status = 'swapping';
-        
-        let temp = arr[j].value;
-        arr[j].value = arr[j + 1].value;
-        arr[j + 1].value = temp;
+            arr[j].status = 'comparing';
+            arr[j + 1].status = 'comparing';
+            setArray([...arr]);
+            await sleep(speed);
 
-        setArray([...arr]);  
-        await sleep(speed);
-      }
+            if (arr[j].value > arr[j + 1].value) {
+                arr[j].status = 'swapping';
+                arr[j + 1].status = 'swapping';
 
-      arr[j].status = 'default';
-      arr[j + 1].status = 'default';
+                let temp = arr[j].value;
+                arr[j].value = arr[j + 1].value;
+                arr[j + 1].value = temp;
+
+                setArray([...arr]);
+                await sleep(speed);
+            }
+
+            arr[j].status = 'default';
+            arr[j + 1].status = 'default';
+        }
+        arr[n - 1 - i].status = 'sorted';
+        setArray([...arr]);
     }
-    arr[n - 1 - i].status = 'sorted';
-    setArray([...arr]);
-  }
 };
 
 export const bubbleSortCPP = `#include <iostream>
@@ -102,3 +102,15 @@ public class Main {
         for (int i : arr) System.out.print(i + " ");
     }
 }`;
+
+export const bubbleSortPython = `def bubble_sort(arr):
+    n = len(arr)
+    for i in range(n):
+        for j in range(0, n - i - 1):
+            if arr[j] > arr[j + 1]:
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+
+if __name__ == "__main__":
+    arr = list(map(int, input("Enter number of elements: ").split()))
+    bubble_sort(arr)
+    print("Sorted array:", *arr)`;
