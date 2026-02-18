@@ -351,10 +351,21 @@ export default function VisualizerPage({ name, cppSnippet, javaSnippet }) {
             </button>
           </div>
         </div>
-        <div className="max-h-[500px] overflow-auto bg-[#020617] p-6 text-sm leading-relaxed">
-          <pre><code>{activeCode?.split("\n").map((line, i) => (
-            <div key={i} className="flex hover:bg-white/5 px-2 rounded"><span className="w-8 shrink-0 text-slate-600 text-right pr-4 text-xs">{i + 1}</span><span className="text-slate-300">{renderHighlightedCode(line)}</span></div>
-          ))}</code></pre>
+        <div className="ll-scrollbar max-h-[500px] overflow-auto bg-[#020617] p-6 font-code text-sm leading-relaxed">
+          <pre>
+            <code>
+              {codeSnippet.split("\n").map((line, i) => (
+                <div key={i} className="flex hover:bg-white/5 px-2 rounded">
+                  <span className="w-8 shrink-0 text-slate-600 select-none text-right pr-4 text-xs">
+                    {i + 1}
+                  </span>
+                  <span className="text-slate-300">
+                    {renderHighlightedCpp(line)}
+                  </span>
+                </div>
+              ))}
+            </code>
+          </pre>
         </div>
       </section>
     </div>

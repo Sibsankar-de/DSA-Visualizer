@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import Algorithms from './pages/Algorithms';
 import Contact from './pages/Contact';
 import VisualizerPage from './pages/VisualizerPage';
+import LinkedListVisualizerPage from './pages/LinkedListVisualizerPage';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 
@@ -61,6 +62,10 @@ export default function App() {
             <Route 
               path="/visualizer/insertion-sort" 
               element={<VisualizerPage name="Insertion Sort" cppSnippet={insertionSortCPP} javaSnippet={insertionSortJava} />} 
+            />
+            <Route
+              path="/visualizer/linked-list"
+              element={<LinkedListVisualizerPage />}
             />
           </Routes>
         </main>
