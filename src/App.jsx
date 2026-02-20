@@ -11,6 +11,7 @@ import VisualizerPage from "./pages/VisualizerPage";
 import LinkedListVisualizerPage from "./pages/LinkedListVisualizerPage";
 import GraphVisualizerPage from "./pages/GraphVisualizerPage";
 import DijkstraPage from "./pages/DijkstraPage";
+import KruskalPage from "./pages/KruskalPage";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 
@@ -63,7 +64,8 @@ import {
   insertionSortPython,
   insertionSortJS,
 } from "./algorithms/insertionSort";
-import { mergeSortCPP,
+import {
+  mergeSortCPP,
   mergeSortJava,
   mergeSortPython,
   mergeSortJS,
@@ -187,16 +189,17 @@ export default function App() {
               path="/visualizer/linked-list"
               element={<LinkedListVisualizerPage />}
             />
-            <Route 
+            <Route
               path="/visualizer/merge-sort"
-              element={<VisualizerPage name="Merge Sort" 
+              element={<VisualizerPage name="Merge Sort"
                 cppSnippet={mergeSortCPP}
                 javaSnippet={mergeSortJava}
                 pythonSnippet={mergeSortPython}
                 jsSnippet={mergeSortJS}
-                 />} 
+              />}
             />
             <Route path="/visualizer/dijkstra" element={<DijkstraPage />} />
+            <Route path="/visualizer/kruskal" element={<KruskalPage />} />
             <Route path="/visualizer/dfs" element={<GraphVisualizerPage />} />
           </Routes>
         </main>

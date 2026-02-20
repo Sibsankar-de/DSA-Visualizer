@@ -187,6 +187,20 @@ const algorithmsCatalog = [
     gradient: 'from-orange-500/25 via-amber-500/15 to-transparent',
     accent: 'text-orange-200',
   },
+  {
+    id: 'kruskal',
+    title: "Kruskal's Algorithm",
+    description:
+      "Finds a Minimum Spanning Tree (MST) for a connected weighted graph using a greedy approach.",
+    path: '/visualizer/kruskal',
+    category: 'pathfinding',
+    type: 'Greedy',
+    complexity: 'O(E log E)',
+    level: 'Intermediate',
+    icon: Waypoints,
+    gradient: 'from-orange-500/25 via-amber-500/15 to-transparent',
+    accent: 'text-orange-200',
+  },
 ];
 
 const filterTabs = [
