@@ -230,6 +230,20 @@ const algorithmsCatalog = [
     gradient: "from-orange-500/25 via-amber-500/15 to-transparent",
     accent: "text-orange-200",
   },
+  {
+    id: "topological-sort",
+    title: "Topological Sort",
+    description:
+      "Linear ordering of vertices in a Directed Acyclic Graph (DAG) using Kahn's Algorithm.",
+    path: "/visualizer/topological-sort",
+    category: "sorting",
+    type: "Sorting",
+    complexity: "O(V+E)",
+    level: "Intermediate",
+    icon: Network,
+    gradient: "from-emerald-500/25 via-teal-500/15 to-transparent",
+    accent: "text-emerald-200",
+  },
 ];
 
 const filterTabs = [
@@ -546,11 +560,10 @@ export default function Algorithms() {
                 type="button"
                 onClick={() => setActiveFilter(tab.id)}
                 aria-pressed={activeFilter === tab.id}
-                className={`rounded-full border px-4 py-2 text-sm font-semibold transition-all ${
-                  activeFilter === tab.id
+                className={`rounded-full border px-4 py-2 text-sm font-semibold transition-all ${activeFilter === tab.id
                     ? "border-blue-400/60 bg-blue-500/20 text-blue-100 shadow-lg shadow-blue-900/30"
                     : "border-white/10 bg-white/5 text-slate-300 hover:border-cyan-400/40 hover:text-white"
-                }`}
+                  }`}
               >
                 {tab.label}
               </button>
@@ -591,11 +604,10 @@ export default function Algorithms() {
               type="button"
               onClick={() => setActiveLevel(level)}
               aria-pressed={activeLevel === level}
-              className={`rounded-full border px-3 py-1.5 text-xs font-semibold uppercase tracking-wide transition-all ${
-                activeLevel === level
+              className={`rounded-full border px-3 py-1.5 text-xs font-semibold uppercase tracking-wide transition-all ${activeLevel === level
                   ? "border-emerald-400/55 bg-emerald-500/15 text-emerald-100"
                   : "border-white/10 bg-white/5 text-slate-300 hover:border-emerald-400/40 hover:text-white"
-              }`}
+                }`}
             >
               {level}
             </button>

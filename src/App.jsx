@@ -14,6 +14,7 @@ import PrimsVisualizerPage from "./pages/PrimsVisualizerPage";
 import DijkstraPage from "./pages/DijkstraPage";
 import KruskalPage from "./pages/KruskalPage";
 import SignIn from "./pages/SignIn";
+import TopologicalSortPage from "./pages/TopologicalSortPage";
 import SignUp from "./pages/SignUp";
 
 // UPDATED IMPORTS: Including both CPP and Java versions
@@ -148,7 +149,7 @@ export default function App() {
             <Route
               path="/visualizer/binary-search"
               element={
-                <VisualizerPage 
+                <VisualizerPage
                   name="Binary Search"
                   cppSnippet={binarySearchCPP}
                   javaSnippet={binarySearchJava}
@@ -221,6 +222,7 @@ export default function App() {
             <Route path="/visualizer/dijkstra" element={<DijkstraPage />} />
             <Route path="/visualizer/kruskal" element={<KruskalPage />} />
             <Route path="/visualizer/dfs" element={<GraphVisualizerPage />} />
+            <Route path="/visualizer/topological-sort" element={<TopologicalSortPage />} />
           </Routes>
         </main>
 
