@@ -20,6 +20,8 @@ import SignUp from "./pages/SignUp";
 import HuffmanCodingPage from "./pages/HuffmanCodingPage";
 import ForgotPasswordEmail from "./pages/ForgotPasswordEmail";
 import ForgotPasswordOTP from "./pages/ForgotPasswordOTP";
+import BoyerMoorePage from "./pages/BoyerMoorePage";
+import FloydWarshallPage from "./pages/FloydWarshallPage";
 
 // UPDATED IMPORTS: Including both CPP and Java versions
 import {
