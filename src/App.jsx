@@ -120,6 +120,10 @@ export default function App() {
                   />
                 }
               />
+              <Route
+                path="/visualizer/boyer-moore"
+                element={<BoyerMoorePage />}
+              />
               <Route path="/visualizer/prims" element={<PrimsVisualizerPage />} />
               <Route path="/visualizer/astar" element={<AStarPage />} />
               <Route
