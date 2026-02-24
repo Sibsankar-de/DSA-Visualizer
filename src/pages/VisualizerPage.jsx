@@ -38,6 +38,7 @@ import { binarysearch } from '../algorithms/binarySearch';
 import { selectionSort } from "../algorithms/selectionSort";
 import { mergeSort } from "../algorithms/mergeSort";
 import CustomInputModal from "../components/CustomInputModal";
+import AlgorithmExplanationPanel from "../components/AlgorithmExplanationPanel";
 
 
 const algorithmMap = {
@@ -215,7 +216,21 @@ export default function VisualizerPage({
   pythonSnippet,
   jsSnippet,
 }) {
-  const { array, setArray, generateRandomArray, setCustomArray, generatePresetArray, setArrayFromFile } = useVisualizer();
+  const { 
+    array, 
+    setArray, 
+    generateRandomArray, 
+    setCustomArray, 
+    generatePresetArray, 
+    setArrayFromFile,
+    currentStep,
+    totalSteps,
+    explanation,
+    operation,
+    variables,
+    updateStepInfo,
+    resetStepInfo
+  } = useVisualizer();
 
   const navigate = useNavigate();
   useDocumentTitle(name);
@@ -426,7 +441,8 @@ export default function VisualizerPage({
     setIsSorting(true);
     setRunStatus("Running");
     setElapsedSeconds(0);
-    await algorithm.run(array, setArray, speed, stopSignal, pauseSignal);
+    // Pass updateStepInfo as 6th parameter to algorithm
+    await algorithm.run(array, setArray, speed, stopSignal, pauseSignal, updateStepInfo);
     if (!stopSignal.current) setRunStatus("Completed");
     setIsSorting(false);
   };
@@ -564,124 +580,137 @@ export default function VisualizerPage({
         </div>
       </motion.section>
 
-      <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-[360px_1fr]">
-        <aside className="rounded-3xl border border-white/10 bg-slate-800/35 p-5 backdrop-blur xl:sticky xl:top-24">
-          <div className="mb-5 flex items-center gap-2">
-            <SlidersHorizontal size={18} className="text-cyan-300" />
-            <h2 className="text-sm font-bold uppercase tracking-widest text-white">
-              Controls
-            </h2>
-          </div>
-          <div className="space-y-4">
-            <div className="rounded-2xl bg-white/5 p-3">
-              <label className="flex justify-between text-xs text-slate-400 mb-2 uppercase">
-                <span>Size</span> <span>{arraySize}</span>
-              </label>
-              <input
-                type="range"
-                min="16"
-                max="80"
-                value={arraySize}
-                disabled={isSorting}
-                onChange={(e) => {
-                  setArraySize(+e.target.value);
-                  handleGenerateNew(+e.target.value);
-                }}
-                className="w-full accent-cyan-400"
-              />
+      <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-[340px_1fr]">
+        <div className="space-y-6">
+          {/* Controls Sidebar */}
+          <aside className="rounded-3xl border border-white/10 bg-slate-800/35 p-5 backdrop-blur xl:sticky xl:top-24">
+            <div className="mb-5 flex items-center gap-2">
+              <SlidersHorizontal size={18} className="text-cyan-300" />
+              <h2 className="text-sm font-bold uppercase tracking-widest text-white">
+                Controls
+              </h2>
             </div>
-            <div className="rounded-2xl bg-white/5 p-3">
-              <label className="flex justify-between text-xs text-slate-400 mb-2 uppercase">
-                <span>Delay</span> <span>{speed}ms</span>
-              </label>
-              <input
-                type="range"
-                min="10"
-                max="150"
-                value={speed}
-                disabled={isSorting}
-                onChange={(e) => setSpeed(+e.target.value)}
-                className="w-full accent-blue-400"
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              <MotionButton
-                onClick={handleResetHighlights}
-                className="flex items-center justify-center gap-2 rounded-xl bg-white/5 py-2.5 text-sm font-bold text-white border border-white/10"
-              >
-                <RotateCcw size={16} /> Reset
-              </MotionButton>
-              <MotionButton
-                onClick={() => handleGenerateNew()}
-                className="flex items-center justify-center gap-2 rounded-xl bg-cyan-500/10 py-2.5 text-sm font-bold text-cyan-100 border border-cyan-400/20"
-              >
-                <Shuffle size={16} /> New Data
-              </MotionButton>
-            </div>
-            <MotionButton
-              onClick={() => setIsCustomInputOpen(true)}
-              disabled={isSorting}
-              className="w-full flex items-center justify-center gap-2 rounded-xl bg-violet-500/10 py-2.5 text-sm font-bold text-violet-100 border border-violet-400/20 hover:bg-violet-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <Type size={16} /> Custom Input
-            </MotionButton>
-
-            <div className="grid grid-cols-2 gap-2 items-start">
-              <div className="flex flex-col">
+            <div className="space-y-4">
+              <div className="rounded-2xl bg-white/5 p-3">
+                <label className="flex justify-between text-xs text-slate-400 mb-2 uppercase">
+                  <span>Size</span> <span>{arraySize}</span>
+                </label>
+                <input
+                  type="range"
+                  min="16"
+                  max="80"
+                  value={arraySize}
+                  disabled={isSorting}
+                  onChange={(e) => {
+                    setArraySize(+e.target.value);
+                    handleGenerateNew(+e.target.value);
+                  }}
+                  className="w-full accent-cyan-400"
+                />
+              </div>
+              <div className="rounded-2xl bg-white/5 p-3">
+                <label className="flex justify-between text-xs text-slate-400 mb-2 uppercase">
+                  <span>Delay</span> <span>{speed}ms</span>
+                </label>
+                <input
+                  type="range"
+                  min="10"
+                  max="150"
+                  value={speed}
+                  disabled={isSorting}
+                  onChange={(e) => setSpeed(+e.target.value)}
+                  className="w-full accent-blue-400"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-2">
                 <MotionButton
-                  onClick={() =>
-                    !isTooLargeForValues && setShowValues(!showValues)
-                  }
-                  className={`flex items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-bold border transition-all ${isTooLargeForValues ? "bg-slate-800/50 border-white/5 text-slate-500 cursor-not-allowed" : "bg-white/5 border-white/10 text-white hover:bg-white/10"}`}
+                  onClick={handleResetHighlights}
+                  className="flex items-center justify-center gap-2 rounded-xl bg-white/5 py-2.5 text-sm font-bold text-white border border-white/10"
                 >
-                  {showValues && !isTooLargeForValues ? (
-                    <EyeOff size={16} />
-                  ) : (
-                    <Eye size={16} />
-                  )}{" "}
-                  {isTooLargeForValues
-                    ? "Hidden"
-                    : showValues
-                      ? "Hide"
-                      : "Values"}
+                  <RotateCcw size={16} /> Reset
                 </MotionButton>
-                {isTooLargeForValues && (
-                  <p className="mt-1 text-[9px] text-amber-400/90 text-center font-medium animate-pulse">
-                    Size must be ≤ 35
-                  </p>
-                )}
+                <MotionButton
+                  onClick={() => handleGenerateNew()}
+                  className="flex items-center justify-center gap-2 rounded-xl bg-cyan-500/10 py-2.5 text-sm font-bold text-cyan-100 border border-cyan-400/20"
+                >
+                  <Shuffle size={16} /> New Data
+                </MotionButton>
               </div>
               <MotionButton
-                onClick={handleDownloadCode}
-                className="flex items-center justify-center gap-2 rounded-xl bg-blue-500/10 py-2.5 text-sm font-bold text-blue-100 border border-blue-400/20 hover:bg-blue-500/20 transition-all"
+                onClick={() => setIsCustomInputOpen(true)}
+                disabled={isSorting}
+                className="w-full flex items-center justify-center gap-2 rounded-xl bg-violet-500/10 py-2.5 text-sm font-bold text-violet-100 border border-violet-400/20 hover:bg-violet-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <Download size={16} /> Download
+                <Type size={16} /> Custom Input
+              </MotionButton>
+
+              <div className="grid grid-cols-2 gap-2 items-start">
+                <div className="flex flex-col">
+                  <MotionButton
+                    onClick={() =>
+                      !isTooLargeForValues && setShowValues(!showValues)
+                    }
+                    className={`flex items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-bold border transition-all ${isTooLargeForValues ? "bg-slate-800/50 border-white/5 text-slate-500 cursor-not-allowed" : "bg-white/5 border-white/10 text-white hover:bg-white/10"}`}
+                  >
+                    {showValues && !isTooLargeForValues ? (
+                      <EyeOff size={16} />
+                    ) : (
+                      <Eye size={16} />
+                    )}{" "}
+                    {isTooLargeForValues
+                      ? "Hidden"
+                      : showValues
+                        ? "Hide"
+                        : "Values"}
+                  </MotionButton>
+                  {isTooLargeForValues && (
+                    <p className="mt-1 text-[9px] text-amber-400/90 text-center font-medium animate-pulse">
+                      Size must be ≤ 35
+                    </p>
+                  )}
+                </div>
+                <MotionButton
+                  onClick={handleDownloadCode}
+                  className="flex items-center justify-center gap-2 rounded-xl bg-blue-500/10 py-2.5 text-sm font-bold text-blue-100 border border-blue-400/20 hover:bg-blue-500/20 transition-all"
+                >
+                  <Download size={16} /> Download
+                </MotionButton>
+              </div>
+              <MotionButton
+                whileHover={{ scale: 1.02 }}
+                onClick={
+                  isPaused ? handleResume : isSorting ? handlePause : handleStart
+                }
+                className={`w-full flex items-center justify-center gap-2 rounded-2xl py-3.5 font-bold text-white shadow-lg transition-all ${isPaused ? "bg-emerald-600" : isSorting ? "bg-amber-500 text-slate-900" : "bg-gradient-to-r from-blue-600 to-cyan-500"}`}
+              >
+                {isPaused ? (
+                  <Play size={18} fill="currentColor" />
+                ) : isSorting ? (
+                  <Pause size={18} fill="currentColor" />
+                ) : (
+                  <Play size={18} fill="currentColor" />
+                )}
+                {isPaused ? "Resume" : isSorting ? "Pause" : "Start"}
               </MotionButton>
             </div>
-            <MotionButton
-              whileHover={{ scale: 1.02 }}
-              onClick={
-                isPaused ? handleResume : isSorting ? handlePause : handleStart
-              }
-              className={`w-full flex items-center justify-center gap-2 rounded-2xl py-3.5 font-bold text-white shadow-lg transition-all ${isPaused ? "bg-emerald-600" : isSorting ? "bg-amber-500 text-slate-900" : "bg-gradient-to-r from-blue-600 to-cyan-500"}`}
-            >
-              {isPaused ? (
-                <Play size={18} fill="currentColor" />
-              ) : isSorting ? (
-                <Pause size={18} fill="currentColor" />
-              ) : (
-                <Play size={18} fill="currentColor" />
-              )}
-              {isPaused ? "Resume" : isSorting ? "Pause" : "Start"}
-            </MotionButton>
-          </div>
-          <div className="mt-5 p-3 rounded-2xl border border-white/10 bg-white/5 text-[11px] text-slate-400 space-y-1">
-            <p className="font-bold text-slate-200 uppercase mb-1 flex items-center gap-1">
-              <Keyboard size={12} /> Shortcuts
-            </p>
-            <p>Space: Start/Pause | R: Reset | N: New</p>
-          </div>
-        </aside>
+            <div className="mt-5 p-3 rounded-2xl border border-white/10 bg-white/5 text-[11px] text-slate-400 space-y-1">
+              <p className="font-bold text-slate-200 uppercase mb-1 flex items-center gap-1">
+                <Keyboard size={12} /> Shortcuts
+              </p>
+              <p>Space: Start/Pause | R: Reset | N: New</p>
+            </div>
+          </aside>
+
+          {/* Algorithm Explanation Panel */}
+          <AlgorithmExplanationPanel
+            currentStep={currentStep}
+            totalSteps={totalSteps}
+            explanation={explanation}
+            operation={operation}
+            variables={variables}
+            isRunning={isSorting || isPaused}
+          />
+        </div>
 
         <section className="rounded-3xl border border-white/10 bg-slate-800/35 p-4 backdrop-blur sm:p-6 shadow-2xl">
           <div className="mb-4 flex justify-between items-center">

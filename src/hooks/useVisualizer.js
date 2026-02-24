@@ -1,14 +1,40 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 
 export const useVisualizer = () => {
   const [array, setArray] = useState([]);
+  
+  // Step tracking state
+  const [currentStep, setCurrentStep] = useState(0);
+  const [totalSteps, setTotalSteps] = useState(0);
+  const [explanation, setExplanation] = useState('');
+  const [operation, setOperation] = useState('');
+  const [variables, setVariables] = useState({});
+
+  // Callback function to update step info - to be passed to algorithms
+  const updateStepInfo = useCallback((stepInfo) => {
+    if (stepInfo.currentStep !== undefined) setCurrentStep(stepInfo.currentStep);
+    if (stepInfo.totalSteps !== undefined) setTotalSteps(stepInfo.totalSteps);
+    if (stepInfo.explanation !== undefined) setExplanation(stepInfo.explanation);
+    if (stepInfo.operation !== undefined) setOperation(stepInfo.operation);
+    if (stepInfo.variables !== undefined) setVariables(stepInfo.variables);
+  }, []);
+
+  // Reset step info
+  const resetStepInfo = useCallback(() => {
+    setCurrentStep(0);
+    setTotalSteps(0);
+    setExplanation('');
+    setOperation('');
+    setVariables({});
+  }, []);
 
   const generateRandomArray = (size = 20) => {
     const newArray = Array.from({ length: size }, () => ({
       value: Math.floor(Math.random() * 400) + 20,
       status: 'default',
-    }));
+    })); 
     setArray(newArray);
+    resetStepInfo();
   };
 
   // Parse comma-separated values and create array items
@@ -27,6 +53,7 @@ export const useVisualizer = () => {
       status: 'default',
     }));
     setArray(newArray);
+    resetStepInfo();
     return true;
   };
 
@@ -67,6 +94,7 @@ export const useVisualizer = () => {
       status: 'default',
     }));
     setArray(newArray);
+    resetStepInfo();
   };
 
   // Parse array from uploaded file
@@ -112,6 +140,7 @@ export const useVisualizer = () => {
             status: 'default',
           }));
           setArray(newArray);
+          resetStepInfo();
           resolve(values.length);
         } catch (error) {
           reject(error);
@@ -132,6 +161,14 @@ export const useVisualizer = () => {
     generateRandomArray,
     setCustomArray,
     generatePresetArray,
-    setArrayFromFile
+    setArrayFromFile,
+    // Step tracking
+    currentStep,
+    totalSteps,
+    explanation,
+    operation,
+    variables,
+    updateStepInfo,
+    resetStepInfo
   }; 
 };

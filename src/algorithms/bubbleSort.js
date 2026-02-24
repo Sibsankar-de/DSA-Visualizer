@@ -1,19 +1,44 @@
 import { sleep } from '../utils/helpers';
 
-export const bubbleSort = async (array, setArray, speed, stopSignal, pauseSignal) => {
+export const bubbleSort = async (array, setArray, speed, stopSignal, pauseSignal, updateStepInfo) => {
     let arr = array.map(item => ({ ...item }));
     let n = arr.length;
+    let stepCounter = 0;
+    const totalSteps = n * (n - 1) / 2;
+
+    // Initialize step info
+    if (updateStepInfo) {
+        updateStepInfo({
+            totalSteps,
+            currentStep: 0,
+            operation: 'Starting Bubble Sort',
+            explanation: 'Bubble Sort will iterate through the array, comparing adjacent elements and swapping them if they are in the wrong order.',
+            variables: { i: 0, j: 0, n }
+        });
+    }
 
     for (let i = 0; i < n; i++) {
         for (let j = 0; j < n - i - 1; j++) {
+            stepCounter++;
 
             // 1. CHECK FOR STOP
             if (stopSignal.current) return;
 
             // 2. CHECK FOR PAUSE (The Wait Loop)
             while (pauseSignal.current) {
-                if (stopSignal.current) return; // Allow reset while paused
-                await sleep(100); // Wait 100ms and check again
+                if (stopSignal.current) return;
+                await sleep(100);
+            }
+
+            // Update step info for comparison
+            if (updateStepInfo) {
+                updateStepInfo({
+                    currentStep: stepCounter,
+                    totalSteps,
+                    operation: `Comparing indices ${j} and ${j + 1}`,
+                    explanation: `Checking if element at index ${j} (value: ${arr[j].value}) is greater than element at index ${j + 1} (value: ${arr[j + 1].value}).`,
+                    variables: { i, j, 'arr[j]': arr[j].value, 'arr[j+1]': arr[j + 1].value, sorted: n - i - 1 }
+                });
             }
 
             arr[j].status = 'comparing';
@@ -22,6 +47,17 @@ export const bubbleSort = async (array, setArray, speed, stopSignal, pauseSignal
             await sleep(speed);
 
             if (arr[j].value > arr[j + 1].value) {
+                // Update step info for swap
+                if (updateStepInfo) {
+                    updateStepInfo({
+                        currentStep: stepCounter,
+                        totalSteps,
+                        operation: `Swapping ${arr[j].value} and ${arr[j + 1].value}`,
+                        explanation: `Since ${arr[j].value} > ${arr[j + 1].value}, we swap these two elements to move the larger value towards the right.`,
+                        variables: { i, j, 'swapping': `${arr[j].value} ↔ ${arr[j + 1].value}`, sorted: n - i - 1 }
+                    });
+                }
+
                 arr[j].status = 'swapping';
                 arr[j + 1].status = 'swapping';
 
@@ -38,6 +74,28 @@ export const bubbleSort = async (array, setArray, speed, stopSignal, pauseSignal
         }
         arr[n - 1 - i].status = 'sorted';
         setArray([...arr]);
+        
+        // Update step info for sorted element
+        if (updateStepInfo) {
+            updateStepInfo({
+                currentStep: stepCounter,
+                totalSteps,
+                operation: `Element ${arr[n - 1 - i].value} is now sorted`,
+                explanation: `The element at index ${n - 1 - i} is in its final sorted position.`,
+                variables: { i, 'sorted index': n - 1 - i, 'sorted value': arr[n - 1 - i].value }
+            });
+        }
+    }
+    
+    // Final step
+    if (updateStepInfo) {
+        updateStepInfo({
+            currentStep: totalSteps,
+            totalSteps,
+            operation: 'Bubble Sort Complete',
+            explanation: 'All elements have been sorted in ascending order. The algorithm is finished!',
+            variables: {}
+        });
     }
 };
 
