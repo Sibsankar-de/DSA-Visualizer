@@ -21,6 +21,7 @@ import HuffmanCodingPage from "./pages/HuffmanCodingPage";
 import ForgotPasswordEmail from "./pages/ForgotPasswordEmail";
 import ForgotPasswordOTP from "./pages/ForgotPasswordOTP";
 import BoyerMoorePage from "./pages/BoyerMoorePage";
+import OAuthSuccess from "./pages/OAuthSuccess";
 import FloydWarshallPage from "./pages/FloydWarshallPage";
 
 // UPDATED IMPORTS: Including both CPP and Java versions
@@ -108,6 +109,7 @@ export default function App() {
               <Route path="/signup" element={<SignUp />} />
               <Route path="/forgot-password" element={<ForgotPasswordEmail />} />
               <Route path="/forgot-password/otp" element={<ForgotPasswordOTP />} />
+              <Route path="/oauth-success" element={<OAuthSuccess />} />
 
               {/* UPDATED ROUTES: Passing both cppSnippet, javaSnippet, and pythonSnippet */}
               <Route
