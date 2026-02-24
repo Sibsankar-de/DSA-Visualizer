@@ -557,6 +557,13 @@ export default function Algorithms() {
                 <Dices size={13} />
                 Shuffle Spotlight
               </button>
+              <Link
+                to="/compare"
+                className="inline-flex items-center gap-2 rounded-full border border-purple-400/35 bg-purple-500/10 px-3 py-1.5 text-xs font-semibold text-purple-100 transition-colors hover:bg-purple-500/20"
+              >
+                <Layers size={13} />
+                Compare Mode
+              </Link>
               {hasActiveFilters && (
                 <button
                   type="button"
