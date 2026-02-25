@@ -29,13 +29,28 @@ export default function ForgotPasswordEmail() {
         }
 
         setIsLoading(true);
-        // Simulate API call for sending OTP
-        setTimeout(() => {
+        try {
+            const response = await fetch('http://localhost:5000/api/auth/forgot-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                toast.success('OTP sent successfully!');
+                navigate('/forgot-password/otp', { state: { email } });
+            } else {
+                toast.error(data.message || 'Failed to send OTP');
+            }
+        } catch (error) {
+            toast.error('Something went wrong. Please try again.');
+        } finally {
             setIsLoading(false);
-            toast.success('OTP sent successfully!');
-            // In a real application, you might pass the email via state or context
-            navigate('/forgot-password/otp', { state: { email } });
-        }, 1500);
+        }
     };
 
     return (
