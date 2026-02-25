@@ -1,5 +1,3 @@
-
-
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -107,8 +105,8 @@ export default function App() {
           <main className="block">
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/algorithms" element={<ProtectedRoute><Algorithms /></ProtectedRoute>} />
-              <Route path="/contact" element={<ProtectedRoute><Contact /></ProtectedRoute>} />
+              <Route path="/algorithms" element={<Algorithms />} />
+              <Route path="/contact" element={<Contact />} />
               <Route path="/signin" element={<PublicRoute><SignIn /></PublicRoute>} />
               <Route path="/signup" element={<PublicRoute><SignUp /></PublicRoute>} />
               <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordEmail /></PublicRoute>} />
@@ -119,7 +117,7 @@ export default function App() {
               <Route
                 path="/visualizer/bubble-sort"
                 element={
-                  <ProtectedRoute>
+                  
                     <VisualizerPage
                       name="Bubble Sort"
                       cppSnippet={bubbleSortCPP}
@@ -127,19 +125,19 @@ export default function App() {
                       pythonSnippet={bubbleSortPython}
                       jsSnippet={bubbleSortJS}
                     />
-                  </ProtectedRoute>
+                  
                 }
               />
               <Route
                 path="/visualizer/boyer-moore"
-                element={<ProtectedRoute><BoyerMoorePage /></ProtectedRoute>}
+                element={<BoyerMoorePage />}
               />
-              <Route path="/visualizer/prims" element={<ProtectedRoute><PrimsVisualizerPage /></ProtectedRoute>} />
-              <Route path="/visualizer/astar" element={<ProtectedRoute><AStarPage /></ProtectedRoute>} />
+              <Route path="/visualizer/prims" element={<PrimsVisualizerPage />} />
+              <Route path="/visualizer/astar" element={<AStarPage />} />
               <Route
                 path="/visualizer/selection-sort"
                 element={
-                  <ProtectedRoute>
+                  
                     <VisualizerPage
                       name="Selection Sort"
                       cppSnippet={selectionSortCPP}
@@ -147,13 +145,13 @@ export default function App() {
                       pythonSnippet={selectionSortPython}
                       jsSnippet={selectionSortJS}
                     />
-                  </ProtectedRoute>
+                  
                 }
               />
               <Route
                 path="/visualizer/quick-sort"
                 element={
-                  <ProtectedRoute>
+                  
                     <VisualizerPage
                       name="Quick Sort"
                       cppSnippet={quickSortCPP}
@@ -161,13 +159,13 @@ export default function App() {
                       pythonSnippet={quickSortPython}
                       jsSnippet={quickSortJS}
                     />
-                  </ProtectedRoute>
+                  
                 }
               />
               <Route
                 path="/visualizer/linear-search"
                 element={
-                  <ProtectedRoute>
+                  
                     <VisualizerPage
                       name="Linear Search"
                       cppSnippet={linearSearchCPP}
@@ -175,13 +173,13 @@ export default function App() {
                       pythonSnippet={linearSearchPython}
                       jsSnippet={linearSearchJS}
                     />
-                  </ProtectedRoute>
+                  
                 }
               />
               <Route
                 path="/visualizer/binary-search"
                 element={
-                  <ProtectedRoute>
+                  
                     <VisualizerPage
                       name="Binary Search"
                       cppSnippet={binarySearchCPP}
@@ -189,13 +187,13 @@ export default function App() {
                       pythonSnippet={binarySearchPython}
                       jsSnippet={binarySearchJS}
                     />
-                  </ProtectedRoute>
+                  
                 }
               />
               <Route
                 path="/visualizer/interpolation-search"
                 element={
-                  <ProtectedRoute>
+                  
                     <VisualizerPage
                       name="Interpolation Search"
                       cppSnippet={interpolationSearchCPP}
@@ -203,13 +201,13 @@ export default function App() {
                       pythonSnippet={interpolationSearchPython}
                       jsSnippet={interpolationSearchJS}
                     />
-                  </ProtectedRoute>
+                  
                 }
               />
               <Route
                 path="/visualizer/radix-sort"
                 element={
-                  <ProtectedRoute>
+                  
                     <VisualizerPage
                       name="Radix Sort"
                       cppSnippet={radixSortCPP}
@@ -217,13 +215,13 @@ export default function App() {
                       pythonSnippet={radixSortPython}
                       jsSnippet={radixSortJS}
                     />
-                  </ProtectedRoute>
+                  
                 }
               />
               <Route
                 path="/visualizer/heap-sort"
                 element={
-                  <ProtectedRoute>
+                  
                     <VisualizerPage
                       name="Heap Sort"
                       cppSnippet={heapSortCPP}
@@ -231,13 +229,13 @@ export default function App() {
                       pythonSnippet={heapSortPython}
                       jsSnippet={heapSortJS}
                     />
-                  </ProtectedRoute>
+                  
                 }
               />
               <Route
                 path="/visualizer/insertion-sort"
                 element={
-                  <ProtectedRoute>
+                  
                     <VisualizerPage
                       name="Insertion Sort"
                       cppSnippet={insertionSortCPP}
@@ -245,34 +243,34 @@ export default function App() {
                       pythonSnippet={insertionSortPython}
                       jsSnippet={insertionSortJS}
                     />
-                  </ProtectedRoute>
+                  
                 }
               />
               <Route
                 path="/visualizer/linked-list"
-                element={<ProtectedRoute><LinkedListVisualizerPage /></ProtectedRoute>}
+                element={<LinkedListVisualizerPage />}
               />
               <Route
                 path="/visualizer/merge-sort"
                 element={
-                  <ProtectedRoute>
+                  
                     <VisualizerPage name="Merge Sort"
                       cppSnippet={mergeSortCPP}
                       javaSnippet={mergeSortJava}
                       pythonSnippet={mergeSortPython}
                       jsSnippet={mergeSortJS}
                     />
-                  </ProtectedRoute>
+                  
                 }
               />
-              <Route path="/visualizer/dijkstra" element={<ProtectedRoute><DijkstraPage /></ProtectedRoute>} />
-              <Route path="/visualizer/kruskal" element={<ProtectedRoute><KruskalPage /></ProtectedRoute>} />
-              <Route path="/visualizer/dfs" element={<ProtectedRoute><GraphVisualizerPage /></ProtectedRoute>} />
-              <Route path="/visualizer/topological-sort" element={<ProtectedRoute><TopologicalSortPage /></ProtectedRoute>} />
-              <Route path="/visualizer/huffman-coding" element={<ProtectedRoute><HuffmanCodingPage /></ProtectedRoute>} />
-              <Route path="/visualizer/floyd-warshall" element={<ProtectedRoute><FloydWarshallPage /></ProtectedRoute>} />
-              <Route path="/visualizer/stack" element={<ProtectedRoute><StackVisualizerPage /></ProtectedRoute>} />
-              <Route path="/compare" element={<ProtectedRoute><ComparisonPage /></ProtectedRoute>} />
+              <Route path="/visualizer/dijkstra" element={<DijkstraPage />} />
+              <Route path="/visualizer/kruskal" element={<KruskalPage />} />
+              <Route path="/visualizer/dfs" element={<GraphVisualizerPage />} />
+              <Route path="/visualizer/topological-sort" element={<TopologicalSortPage />} />
+              <Route path="/visualizer/huffman-coding" element={<HuffmanCodingPage />} />
+              <Route path="/visualizer/floyd-warshall" element={<FloydWarshallPage />} />
+              <Route path="/visualizer/stack" element={<StackVisualizerPage />} />
+              <Route path="/compare" element={<ComparisonPage />} />
             </Routes>
           </main>
 
