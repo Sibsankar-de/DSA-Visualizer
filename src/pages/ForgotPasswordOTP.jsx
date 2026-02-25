@@ -48,12 +48,32 @@ export default function ForgotPasswordOTP() {
         }
 
         setIsLoading(true);
-        // Simulate API call for verifying OTP and resetting password
-        setTimeout(() => {
+        try {
+            const response = await fetch('http://localhost:5000/api/auth/reset-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email,
+                    otp: formData.otp,
+                    newPassword: formData.newPassword
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                toast.success('Password reset successfully!');
+                navigate('/signin');
+            } else {
+                toast.error(data.message || 'Reset failed. Please check your OTP.');
+            }
+        } catch (error) {
+            toast.error('Something went wrong. Please try again.');
+        } finally {
             setIsLoading(false);
-            toast.success('Password reset successfully!');
-            navigate('/signin');
-        }, 2000);
+        }
     };
 
     return (
