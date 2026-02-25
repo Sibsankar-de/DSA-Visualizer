@@ -25,6 +25,8 @@ import BoyerMoorePage from "./pages/BoyerMoorePage";
 import OAuthSuccess from "./pages/OAuthSuccess";
 import FloydWarshallPage from "./pages/FloydWarshallPage";
 import ComparisonPage from "./pages/ComparisonPage";
+import ProtectedRoute from "./components/ProtectedRoute";
+import PublicRoute from "./components/PublicRoute";
 
 // UPDATED IMPORTS: Including both CPP and Java versions
 import {
@@ -105,150 +107,172 @@ export default function App() {
           <main className="block">
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/algorithms" element={<Algorithms />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/signin" element={<SignIn />} />
-              <Route path="/signup" element={<SignUp />} />
-              <Route path="/forgot-password" element={<ForgotPasswordEmail />} />
-              <Route path="/forgot-password/otp" element={<ForgotPasswordOTP />} />
+              <Route path="/algorithms" element={<ProtectedRoute><Algorithms /></ProtectedRoute>} />
+              <Route path="/contact" element={<ProtectedRoute><Contact /></ProtectedRoute>} />
+              <Route path="/signin" element={<PublicRoute><SignIn /></PublicRoute>} />
+              <Route path="/signup" element={<PublicRoute><SignUp /></PublicRoute>} />
+              <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordEmail /></PublicRoute>} />
+              <Route path="/forgot-password/otp" element={<PublicRoute><ForgotPasswordOTP /></PublicRoute>} />
               <Route path="/oauth-success" element={<OAuthSuccess />} />
 
               {/* UPDATED ROUTES: Passing both cppSnippet, javaSnippet, and pythonSnippet */}
               <Route
                 path="/visualizer/bubble-sort"
                 element={
-                  <VisualizerPage
-                    name="Bubble Sort"
-                    cppSnippet={bubbleSortCPP}
-                    javaSnippet={bubbleSortJava}
-                    pythonSnippet={bubbleSortPython}
-                    jsSnippet={bubbleSortJS}
-                  />
+                  <ProtectedRoute>
+                    <VisualizerPage
+                      name="Bubble Sort"
+                      cppSnippet={bubbleSortCPP}
+                      javaSnippet={bubbleSortJava}
+                      pythonSnippet={bubbleSortPython}
+                      jsSnippet={bubbleSortJS}
+                    />
+                  </ProtectedRoute>
                 }
               />
               <Route
                 path="/visualizer/boyer-moore"
-                element={<BoyerMoorePage />}
+                element={<ProtectedRoute><BoyerMoorePage /></ProtectedRoute>}
               />
-              <Route path="/visualizer/prims" element={<PrimsVisualizerPage />} />
-              <Route path="/visualizer/astar" element={<AStarPage />} />
+              <Route path="/visualizer/prims" element={<ProtectedRoute><PrimsVisualizerPage /></ProtectedRoute>} />
+              <Route path="/visualizer/astar" element={<ProtectedRoute><AStarPage /></ProtectedRoute>} />
               <Route
                 path="/visualizer/selection-sort"
                 element={
-                  <VisualizerPage
-                    name="Selection Sort"
-                    cppSnippet={selectionSortCPP}
-                    javaSnippet={selectionSortJava}
-                    pythonSnippet={selectionSortPython}
-                    jsSnippet={selectionSortJS}
-                  />
+                  <ProtectedRoute>
+                    <VisualizerPage
+                      name="Selection Sort"
+                      cppSnippet={selectionSortCPP}
+                      javaSnippet={selectionSortJava}
+                      pythonSnippet={selectionSortPython}
+                      jsSnippet={selectionSortJS}
+                    />
+                  </ProtectedRoute>
                 }
               />
               <Route
                 path="/visualizer/quick-sort"
                 element={
-                  <VisualizerPage
-                    name="Quick Sort"
-                    cppSnippet={quickSortCPP}
-                    javaSnippet={quickSortJava}
-                    pythonSnippet={quickSortPython}
-                    jsSnippet={quickSortJS}
-                  />
+                  <ProtectedRoute>
+                    <VisualizerPage
+                      name="Quick Sort"
+                      cppSnippet={quickSortCPP}
+                      javaSnippet={quickSortJava}
+                      pythonSnippet={quickSortPython}
+                      jsSnippet={quickSortJS}
+                    />
+                  </ProtectedRoute>
                 }
               />
               <Route
                 path="/visualizer/linear-search"
                 element={
-                  <VisualizerPage
-                    name="Linear Search"
-                    cppSnippet={linearSearchCPP}
-                    javaSnippet={linearSearchJava}
-                    pythonSnippet={linearSearchPython}
-                    jsSnippet={linearSearchJS}
-                  />
+                  <ProtectedRoute>
+                    <VisualizerPage
+                      name="Linear Search"
+                      cppSnippet={linearSearchCPP}
+                      javaSnippet={linearSearchJava}
+                      pythonSnippet={linearSearchPython}
+                      jsSnippet={linearSearchJS}
+                    />
+                  </ProtectedRoute>
                 }
               />
               <Route
                 path="/visualizer/binary-search"
                 element={
-                  <VisualizerPage
-                    name="Binary Search"
-                    cppSnippet={binarySearchCPP}
-                    javaSnippet={binarySearchJava}
-                    pythonSnippet={binarySearchPython}
-                    jsSnippet={binarySearchJS}
-                  />
+                  <ProtectedRoute>
+                    <VisualizerPage
+                      name="Binary Search"
+                      cppSnippet={binarySearchCPP}
+                      javaSnippet={binarySearchJava}
+                      pythonSnippet={binarySearchPython}
+                      jsSnippet={binarySearchJS}
+                    />
+                  </ProtectedRoute>
                 }
               />
               <Route
                 path="/visualizer/interpolation-search"
                 element={
-                  <VisualizerPage
-                    name="Interpolation Search"
-                    cppSnippet={interpolationSearchCPP}
-                    javaSnippet={interpolationSearchJava}
-                    pythonSnippet={interpolationSearchPython}
-                    jsSnippet={interpolationSearchJS}
-                  />
+                  <ProtectedRoute>
+                    <VisualizerPage
+                      name="Interpolation Search"
+                      cppSnippet={interpolationSearchCPP}
+                      javaSnippet={interpolationSearchJava}
+                      pythonSnippet={interpolationSearchPython}
+                      jsSnippet={interpolationSearchJS}
+                    />
+                  </ProtectedRoute>
                 }
               />
               <Route
                 path="/visualizer/radix-sort"
                 element={
-                  <VisualizerPage
-                    name="Radix Sort"
-                    cppSnippet={radixSortCPP}
-                    javaSnippet={radixSortJava}
-                    pythonSnippet={radixSortPython}
-                    jsSnippet={radixSortJS}
-                  />
+                  <ProtectedRoute>
+                    <VisualizerPage
+                      name="Radix Sort"
+                      cppSnippet={radixSortCPP}
+                      javaSnippet={radixSortJava}
+                      pythonSnippet={radixSortPython}
+                      jsSnippet={radixSortJS}
+                    />
+                  </ProtectedRoute>
                 }
               />
               <Route
                 path="/visualizer/heap-sort"
                 element={
-                  <VisualizerPage
-                    name="Heap Sort"
-                    cppSnippet={heapSortCPP}
-                    javaSnippet={heapSortJava}
-                    pythonSnippet={heapSortPython}
-                    jsSnippet={heapSortJS}
-                  />
+                  <ProtectedRoute>
+                    <VisualizerPage
+                      name="Heap Sort"
+                      cppSnippet={heapSortCPP}
+                      javaSnippet={heapSortJava}
+                      pythonSnippet={heapSortPython}
+                      jsSnippet={heapSortJS}
+                    />
+                  </ProtectedRoute>
                 }
               />
               <Route
                 path="/visualizer/insertion-sort"
                 element={
-                  <VisualizerPage
-                    name="Insertion Sort"
-                    cppSnippet={insertionSortCPP}
-                    javaSnippet={insertionSortJava}
-                    pythonSnippet={insertionSortPython}
-                    jsSnippet={insertionSortJS}
-                  />
+                  <ProtectedRoute>
+                    <VisualizerPage
+                      name="Insertion Sort"
+                      cppSnippet={insertionSortCPP}
+                      javaSnippet={insertionSortJava}
+                      pythonSnippet={insertionSortPython}
+                      jsSnippet={insertionSortJS}
+                    />
+                  </ProtectedRoute>
                 }
               />
               <Route
                 path="/visualizer/linked-list"
-                element={<LinkedListVisualizerPage />}
+                element={<ProtectedRoute><LinkedListVisualizerPage /></ProtectedRoute>}
               />
               <Route
                 path="/visualizer/merge-sort"
-                element={<VisualizerPage name="Merge Sort"
-                  cppSnippet={mergeSortCPP}
-                  javaSnippet={mergeSortJava}
-                  pythonSnippet={mergeSortPython}
-                  jsSnippet={mergeSortJS}
-                />}
+                element={
+                  <ProtectedRoute>
+                    <VisualizerPage name="Merge Sort"
+                      cppSnippet={mergeSortCPP}
+                      javaSnippet={mergeSortJava}
+                      pythonSnippet={mergeSortPython}
+                      jsSnippet={mergeSortJS}
+                    />
+                  </ProtectedRoute>
+                }
               />
-              <Route path="/visualizer/dijkstra" element={<DijkstraPage />} />
-              <Route path="/visualizer/kruskal" element={<KruskalPage />} />
-              <Route path="/visualizer/dfs" element={<GraphVisualizerPage />} />
-              <Route path="/visualizer/topological-sort" element={<TopologicalSortPage />} />
-              <Route path="/visualizer/huffman-coding" element={<HuffmanCodingPage />} />
-<Route path="/visualizer/floyd-warshall" element={<FloydWarshallPage />} />
-              <Route path="/visualizer/stack" element={<StackVisualizerPage />} />
-              <Route path="/compare" element={<ComparisonPage />} />
+              <Route path="/visualizer/dijkstra" element={<ProtectedRoute><DijkstraPage /></ProtectedRoute>} />
+              <Route path="/visualizer/kruskal" element={<ProtectedRoute><KruskalPage /></ProtectedRoute>} />
+              <Route path="/visualizer/dfs" element={<ProtectedRoute><GraphVisualizerPage /></ProtectedRoute>} />
+              <Route path="/visualizer/topological-sort" element={<ProtectedRoute><TopologicalSortPage /></ProtectedRoute>} />
+              <Route path="/visualizer/huffman-coding" element={<ProtectedRoute><HuffmanCodingPage /></ProtectedRoute>} />
+              <Route path="/visualizer/floyd-warshall" element={<ProtectedRoute><FloydWarshallPage /></ProtectedRoute>} />
+              <Route path="/visualizer/stack" element={<ProtectedRoute><StackVisualizerPage /></ProtectedRoute>} />
+              <Route path="/compare" element={<ProtectedRoute><ComparisonPage /></ProtectedRoute>} />
             </Routes>
           </main>
 
