@@ -14,12 +14,17 @@ import PrimsVisualizerPage from "./pages/PrimsVisualizerPage";
 import DijkstraPage from "./pages/DijkstraPage";
 import KruskalPage from "./pages/KruskalPage";
 import AStarPage from "./pages/AStarPage";
+import StackVisualizerPage from "./pages/StackVisualizerPage";
 import SignIn from "./pages/SignIn";
 import TopologicalSortPage from "./pages/TopologicalSortPage";
 import SignUp from "./pages/SignUp";
 import HuffmanCodingPage from "./pages/HuffmanCodingPage";
 import ForgotPasswordEmail from "./pages/ForgotPasswordEmail";
 import ForgotPasswordOTP from "./pages/ForgotPasswordOTP";
+import BoyerMoorePage from "./pages/BoyerMoorePage";
+import OAuthSuccess from "./pages/OAuthSuccess";
+import FloydWarshallPage from "./pages/FloydWarshallPage";
+import ComparisonPage from "./pages/ComparisonPage";
 
 // UPDATED IMPORTS: Including both CPP and Java versions
 import {
@@ -106,6 +111,7 @@ export default function App() {
               <Route path="/signup" element={<SignUp />} />
               <Route path="/forgot-password" element={<ForgotPasswordEmail />} />
               <Route path="/forgot-password/otp" element={<ForgotPasswordOTP />} />
+              <Route path="/oauth-success" element={<OAuthSuccess />} />
 
               {/* UPDATED ROUTES: Passing both cppSnippet, javaSnippet, and pythonSnippet */}
               <Route
@@ -119,6 +125,10 @@ export default function App() {
                     jsSnippet={bubbleSortJS}
                   />
                 }
+              />
+              <Route
+                path="/visualizer/boyer-moore"
+                element={<BoyerMoorePage />}
               />
               <Route path="/visualizer/prims" element={<PrimsVisualizerPage />} />
               <Route path="/visualizer/astar" element={<AStarPage />} />
@@ -236,6 +246,9 @@ export default function App() {
               <Route path="/visualizer/dfs" element={<GraphVisualizerPage />} />
               <Route path="/visualizer/topological-sort" element={<TopologicalSortPage />} />
               <Route path="/visualizer/huffman-coding" element={<HuffmanCodingPage />} />
+<Route path="/visualizer/floyd-warshall" element={<FloydWarshallPage />} />
+              <Route path="/visualizer/stack" element={<StackVisualizerPage />} />
+              <Route path="/compare" element={<ComparisonPage />} />
             </Routes>
           </main>
 

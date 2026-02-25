@@ -10,9 +10,11 @@ import {
   Dices,
   Filter,
   Layers,
+  Layers2,
   Search,
   Sparkles,
   Network,
+  Vote,
   TimerReset,
   X,
   Zap,
@@ -26,7 +28,7 @@ const algorithmsCatalog = [
     description:
       "A simple sorting algorithm that repeatedly compares adjacent elements and swaps them when needed.",
     path: "/visualizer/bubble-sort",
-    category: "sorting",
+    category: "1d-array-sorting",
     type: "Comparison",
     complexity: "O(n^2)",
     level: "Beginner",
@@ -40,7 +42,7 @@ const algorithmsCatalog = [
     description:
       "Selects the minimum value from the unsorted part and places it in its final position each pass.",
     path: "/visualizer/selection-sort",
-    category: "sorting",
+    category: "1d-array-sorting",
     type: "In-place",
     complexity: "O(n^2)",
     level: "Beginner",
@@ -54,13 +56,26 @@ const algorithmsCatalog = [
     description:
       "A fast divide-and-conquer algorithm that partitions around a pivot and recursively sorts subarrays.",
     path: "/visualizer/quick-sort",
-    category: "sorting",
+    category: "1d-array-sorting",
     type: "Divide & Conquer",
     complexity: "O(n log n)",
     level: "Intermediate",
     icon: Zap,
     gradient: "from-cyan-400/25 via-sky-500/15 to-transparent",
     accent: "text-sky-200",
+  },
+  {
+    id: 'boyer-moore',
+    title: 'Boyer-Moore Voting',
+    description: 'Find the majority element in an array (appears more than n/2 times) using a single pass.',
+    path: '/visualizer/boyer-moore',
+    category: '1d-array-searching', 
+    type: 'Array Search',
+    complexity: 'O(n)',
+    level: 'Beginner',
+    icon: Vote, 
+    gradient: 'from-orange-500/25 via-amber-500/15 to-transparent',
+    accent: 'text-amber-200',
   },
   {
     id: "linear-search",
@@ -110,7 +125,7 @@ const algorithmsCatalog = [
     description:
       "A non-comparative sorting algorithm that sorts integers by processing individual digits.",
     path: "/visualizer/radix-sort",
-    category: "sorting",
+    category: "1d-array-sorting",
     type: "Distribution",
     complexity: "O(nk)",
     level: "Advanced",
@@ -124,7 +139,7 @@ const algorithmsCatalog = [
     description:
       "A divide and conquer algorithm that splits the array into halves, recursively sorts them, and merges them.",
     path: "/visualizer/merge-sort",
-    category: "sorting",
+    category: "1d-array-sorting",
     type: "Divide & Conquer",
     complexity: "O(n log n)",
     level: "Intermediate",
@@ -138,7 +153,7 @@ const algorithmsCatalog = [
     description:
       "A comparison-based sorting algorithm that uses a binary heap data structure to sort elements efficiently.",
     path: "/visualizer/heap-sort",
-    category: "sorting",
+    category: "1d-array-sorting",
     type: "Comparison",
     complexity: "O(n log n)",
     level: "Intermediate",
@@ -152,7 +167,7 @@ const algorithmsCatalog = [
     description:
       "Builds a sorted array one item at a time by shifting elements that are greater than the key to the right.",
     path: "/visualizer/insertion-sort",
-    category: "sorting",
+    category: "1d-array-sorting",
     type: "In-place",
     complexity: "O(n^2)",
     level: "Beginner",
@@ -203,18 +218,18 @@ const algorithmsCatalog = [
     accent: "text-violet-200",
   },
   {
-  id: 'astar-search',
-  title: 'A* Pathfinding',
-  description: 'An intelligent pathfinding algorithm that uses heuristics to find the shortest path more efficiently than Dijkstra.',
-  path: '/visualizer/astar',
-  category: 'pathfinding', 
-  type: 'Informed Search',
-  complexity: 'O(E log V)',
-  level: 'Intermediate',
-  icon: Zap, // Uses the Zap icon to represent speed/efficiency
-  gradient: 'from-blue-500/25 via-cyan-500/15 to-transparent',
-  accent: 'text-cyan-200',
-},
+    id: 'astar-search',
+    title: 'A* Pathfinding',
+    description: 'An intelligent pathfinding algorithm that uses heuristics to find the shortest path more efficiently than Dijkstra.',
+    path: '/visualizer/astar',
+    category: 'pathfinding',
+    type: 'Informed Search',
+    complexity: 'O(E log V)',
+    level: 'Intermediate',
+    icon: Zap, // Uses the Zap icon to represent speed/efficiency
+    gradient: 'from-blue-500/25 via-cyan-500/15 to-transparent',
+    accent: 'text-cyan-200',
+  },
   {
     id: "dijkstra",
     title: "Dijkstra's Algorithm",
@@ -249,7 +264,7 @@ const algorithmsCatalog = [
     description:
       "Linear ordering of vertices in a Directed Acyclic Graph (DAG) using Kahn's Algorithm.",
     path: "/visualizer/topological-sort",
-    category: "sorting",
+    category: "graph-sorting",
     type: "Sorting",
     complexity: "O(V+E)",
     level: "Intermediate",
@@ -271,14 +286,43 @@ const algorithmsCatalog = [
     gradient: "from-amber-500/25 via-orange-500/15 to-transparent",
     accent: "text-amber-200",
   },
+  {
+    id: "floyd-warshall",
+    title: "Floyd Warshall Algorithm",
+    description: "Computes the shortest paths between all pairs of nodes using Dynamic Programming.",
+    path: "/visualizer/floyd-warshall",
+    category: "pathfinding",
+    type: "Dynamic Programming",
+    complexity: "O(V^3)",
+    level: "Advanced",
+    icon: Waypoints,
+    gradient: "from-rose-500/25 via-red-500/15 to-transparent",
+    accent: "text-rose-200",
+  },
+  {
+    id: 'stack',
+    title: 'Stack Push-Pop',
+    description:
+      'Visualize LIFO (Last In, First Out) stack operations with animated push and pop demonstrations.',
+    path: '/visualizer/stack',
+    category: 'stack',
+    type: 'LIFO',
+    complexity: 'O(1)',
+    level: 'Beginner',
+    icon: Layers2,
+    gradient: 'from-violet-500/25 via-purple-500/15 to-transparent',
+    accent: 'text-violet-200',
+  },
 ];
 
 const filterTabs = [
   { id: "all", label: "All" },
-  { id: "sorting", label: "Sorting" },
+  { id: "1d-array-sorting", label: "Sorting (1D Array)" },
+  { id: "graph-sorting", label: "Graph Sorting" },
   { id: "1d-array-searching", label: "1D Array Searching" },
   { id: "graph-searching", label: "Graph Searching" },
   { id: "linked-list", label: "Linked List" },
+  { id: "stack", label: "Stack Operations" },
   { id: "pathfinding", label: "Pathfinding" },
   { id: "mst", label: "Minimum Spanning Tree" },
   { id: "greedy", label: "Greedy Algorithms" },
@@ -360,7 +404,7 @@ export default function Algorithms() {
   }, [filteredAlgorithms, spotlightId]);
 
   const sortingCount = algorithmsCatalog.filter(
-    (algorithm) => algorithm.category === "sorting",
+    (algorithm) => algorithm.category === "1d-array-sorting",
   ).length;
   const arraySearchingCount = algorithmsCatalog.filter(
     (algorithm) => algorithm.category === "1d-array-searching",
@@ -370,6 +414,9 @@ export default function Algorithms() {
   ).length;
   const linkedListCount = algorithmsCatalog.filter(
     (algorithm) => algorithm.category === "linked-list",
+  ).length;
+  const stackCount = algorithmsCatalog.filter(
+    (algorithm) => algorithm.category === 'stack',
   ).length;
   const hasActiveFilters =
     activeFilter !== "all" ||
@@ -496,6 +543,10 @@ export default function Algorithms() {
                   {linkedListCount}
                 </p>
               </div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                <p className="text-xs uppercase tracking-wider text-slate-400">Stack Ops</p>
+                <p className="mt-1 text-2xl font-bold text-purple-200">{stackCount}</p>
+              </div>
             </div>
           </div>
 
@@ -544,6 +595,13 @@ export default function Algorithms() {
                 <Dices size={13} />
                 Shuffle Spotlight
               </button>
+              <Link
+                to="/compare"
+                className="inline-flex items-center gap-2 rounded-full border border-purple-400/35 bg-purple-500/10 px-3 py-1.5 text-xs font-semibold text-purple-100 transition-colors hover:bg-purple-500/20"
+              >
+                <Layers size={13} />
+                Compare Mode
+              </Link>
               {hasActiveFilters && (
                 <button
                   type="button"
@@ -615,11 +673,10 @@ export default function Algorithms() {
               type="button"
               onClick={() => setActiveFilter(tab.id)}
               aria-pressed={activeFilter === tab.id}
-              className={`rounded-full border px-4 py-2 text-sm font-semibold transition-all ${
-                activeFilter === tab.id
-                  ? "border-blue-400/60 bg-blue-500/20 text-blue-100 shadow-lg shadow-blue-900/30"
-                  : "border-white/10 bg-white/5 text-slate-300 hover:border-cyan-400/40 hover:text-white"
-              }`}
+              className={`rounded-full border px-4 py-2 text-sm font-semibold transition-all ${activeFilter === tab.id
+                ? "border-blue-400/60 bg-blue-500/20 text-blue-100 shadow-lg shadow-blue-900/30"
+                : "border-white/10 bg-white/5 text-slate-300 hover:border-cyan-400/40 hover:text-white"
+                }`}
             >
               {tab.label}
             </button>
@@ -633,11 +690,10 @@ export default function Algorithms() {
               type="button"
               onClick={() => setActiveLevel(level)}
               aria-pressed={activeLevel === level}
-              className={`rounded-full border px-3 py-1.5 text-xs font-semibold uppercase tracking-wide transition-all ${
-                activeLevel === level
-                  ? "border-emerald-400/55 bg-emerald-500/15 text-emerald-100"
-                  : "border-white/10 bg-white/5 text-slate-300 hover:border-emerald-400/40 hover:text-white"
-              }`}
+              className={`rounded-full border px-3 py-1.5 text-xs font-semibold uppercase tracking-wide transition-all ${activeLevel === level
+                ? "border-emerald-400/55 bg-emerald-500/15 text-emerald-100"
+                : "border-white/10 bg-white/5 text-slate-300 hover:border-emerald-400/40 hover:text-white"
+                }`}
             >
               {level}
             </button>
