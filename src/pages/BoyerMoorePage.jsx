@@ -24,6 +24,7 @@ import {
     generateBoyerMooreSteps,
 } from "../algorithms/boyerMooreVoting";
 import { renderHighlightedCode } from "../utils/codeHighlight";
+import HotkeysHint from "../components/HotkeysHint";
 
 const runStatusStyleMap = {
     Idle: "border-white/15 bg-white/5 text-slate-200",
@@ -97,6 +98,41 @@ export default function BoyerMoorePage() {
         }
         return () => { if (timerRef.current) clearInterval(timerRef.current); };
     }, [runStatus, isPaused, steps.length, speed]);
+
+    useEffect(() => {
+        const handleHotkeys = (e) => {
+            const tag = e.target?.tagName?.toLowerCase();
+            if (tag === "input" || tag === "textarea" || tag === "select") return;
+
+            if (e.code === "Space") {
+                e.preventDefault();
+                if (runStatus === "Running" || runStatus === "Paused") {
+                    setIsPaused((prev) => {
+                        const next = !prev;
+                        setRunStatus(next ? "Paused" : "Running");
+                        return next;
+                    });
+                    return;
+                }
+                if (runStatus === "Completed") handleReset();
+                setTimeout(runAlgorithm, 50);
+                return;
+            }
+
+            const key = e.key?.toLowerCase();
+            if (key === "r") {
+                e.preventDefault();
+                handleReset();
+            }
+            if (key === "n") {
+                e.preventDefault();
+                if (runStatus !== "Running") handleGenerateNewArray();
+            }
+        };
+
+        window.addEventListener("keydown", handleHotkeys);
+        return () => window.removeEventListener("keydown", handleHotkeys);
+    }, [runStatus, handleGenerateNewArray, handleReset, runAlgorithm]);
 
     const handleCopyCode = async () => {
         await navigator.clipboard.writeText(activeCode);
@@ -178,6 +214,7 @@ export default function BoyerMoorePage() {
                             {runStatus === "Running" ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" />}
                             {runStatus === "Completed" ? "Restart" : runStatus === "Running" ? "Active" : "Start Learning"}
                         </button>
+                        <HotkeysHint className="mt-1" />
                     </div>
                 </aside>
 

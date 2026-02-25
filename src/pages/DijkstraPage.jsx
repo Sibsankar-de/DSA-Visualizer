@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { dijkstraCPP, dijkstraJava, dijkstraPython, dijkstraJS, generateDijkstraSteps } from '../algorithms/dijkstra';
 import { renderHighlightedCode } from '../utils/codeHighlight';
+import HotkeysHint from "../components/HotkeysHint";
 
 const CANVAS_WIDTH = 800;
 const CANVAS_HEIGHT = 450;
@@ -190,6 +191,37 @@ export default function DijkstraPage() {
         URL.revokeObjectURL(url);
     };
 
+    useEffect(() => {
+        const handleHotkeys = (e) => {
+            const tag = e.target?.tagName?.toLowerCase();
+            if (tag === "input" || tag === "textarea" || tag === "select") return;
+
+            if (e.code === "Space") {
+                e.preventDefault();
+                if (runStatus === 'Idle' || runStatus === 'Completed') {
+                    if (runStatus === 'Completed') handleReset();
+                    setTimeout(runAlgorithm, 100);
+                } else {
+                    setIsPaused((prev) => !prev);
+                }
+                return;
+            }
+
+            const key = e.key?.toLowerCase();
+            if (key === "r") {
+                e.preventDefault();
+                handleReset();
+            }
+            if (key === "n") {
+                e.preventDefault();
+                if (runStatus === "Idle") handleGenerateNewGraph();
+            }
+        };
+
+        window.addEventListener("keydown", handleHotkeys);
+        return () => window.removeEventListener("keydown", handleHotkeys);
+    }, [runStatus, handleReset, runAlgorithm, handleGenerateNewGraph]);
+
 
     return (
         <div className="font-body relative mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:py-12">
@@ -357,6 +389,7 @@ export default function DijkstraPage() {
                                 {isPaused ? 'Resume' : 'Pause'}
                             </button>
                         )}
+                        <HotkeysHint className="mt-1" />
                     </div>
                 </aside>
 

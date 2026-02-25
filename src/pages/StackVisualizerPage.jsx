@@ -27,6 +27,7 @@ import {
   stackArrayJS,
 } from "../algorithms/stack";
 import { renderHighlightedCode } from "../utils/codeHighlight";
+import HotkeysHint from "../components/HotkeysHint";
 
 const runStatusStyleMap = {
   Idle: "border-white/15 bg-white/5 text-slate-200",
@@ -413,6 +414,45 @@ export default function StackVisualizerPage() {
     }
   }, [inputValue, isRunning, handlePush]);
 
+  useEffect(() => {
+    const handleHotkeys = (e) => {
+      const tag = e.target?.tagName?.toLowerCase();
+      if (tag === "input" || tag === "textarea" || tag === "select") return;
+
+      if (e.code === "Space") {
+        e.preventDefault();
+        if (isRunning) {
+          if (isPaused) handleResume();
+          else handlePause();
+        } else {
+          handleAutoPushPop();
+        }
+        return;
+      }
+
+      const key = e.key?.toLowerCase();
+      if (key === "r") {
+        e.preventDefault();
+        resetStack();
+      }
+      if (key === "n") {
+        e.preventDefault();
+        if (!isRunning) generateRandomStack();
+      }
+    };
+
+    window.addEventListener("keydown", handleHotkeys);
+    return () => window.removeEventListener("keydown", handleHotkeys);
+  }, [
+    generateRandomStack,
+    handleAutoPushPop,
+    handlePause,
+    handleResume,
+    isPaused,
+    isRunning,
+    resetStack,
+  ]);
+
   return (
     <div className="font-body relative mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:py-12">
       <div className="pointer-events-none absolute inset-0 -z-20 bg-[radial-gradient(circle_at_20%_0%,rgba(56,189,248,0.2),transparent_32%),radial-gradient(circle_at_82%_10%,rgba(59,130,246,0.16),transparent_34%),linear-gradient(to_bottom,rgba(15,23,42,0.95),rgba(15,23,42,0.6))]" />
@@ -610,6 +650,7 @@ export default function StackVisualizerPage() {
               )}
               {isRunning ? (isPaused ? "Resume" : "Pause") : "Auto Demo"}
             </MotionButton>
+            <HotkeysHint className="mt-1" />
           </div>
         </aside>
 

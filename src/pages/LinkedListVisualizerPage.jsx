@@ -27,6 +27,7 @@ import {
   reverseLinkedListJS,
 } from "../algorithms/linkedList";
 import { renderHighlightedCode } from "../utils/codeHighlight";
+import HotkeysHint from "../components/HotkeysHint";
 
 const EMPTY_MARKERS = {
   head: null,
@@ -456,6 +457,43 @@ export default function LinkedListVisualizerPage() {
     });
   }, [focusIndex, isRunning]);
 
+  useEffect(() => {
+    const handleHotkeys = (e) => {
+      const tag = e.target?.tagName?.toLowerCase();
+      if (tag === "input" || tag === "textarea" || tag === "select") return;
+
+      if (e.code === "Space") {
+        e.preventDefault();
+        if (!isRunning) handleStart();
+        else if (isPaused) handleResume();
+        else handlePause();
+        return;
+      }
+
+      const key = e.key?.toLowerCase();
+      if (key === "r") {
+        e.preventDefault();
+        handleReset();
+      }
+      if (key === "n") {
+        e.preventDefault();
+        generateNewList(listSize);
+      }
+    };
+
+    window.addEventListener("keydown", handleHotkeys);
+    return () => window.removeEventListener("keydown", handleHotkeys);
+  }, [
+    generateNewList,
+    handlePause,
+    handleReset,
+    handleResume,
+    handleStart,
+    isPaused,
+    isRunning,
+    listSize,
+  ]);
+
   return (
     <div className="font-body relative mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:py-12">
       <div className="pointer-events-none absolute inset-0 -z-20 bg-[radial-gradient(circle_at_20%_0%,rgba(56,189,248,0.2),transparent_32%),radial-gradient(circle_at_82%_10%,rgba(59,130,246,0.16),transparent_34%),linear-gradient(to_bottom,rgba(15,23,42,0.95),rgba(15,23,42,0.6))]" />
@@ -561,6 +599,7 @@ export default function LinkedListVisualizerPage() {
               {isRunning ? (isPaused ? <Play size={18} fill="currentColor" /> : <Pause size={18} fill="currentColor" />) : <Play size={18} fill="currentColor" />}
               {isRunning ? (isPaused ? "Resume" : "Pause") : "Start"}
             </MotionButton>
+            <HotkeysHint className="mt-1" />
           </div>
         </aside>
 
