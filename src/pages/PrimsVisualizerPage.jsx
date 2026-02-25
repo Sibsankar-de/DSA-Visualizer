@@ -21,6 +21,7 @@ import {
 
 // Import the logic and code snippets from your prims.js
 import { prims, primsCPP, primsJava, primsPython, primsJS } from '../algorithms/prims';
+import HotkeysHint from "../components/HotkeysHint";
 
 const CANVAS_WIDTH = 800;
 const CANVAS_HEIGHT = 450;
@@ -198,6 +199,36 @@ export default function PrimsVisualizerPage() {
         a.click();
     };
 
+    useEffect(() => {
+        const handleHotkeys = (e) => {
+            const tag = e.target?.tagName?.toLowerCase();
+            if (tag === "input" || tag === "textarea" || tag === "select") return;
+
+            if (e.code === "Space") {
+                e.preventDefault();
+                if (runStatus === "Idle" || runStatus === "Completed") {
+                    runAlgorithm();
+                } else {
+                    setIsPaused((prev) => !prev);
+                }
+                return;
+            }
+
+            const key = e.key?.toLowerCase();
+            if (key === "r") {
+                e.preventDefault();
+                handleReset();
+            }
+            if (key === "n") {
+                e.preventDefault();
+                if (runStatus !== "Running") handleGenerateNewGraph();
+            }
+        };
+
+        window.addEventListener("keydown", handleHotkeys);
+        return () => window.removeEventListener("keydown", handleHotkeys);
+    }, [runStatus, runAlgorithm, handleReset, handleGenerateNewGraph]);
+
     return (
         <div className="font-body relative mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:py-12">
             {/* Ambient Background */}
@@ -344,6 +375,8 @@ export default function PrimsVisualizerPage() {
                                 {isPaused ? 'Resume' : 'Pause Execution'}
                             </button>
                         )}
+
+                        <HotkeysHint className="mt-1" />
                         
                         <div className="mt-4 rounded-xl bg-slate-900/50 p-4 border border-white/5">
                            <p className="flex items-center gap-2 text-[10px] font-bold uppercase text-slate-500 mb-2">

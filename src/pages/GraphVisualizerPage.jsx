@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { dfsCPP, dfsJava, dfsPython, dfsJS, dfs } from '../algorithms/dfs';
 import { renderHighlightedCode } from '../utils/codeHighlight';
+import HotkeysHint from "../components/HotkeysHint";
 
 const runStatusStyleMap = {
     Idle: 'border-white/15 bg-white/5 text-slate-200',
@@ -244,6 +245,44 @@ export default function GraphVisualizerPage() {
         }
     };
 
+    useEffect(() => {
+        const handleHotkeys = (e) => {
+            const tag = e.target?.tagName?.toLowerCase();
+            if (tag === "input" || tag === "textarea" || tag === "select") return;
+
+            if (e.code === "Space") {
+                e.preventDefault();
+                if (isRunning) {
+                    if (isPaused) {
+                        pauseSignal.current = false;
+                        setIsPaused(false);
+                        setRunStatus("Running");
+                    } else {
+                        pauseSignal.current = true;
+                        setIsPaused(true);
+                        setRunStatus("Paused");
+                    }
+                } else {
+                    runDFS();
+                }
+                return;
+            }
+
+            const key = e.key?.toLowerCase();
+            if (key === "r") {
+                e.preventDefault();
+                handleReset();
+            }
+            if (key === "n") {
+                e.preventDefault();
+                handleNewGraph();
+            }
+        };
+
+        window.addEventListener("keydown", handleHotkeys);
+        return () => window.removeEventListener("keydown", handleHotkeys);
+    }, [isRunning, isPaused, runDFS, handleReset, handleNewGraph]);
+
 
     return (
         <div className="font-body relative mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:py-12">
@@ -305,6 +344,7 @@ export default function GraphVisualizerPage() {
                             {isRunning ? (isPaused ? <Play size={18} fill="currentColor" /> : <Pause size={18} fill="currentColor" />) : <Play size={18} fill="currentColor" />}
                             {isRunning ? (isPaused ? "Resume" : "Pause") : "Start DFS"}
                         </motion.button>
+                        <HotkeysHint />
                     </div>
                 </aside>
 

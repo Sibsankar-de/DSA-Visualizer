@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { topologicalSortCPP, topologicalSortJava, topologicalSortPython, topologicalSortJS } from '../algorithms/topologicalSort';
 import { renderHighlightedCode } from '../utils/codeHighlight';
+import HotkeysHint from "../components/HotkeysHint";
 
 const runStatusStyleMap = {
     Idle: 'border-white/15 bg-white/5 text-slate-200',
@@ -295,6 +296,44 @@ export default function TopologicalSortPage() {
         URL.revokeObjectURL(url);
     };
 
+    useEffect(() => {
+        const handleHotkeys = (e) => {
+            const tag = e.target?.tagName?.toLowerCase();
+            if (tag === "input" || tag === "textarea" || tag === "select") return;
+
+            if (e.code === "Space") {
+                e.preventDefault();
+                if (isRunning) {
+                    if (isPaused) {
+                        pauseSignal.current = false;
+                        setIsPaused(false);
+                        setRunStatus("Running");
+                    } else {
+                        pauseSignal.current = true;
+                        setIsPaused(true);
+                        setRunStatus("Paused");
+                    }
+                } else {
+                    runTopologicalSort();
+                }
+                return;
+            }
+
+            const key = e.key?.toLowerCase();
+            if (key === "r") {
+                e.preventDefault();
+                handleReset();
+            }
+            if (key === "n") {
+                e.preventDefault();
+                handleNewGraph();
+            }
+        };
+
+        window.addEventListener("keydown", handleHotkeys);
+        return () => window.removeEventListener("keydown", handleHotkeys);
+    }, [isRunning, isPaused, runTopologicalSort, handleReset, handleNewGraph]);
+
     // Node Colors
     const getNodeColor = (status) => {
         switch (status) {
@@ -397,6 +436,7 @@ export default function TopologicalSortPage() {
                             {isRunning ? (isPaused ? <Play size={18} fill="currentColor" /> : <Pause size={18} fill="currentColor" />) : <Play size={18} fill="currentColor" />}
                             {isRunning ? (isPaused ? "Resume" : "Pause") : "Start Topological Sort"}
                         </motion.button>
+                        <HotkeysHint />
 
                         {/* Result Array Display */}
                         {topoResult.length > 0 && (

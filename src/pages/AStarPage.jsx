@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { astar, astarCPP, astarJava, astarPython, astarJS } from '../algorithms/astar';
 import { renderHighlightedCode } from '../utils/codeHighlight';
+import HotkeysHint from "../components/HotkeysHint";
 
 const ROWS = 18;
 const COLS = 34;
@@ -128,6 +129,58 @@ export default function AStarPage() {
         setStatusMessage(keepWalls ? "Path cleared, terrain kept." : "Grid fully reset.");
     };
 
+    const generateRandomTerrain = () => {
+        stopSignal.current = true;
+        setRunStatus('Idle');
+        setIsPaused(false);
+
+        const newGrid = createInitialGrid();
+        for (let r = 0; r < ROWS; r++) {
+            for (let c = 0; c < COLS; c++) {
+                const isStart = r === startPos.row && c === startPos.col;
+                const isTarget = r === targetPos.row && c === targetPos.col;
+                if (isStart || isTarget) continue;
+
+                const roll = Math.random();
+                if (roll < 0.18) newGrid[r][c].status = 'wall';
+                else if (roll < 0.26) newGrid[r][c].status = 'weight';
+            }
+        }
+
+        setGrid(newGrid);
+        setStatusMessage("New random terrain generated.");
+    };
+
+    useEffect(() => {
+        const handleHotkeys = (e) => {
+            const tag = e.target?.tagName?.toLowerCase();
+            if (tag === "input" || tag === "textarea" || tag === "select") return;
+
+            if (e.code === "Space") {
+                e.preventDefault();
+                if (runStatus === 'Idle' || runStatus === 'Completed') {
+                    handleRun();
+                } else {
+                    setIsPaused((prev) => !prev);
+                }
+                return;
+            }
+
+            const key = e.key?.toLowerCase();
+            if (key === "r") {
+                e.preventDefault();
+                resetGrid(true);
+            }
+            if (key === "n") {
+                e.preventDefault();
+                generateRandomTerrain();
+            }
+        };
+
+        window.addEventListener("keydown", handleHotkeys);
+        return () => window.removeEventListener("keydown", handleHotkeys);
+    }, [runStatus, handleRun, resetGrid, generateRandomTerrain]);
+
     const handleDownloadCode = () => {
         const element = document.createElement("a");
         const file = new Blob([activeCode], { type: "text/plain" });
@@ -230,6 +283,7 @@ export default function AStarPage() {
                             <button onClick={() => resetGrid(false)} className="flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 py-3 text-xs font-bold text-white hover:bg-white/10 transition-all"><RotateCcw size={14}/> Full Reset</button>
                             <button onClick={() => resetGrid(true)} className="flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 py-3 text-xs font-bold text-white hover:bg-white/10 transition-all"><Shuffle size={14}/> Clear Path</button>
                         </div>
+                        <HotkeysHint />
                     </div>
 
                     <div className="rounded-xl bg-blue-500/5 p-4 border border-blue-500/10 flex gap-3 items-start">

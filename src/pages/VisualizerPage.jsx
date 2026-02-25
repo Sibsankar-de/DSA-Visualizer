@@ -14,7 +14,6 @@ import {
   Radar,
   Sparkles,
   Download,
-  Keyboard,
   ArrowLeft,
   RotateCcw,
   Play,
@@ -39,6 +38,7 @@ import { selectionSort } from "../algorithms/selectionSort";
 import { mergeSort } from "../algorithms/mergeSort";
 import CustomInputModal from "../components/CustomInputModal";
 import AlgorithmExplanationPanel from "../components/AlgorithmExplanationPanel";
+import HotkeysHint from "../components/HotkeysHint";
 
 
 const algorithmMap = {
@@ -693,12 +693,7 @@ export default function VisualizerPage({
                 {isPaused ? "Resume" : isSorting ? "Pause" : "Start"}
               </MotionButton>
             </div>
-            <div className="mt-5 p-3 rounded-2xl border border-white/10 bg-white/5 text-[11px] text-slate-400 space-y-1">
-              <p className="font-bold text-slate-200 uppercase mb-1 flex items-center gap-1">
-                <Keyboard size={12} /> Shortcuts
-              </p>
-              <p>Space: Start/Pause | R: Reset | N: New</p>
-            </div>
+            <HotkeysHint className="mt-5" />
           </aside>
 
           {/* Algorithm Explanation Panel */}
