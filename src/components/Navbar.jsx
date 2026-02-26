@@ -1,13 +1,20 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Braces, User, LogOut, ChevronDown } from 'lucide-react';
+import { Menu, X, Braces, User, LogOut, ChevronDown, Trophy, BookOpen, Heart, BarChart3 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const navLinks = [
   { to: '/', label: 'Home' },
   { to: '/algorithms', label: 'Algorithms' },
   { to: '/contact', label: 'Contact Us' },
+];
+
+const userNavLinks = [
+  { to: '/progress', label: 'My Progress', icon: BarChart3 },
+  { to: '/achievements', label: 'Achievements', icon: Trophy },
+  { to: '/learning-paths', label: 'Learning Paths', icon: BookOpen },
+  { to: '/favorites', label: 'Favorites', icon: Heart },
 ];
 
 function NavLink({ to, label, isActive, onClick }) {
@@ -26,7 +33,6 @@ function NavLink({ to, label, isActive, onClick }) {
         {label}
       </span>
 
-      {/* Active Link Underline */}
       {isActive && (
         <motion.span
           layoutId="activeLink"
@@ -35,7 +41,6 @@ function NavLink({ to, label, isActive, onClick }) {
         />
       )}
 
-      {/* Hover glow */}
       <span className="absolute -bottom-1 left-0 right-0 h-0.5 rounded-full bg-gradient-to-r from-blue-500/0 to-cyan-400/0 group-hover:from-blue-500/40 group-hover:to-cyan-400/40 transition-all duration-300" />
     </Link>
   );
@@ -67,14 +72,12 @@ export default function Navbar() {
   return (
     <nav className="sticky top-0 z-50 border-b border-white/5 bg-slate-900/70 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 md:px-10">
-        {/* Logo */}
         <Link to="/" className="flex items-center gap-2 group" onClick={closeMobile}>
           <MotionDiv
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.97 }}
             className="flex items-center gap-2"
           >
-            {/* Code icon */}
             <span className="relative flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400 shadow-lg shadow-blue-500/25">
               <Braces size={16} className="text-white" strokeWidth={2.5} />
               <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-cyan-400 animate-ping" />
@@ -86,7 +89,6 @@ export default function Navbar() {
           </MotionDiv>
         </Link>
 
-        {/* Desktop Nav Links */}
         <div className="hidden md:flex items-center gap-8 font-medium text-sm">
           {navLinks.map((link) => (
             <NavLink
@@ -97,7 +99,6 @@ export default function Navbar() {
             />
           ))}
 
-          {/* GitHub Star Button */}
           <a
             href="https://github.com/sanglaphalder/DSA-Visualizer"
             target="_blank"
@@ -129,21 +130,25 @@ export default function Navbar() {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
                     transition={{ duration: 0.2 }}
-                    className="absolute right-0 mt-2 w-48 overflow-hidden rounded-xl border border-white/10 bg-slate-900 shadow-xl backdrop-blur-xl"
+                    className="absolute right-0 mt-2 w-56 overflow-hidden rounded-xl border border-white/10 bg-slate-900 shadow-xl backdrop-blur-xl"
                   >
                     <div className="px-4 py-3 border-b border-white/10 bg-white/5">
                       <p className="text-sm font-medium text-white truncate">{user?.name || 'User'}</p>
                       <p className="text-xs text-slate-400 truncate">{user?.email}</p>
                     </div>
                     <div className="p-1.5">
-                      <Link
-                        to="/profile"
-                        onClick={() => setProfileOpen(false)}
-                        className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-300 transition-colors hover:bg-white/10 hover:text-white"
-                      >
-                        <User size={16} />
-                        My Profile
-                      </Link>
+                      {userNavLinks.map((link) => (
+                        <Link
+                          key={link.to}
+                          to={link.to}
+                          onClick={() => setProfileOpen(false)}
+                          className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-300 transition-colors hover:bg-white/10 hover:text-white"
+                        >
+                          <link.icon size={16} />
+                          {link.label}
+                        </Link>
+                      ))}
+                      <div className="my-1 border-t border-white/10" />
                       <button
                         onClick={() => {
                           logout();
@@ -169,7 +174,6 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* Mobile Menu Button */}
         <MotionButton
           whileTap={{ scale: 0.9 }}
           onClick={toggleMobile}
@@ -202,7 +206,6 @@ export default function Navbar() {
         </MotionButton>
       </div>
 
-      {/* Mobile Menu Dropdown */}
       <AnimatePresence>
         {mobileOpen && (
           <MotionDiv
@@ -236,39 +239,49 @@ export default function Navbar() {
                 </MotionDiv>
               ))}
 
-              {user ? (
+              {user && (
                 <>
-                  <MotionDiv
-                    initial={{ x: -20, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ delay: navLinks.length * 0.07, duration: 0.25 }}
-                  >
-                    <Link
-                      to="/profile"
-                      onClick={closeMobile}
-                      className="flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-slate-400 transition-all hover:bg-white/5 hover:text-white"
+                  <div className="my-2 border-t border-white/10" />
+                  {userNavLinks.map((link, i) => (
+                    <MotionDiv
+                      key={link.to}
+                      initial={{ x: -20, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      transition={{ delay: (navLinks.length + i) * 0.07, duration: 0.25 }}
                     >
-                      <User size={16} />
-                      My Profile
-                    </Link>
-                  </MotionDiv>
-                  <MotionDiv
-                    initial={{ x: -20, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ delay: (navLinks.length + 0.5) * 0.07, duration: 0.25 }}
-                  >
-                    <button
-                      onClick={() => {
-                        logout();
-                        closeMobile();
-                      }}
-                      className="flex w-full items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-red-400 transition-all hover:bg-white/5 hover:text-red-300"
-                    >
-                      <LogOut size={16} />
-                      Logout
-                    </button>
-                  </MotionDiv>
+                      <Link
+                        to={link.to}
+                        onClick={closeMobile}
+                        className={`flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200 ${location.pathname === link.to
+                          ? 'bg-blue-500/10 text-blue-400'
+                          : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                          }`}
+                      >
+                        <link.icon size={16} />
+                        {link.label}
+                      </Link>
+                    </MotionDiv>
+                  ))}
                 </>
+              )}
+
+              {user ? (
+                <MotionDiv
+                  initial={{ x: -20, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: (navLinks.length + userNavLinks.length + 0.5) * 0.07, duration: 0.25 }}
+                >
+                  <button
+                    onClick={() => {
+                      logout();
+                      closeMobile();
+                    }}
+                    className="mt-2 flex w-full items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-red-400 transition-all hover:bg-white/5 hover:text-red-300"
+                  >
+                    <LogOut size={16} />
+                    Logout
+                  </button>
+                </MotionDiv>
               ) : (
                 <MotionDiv
                   initial={{ x: -20, opacity: 0 }}
@@ -285,11 +298,10 @@ export default function Navbar() {
                 </MotionDiv>
               )}
 
-              {/* Mobile GitHub Link */}
               <MotionDiv
                 initial={{ x: -20, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: navLinks.length * 0.07, duration: 0.25 }}
+                transition={{ delay: (navLinks.length + (user ? userNavLinks.length : 0) + 1) * 0.07, duration: 0.25 }}
               >
                 <a
                   href="https://github.com/sanglaphalder/DSA-Visualizer"

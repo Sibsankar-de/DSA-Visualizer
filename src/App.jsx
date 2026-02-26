@@ -1,5 +1,3 @@
-
-
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -20,8 +18,11 @@ import SignUp from "./pages/SignUp";
 import HuffmanCodingPage from "./pages/HuffmanCodingPage";
 import FloydWarshallPage from "./pages/FloydWarshallPage";
 import ComparisonPage from "./pages/ComparisonPage";
+import ProgressDashboard from "./pages/ProgressDashboard";
+import AchievementsPage from "./pages/AchievementsPage";
+import LearningPathsPage from "./pages/LearningPathsPage";
+import FavoritesPage from "./pages/FavoritesPage";
 
-// UPDATED IMPORTS: Including both CPP and Java versions
 import {
   bubbleSortCPP,
   bubbleSortJava,
@@ -108,8 +109,11 @@ export default function App() {
               <Route path="/contact" element={<Contact />} />
               <Route path="/signin" element={<SignIn />} />
               <Route path="/signup" element={<SignUp />} />
+              <Route path="/progress" element={<ProgressDashboard />} />
+              <Route path="/achievements" element={<AchievementsPage />} />
+              <Route path="/learning-paths" element={<LearningPathsPage />} />
+              <Route path="/favorites" element={<FavoritesPage />} />
 
-              {/* UPDATED ROUTES: Passing both cppSnippet, javaSnippet, and pythonSnippet */}
               <Route
                 path="/visualizer/bubble-sort"
                 element={
@@ -238,7 +242,7 @@ export default function App() {
               <Route path="/visualizer/dfs" element={<GraphVisualizerPage />} />
               <Route path="/visualizer/topological-sort" element={<TopologicalSortPage />} />
               <Route path="/visualizer/huffman-coding" element={<HuffmanCodingPage />} />
-<Route path="/visualizer/floyd-warshall" element={<FloydWarshallPage />} />
+              <Route path="/visualizer/floyd-warshall" element={<FloydWarshallPage />} />
               <Route path="/compare" element={<ComparisonPage />} />
             </Routes>
           </main>
