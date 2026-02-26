@@ -25,6 +25,7 @@ import ArrayTraversalPage from "./pages/ArrayTraversalPage";
 import OAuthSuccess from "./pages/OAuthSuccess";
 import FloydWarshallPage from "./pages/FloydWarshallPage";
 import ComparisonPage from "./pages/ComparisonPage";
+import KnapsackPage from "./pages/KnapsackPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 
@@ -272,6 +273,7 @@ export default function App() {
               <Route path="/visualizer/topological-sort" element={<TopologicalSortPage />} />
               <Route path="/visualizer/huffman-coding" element={<HuffmanCodingPage />} />
               <Route path="/visualizer/floyd-warshall" element={<FloydWarshallPage />} />
+              <Route path="/visualizer/knapsack" element={<KnapsackPage />} />
               <Route path="/visualizer/stack" element={<StackVisualizerPage />} />
               <Route
                 path="/visualizer/trie"

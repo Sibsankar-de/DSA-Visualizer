@@ -25,6 +25,20 @@ import {
 
 const algorithmsCatalog = [
   {
+    id: "knapsack",
+    title: "0/1 Knapsack",
+    description:
+      "A dynamic programming algorithm to find the maximum value subset with a given capacity.",
+    path: "/visualizer/knapsack",
+    category: "dynamic-programming",
+    type: "Dynamic Programming",
+    complexity: "O(n * W)",
+    level: "Advanced",
+    icon: Sparkles,
+    gradient: "from-purple-500/25 via-pink-500/15 to-transparent",
+    accent: "text-pink-200",
+  },
+  {
     id: "bubble-sort",
     title: "Bubble Sort",
     description:
@@ -358,6 +372,7 @@ const filterTabs = [
   { id: "mst", label: "Minimum Spanning Tree" },
   { id: "greedy", label: "Greedy Algorithms" },
   { id: "string-matching", label: "String Matching" },
+  { id: "dynamic-programming", label: "Dynamic Programming" },
 ];
 
 const levelTabs = ["All", "Beginner", "Intermediate", "Advanced"];
