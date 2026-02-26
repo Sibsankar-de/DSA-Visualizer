@@ -86,13 +86,17 @@ import {
 import { dfsCPP, dfsJava } from "./algorithms/dfs";
 
 import { AuthProvider } from "./context/AuthContext";
+import { AnalyticsProvider } from "./context/AnalyticsContext";
 import { Toaster } from "react-hot-toast";
+
 
 export default function App() {
   return (
     <AuthProvider>
-      <Toaster position="top-right" />
-      <Router>
+      <AnalyticsProvider>
+        <Toaster position="top-right" />
+        <Router>
+
         <ScrollToTop />
         <div className="flex flex-col min-h-screen bg-slate-900 text-white selection:bg-blue-500/30">
           <Navbar />
@@ -242,6 +246,7 @@ export default function App() {
           <Footer />
         </div>
       </Router>
+      </AnalyticsProvider>
     </AuthProvider>
   );
 }
