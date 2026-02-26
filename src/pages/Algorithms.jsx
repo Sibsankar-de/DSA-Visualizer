@@ -21,6 +21,7 @@ import {
   Zap,
   Waypoints,
   TextSearch,
+  Crown,
 } from "lucide-react";
 
 const algorithmsCatalog = [
@@ -343,6 +344,20 @@ const algorithmsCatalog = [
     gradient: "from-purple-500/25 via-fuchsia-500/15 to-transparent",
     accent: "text-purple-200",
   },
+  {
+    id: "n-queens",
+    title: "N-Queens Problem",
+    description:
+      "Place N queens on an N×N chessboard so that no two queens attack each other using backtracking.",
+    path: "/visualizer/n-queens",
+    category: "backtracking",
+    type: "Backtracking",
+    complexity: "O(N!)",
+    level: "Advanced",
+    icon: Crown,
+    gradient: "from-amber-500/25 via-orange-500/15 to-transparent",
+    accent: "text-amber-200",
+  },
 ];
 
 const filterTabs = [
@@ -358,6 +373,8 @@ const filterTabs = [
   { id: "mst", label: "Minimum Spanning Tree" },
   { id: "greedy", label: "Greedy Algorithms" },
   { id: "string-matching", label: "String Matching" },
+  { id: "dynamic-programming", label: "Dynamic Programming" },
+  { id: "backtracking", label: "Backtracking" },
 ];
 
 const levelTabs = ["All", "Beginner", "Intermediate", "Advanced"];
