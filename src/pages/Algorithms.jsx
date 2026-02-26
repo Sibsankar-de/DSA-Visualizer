@@ -20,6 +20,7 @@ import {
   X,
   Zap,
   Waypoints,
+  TextSearch,
 } from "lucide-react";
 
 const algorithmsCatalog = [
@@ -328,6 +329,20 @@ const algorithmsCatalog = [
     gradient: 'from-violet-500/25 via-purple-500/15 to-transparent',
     accent: 'text-violet-200',
   },
+  {
+    id: "trie",
+    title: "Trie (Prefix Tree)",
+    description:
+      "A tree data structure used to efficiently store and retrieve keys in a dataset of strings.",
+    path: "/visualizer/trie",
+    category: "string-matching",
+    type: "Tree",
+    complexity: "O(m)",
+    level: "Intermediate",
+    icon: TextSearch,
+    gradient: "from-purple-500/25 via-fuchsia-500/15 to-transparent",
+    accent: "text-purple-200",
+  },
 ];
 
 const filterTabs = [
@@ -342,6 +357,7 @@ const filterTabs = [
   { id: "pathfinding", label: "Pathfinding" },
   { id: "mst", label: "Minimum Spanning Tree" },
   { id: "greedy", label: "Greedy Algorithms" },
+  { id: "string-matching", label: "String Matching" },
 ];
 
 const levelTabs = ["All", "Beginner", "Intermediate", "Advanced"];
@@ -436,6 +452,9 @@ export default function Algorithms() {
   ).length;
   const twoDArrayCount = algorithmsCatalog.filter(
     (algorithm) => algorithm.category === "2d-array",
+  ).length;
+  const stringMatchingCount = algorithmsCatalog.filter(
+    (algorithm) => algorithm.category === "string-matching",
   ).length;
   const hasActiveFilters =
     activeFilter !== "all" ||
@@ -541,6 +560,17 @@ export default function Algorithms() {
                 </p>
                 <p className="mt-1 text-2xl font-bold text-blue-200">
                   {arraySearchingCount}
+                </p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                <p
+                  className="text-[10px] lg:text-xs uppercase tracking-wider text-slate-400 truncate"
+                  title="Strings"
+                >
+                  Strings
+                </p>
+                <p className="mt-1 text-2xl font-bold text-purple-200">
+                  {stringMatchingCount}
                 </p>
               </div>
               <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">

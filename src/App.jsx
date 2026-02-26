@@ -13,6 +13,7 @@ import DijkstraPage from "./pages/DijkstraPage";
 import KruskalPage from "./pages/KruskalPage";
 import AStarPage from "./pages/AStarPage";
 import StackVisualizerPage from "./pages/StackVisualizerPage";
+import TrieVisualizerPage from './pages/TrieVisualizerPage';
 import SignIn from "./pages/SignIn";
 import TopologicalSortPage from "./pages/TopologicalSortPage";
 import SignUp from "./pages/SignUp";
@@ -118,15 +119,15 @@ export default function App() {
               <Route
                 path="/visualizer/bubble-sort"
                 element={
-                  
-                    <VisualizerPage
-                      name="Bubble Sort"
-                      cppSnippet={bubbleSortCPP}
-                      javaSnippet={bubbleSortJava}
-                      pythonSnippet={bubbleSortPython}
-                      jsSnippet={bubbleSortJS}
-                    />
-                  
+
+                  <VisualizerPage
+                    name="Bubble Sort"
+                    cppSnippet={bubbleSortCPP}
+                    javaSnippet={bubbleSortJava}
+                    pythonSnippet={bubbleSortPython}
+                    jsSnippet={bubbleSortJS}
+                  />
+
                 }
               />
               <Route
@@ -139,113 +140,113 @@ export default function App() {
               <Route
                 path="/visualizer/selection-sort"
                 element={
-                  
-                    <VisualizerPage
-                      name="Selection Sort"
-                      cppSnippet={selectionSortCPP}
-                      javaSnippet={selectionSortJava}
-                      pythonSnippet={selectionSortPython}
-                      jsSnippet={selectionSortJS}
-                    />
-                  
+
+                  <VisualizerPage
+                    name="Selection Sort"
+                    cppSnippet={selectionSortCPP}
+                    javaSnippet={selectionSortJava}
+                    pythonSnippet={selectionSortPython}
+                    jsSnippet={selectionSortJS}
+                  />
+
                 }
               />
               <Route
                 path="/visualizer/quick-sort"
                 element={
-                  
-                    <VisualizerPage
-                      name="Quick Sort"
-                      cppSnippet={quickSortCPP}
-                      javaSnippet={quickSortJava}
-                      pythonSnippet={quickSortPython}
-                      jsSnippet={quickSortJS}
-                    />
-                  
+
+                  <VisualizerPage
+                    name="Quick Sort"
+                    cppSnippet={quickSortCPP}
+                    javaSnippet={quickSortJava}
+                    pythonSnippet={quickSortPython}
+                    jsSnippet={quickSortJS}
+                  />
+
                 }
               />
               <Route
                 path="/visualizer/linear-search"
                 element={
-                  
-                    <VisualizerPage
-                      name="Linear Search"
-                      cppSnippet={linearSearchCPP}
-                      javaSnippet={linearSearchJava}
-                      pythonSnippet={linearSearchPython}
-                      jsSnippet={linearSearchJS}
-                    />
-                  
+
+                  <VisualizerPage
+                    name="Linear Search"
+                    cppSnippet={linearSearchCPP}
+                    javaSnippet={linearSearchJava}
+                    pythonSnippet={linearSearchPython}
+                    jsSnippet={linearSearchJS}
+                  />
+
                 }
               />
               <Route
                 path="/visualizer/binary-search"
                 element={
-                  
-                    <VisualizerPage
-                      name="Binary Search"
-                      cppSnippet={binarySearchCPP}
-                      javaSnippet={binarySearchJava}
-                      pythonSnippet={binarySearchPython}
-                      jsSnippet={binarySearchJS}
-                    />
-                  
+
+                  <VisualizerPage
+                    name="Binary Search"
+                    cppSnippet={binarySearchCPP}
+                    javaSnippet={binarySearchJava}
+                    pythonSnippet={binarySearchPython}
+                    jsSnippet={binarySearchJS}
+                  />
+
                 }
               />
               <Route
                 path="/visualizer/interpolation-search"
                 element={
-                  
-                    <VisualizerPage
-                      name="Interpolation Search"
-                      cppSnippet={interpolationSearchCPP}
-                      javaSnippet={interpolationSearchJava}
-                      pythonSnippet={interpolationSearchPython}
-                      jsSnippet={interpolationSearchJS}
-                    />
-                  
+
+                  <VisualizerPage
+                    name="Interpolation Search"
+                    cppSnippet={interpolationSearchCPP}
+                    javaSnippet={interpolationSearchJava}
+                    pythonSnippet={interpolationSearchPython}
+                    jsSnippet={interpolationSearchJS}
+                  />
+
                 }
               />
               <Route
                 path="/visualizer/radix-sort"
                 element={
-                  
-                    <VisualizerPage
-                      name="Radix Sort"
-                      cppSnippet={radixSortCPP}
-                      javaSnippet={radixSortJava}
-                      pythonSnippet={radixSortPython}
-                      jsSnippet={radixSortJS}
-                    />
-                  
+
+                  <VisualizerPage
+                    name="Radix Sort"
+                    cppSnippet={radixSortCPP}
+                    javaSnippet={radixSortJava}
+                    pythonSnippet={radixSortPython}
+                    jsSnippet={radixSortJS}
+                  />
+
                 }
               />
               <Route
                 path="/visualizer/heap-sort"
                 element={
-                  
-                    <VisualizerPage
-                      name="Heap Sort"
-                      cppSnippet={heapSortCPP}
-                      javaSnippet={heapSortJava}
-                      pythonSnippet={heapSortPython}
-                      jsSnippet={heapSortJS}
-                    />
-                  
+
+                  <VisualizerPage
+                    name="Heap Sort"
+                    cppSnippet={heapSortCPP}
+                    javaSnippet={heapSortJava}
+                    pythonSnippet={heapSortPython}
+                    jsSnippet={heapSortJS}
+                  />
+
                 }
               />
               <Route
                 path="/visualizer/insertion-sort"
                 element={
-                  
-                    <VisualizerPage
-                      name="Insertion Sort"
-                      cppSnippet={insertionSortCPP}
-                      javaSnippet={insertionSortJava}
-                      pythonSnippet={insertionSortPython}
-                      jsSnippet={insertionSortJS}
-                    />
-                  
+
+                  <VisualizerPage
+                    name="Insertion Sort"
+                    cppSnippet={insertionSortCPP}
+                    javaSnippet={insertionSortJava}
+                    pythonSnippet={insertionSortPython}
+                    jsSnippet={insertionSortJS}
+                  />
+
                 }
               />
               <Route
@@ -255,14 +256,14 @@ export default function App() {
               <Route
                 path="/visualizer/merge-sort"
                 element={
-                  
-                    <VisualizerPage name="Merge Sort"
-                      cppSnippet={mergeSortCPP}
-                      javaSnippet={mergeSortJava}
-                      pythonSnippet={mergeSortPython}
-                      jsSnippet={mergeSortJS}
-                    />
-                  
+
+                  <VisualizerPage name="Merge Sort"
+                    cppSnippet={mergeSortCPP}
+                    javaSnippet={mergeSortJava}
+                    pythonSnippet={mergeSortPython}
+                    jsSnippet={mergeSortJS}
+                  />
+
                 }
               />
               <Route path="/visualizer/dijkstra" element={<DijkstraPage />} />
@@ -272,6 +273,10 @@ export default function App() {
               <Route path="/visualizer/huffman-coding" element={<HuffmanCodingPage />} />
               <Route path="/visualizer/floyd-warshall" element={<FloydWarshallPage />} />
               <Route path="/visualizer/stack" element={<StackVisualizerPage />} />
+              <Route
+                path="/visualizer/trie"
+                element={<TrieVisualizerPage />}
+              />
               <Route path="/compare" element={<ComparisonPage />} />
             </Routes>
           </main>
