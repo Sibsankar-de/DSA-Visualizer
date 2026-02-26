@@ -20,6 +20,8 @@ import {
 } from 'lucide-react';
 import { dijkstraCPP, dijkstraJava, dijkstraPython, dijkstraJS, generateDijkstraSteps } from '../algorithms/dijkstra';
 import { renderHighlightedCode } from '../utils/codeHighlight';
+import HotkeysHint from "../components/HotkeysHint";
+import { shouldSkipHotkeyTarget, useStableHotkeys } from "../hooks/useStableHotkeys";
 
 const CANVAS_WIDTH = 800;
 const CANVAS_HEIGHT = 450;
@@ -76,6 +78,12 @@ const generateRandomGraph = (numNodes = 6) => {
     return { nodes, edges };
 };
 
+function formatElapsed(seconds) {
+    const mins = Math.floor(seconds / 60).toString().padStart(2, "0");
+    const secs = (seconds % 60).toString().padStart(2, "0");
+    return `${mins}:${secs}`;
+}
+
 export default function DijkstraPage() {
     const navigate = useNavigate();
     const [graph, setGraph] = useState(() => generateRandomGraph(6));
@@ -86,6 +94,7 @@ export default function DijkstraPage() {
     const [runStatus, setRunStatus] = useState('Idle');
     const [speed, setSpeed] = useState(1000);
     const [isPaused, setIsPaused] = useState(false);
+    const [elapsedSeconds, setElapsedSeconds] = useState(0);
     const [copyState, setCopyState] = useState('idle');
     const [selectedLanguage, setSelectedLanguage] = useState("C++");
     const [previous, setPrevious] = useState({});
@@ -106,6 +115,15 @@ export default function DijkstraPage() {
     const visited = currentStep ? currentStep.visited : new Set();
     const processingNode = currentStep ? currentStep.processingNode : null;
     const highlightEdge = currentStep ? currentStep.highlightEdge : null;
+    const visitedCount = visited.size;
+    const progress = useMemo(() => {
+        if (runStatus === "Completed") return 100;
+        if (steps.length <= 1 || currentStepIndex < 0) return 0;
+        return Math.min(
+            99,
+            Math.round((currentStepIndex / (steps.length - 1)) * 100),
+        );
+    }, [runStatus, steps.length, currentStepIndex]);
 
     // Calculate optimal path edges when completed
     const pathEdges = useMemo(() => {
@@ -135,6 +153,7 @@ export default function DijkstraPage() {
         setCurrentStepIndex(-1);
         setRunStatus('Idle');
         setIsPaused(false);
+        setElapsedSeconds(0);
         setStartNodeId(0);
         setPrevious({});
     };
@@ -146,6 +165,7 @@ export default function DijkstraPage() {
         setCurrentStepIndex(0);
         setRunStatus('Running');
         setIsPaused(false);
+        setElapsedSeconds(0);
     };
 
     const stopAnimation = () => {
@@ -169,6 +189,14 @@ export default function DijkstraPage() {
         return () => stopAnimation();
     }, [runStatus, isPaused, steps.length, speed]);
 
+    useEffect(() => {
+        if (runStatus !== "Running" || isPaused) return undefined;
+        const timer = setInterval(() => {
+            setElapsedSeconds((prev) => prev + 1);
+        }, 1000);
+        return () => clearInterval(timer);
+    }, [runStatus, isPaused]);
+
     // Copy/Download handlers
     const handleCopyCode = async () => {
         if (!navigator?.clipboard) return;
@@ -189,6 +217,41 @@ export default function DijkstraPage() {
         link.click();
         URL.revokeObjectURL(url);
     };
+
+    useStableHotkeys((e) => {
+        if (shouldSkipHotkeyTarget(e.target)) return;
+
+        const key = e.key?.toLowerCase();
+        const isHotkey = e.code === "Space" || key === "r" || key === "n";
+        if (!isHotkey) return;
+
+        if (e.repeat) {
+            e.preventDefault();
+            return;
+        }
+
+        if (e.code === "Space") {
+            e.preventDefault();
+            if (runStatus === 'Idle' || runStatus === 'Completed') {
+                if (runStatus === 'Completed') handleReset();
+                setTimeout(runAlgorithm, 100);
+            } else {
+                setIsPaused((prev) => !prev);
+            }
+            return;
+        }
+
+        if (key === "r") {
+            e.preventDefault();
+            handleReset();
+            return;
+        }
+
+        if (key === "n") {
+            e.preventDefault();
+            if (runStatus === "Idle") handleGenerateNewGraph();
+        }
+    });
 
 
     return (
@@ -218,11 +281,33 @@ export default function DijkstraPage() {
                             <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${runStatusStyleMap[runStatus]}`}>
                                 {runStatus}
                             </span>
+                            <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-slate-200">
+                                {formatElapsed(elapsedSeconds)}
+                            </span>
+                            <span className="rounded-full border border-slate-400/25 bg-slate-500/10 px-3 py-1 text-xs font-semibold tracking-wider text-slate-300">
+                                Time: <span className="text-cyan-300 font-mono">O(E + V log V)</span>
+                            </span>
+                            <span className="rounded-full border border-slate-400/25 bg-slate-500/10 px-3 py-1 text-xs font-semibold tracking-wider text-slate-300">
+                                Space: <span className="text-cyan-300 font-mono">O(V)</span>
+                            </span>
                         </div>
                         <h1 className="font-display text-3xl font-black text-white sm:text-4xl lg:text-5xl">Dijkstra's Algorithm</h1>
                         <p className="mt-3 text-sm text-slate-300 sm:text-base">
                             Finds shortest paths from a source node to all other nodes in a weighted graph.
                         </p>
+
+                        <div className="mt-5">
+                            <div className="mb-2 flex items-center justify-between text-xs uppercase tracking-widest text-slate-400">
+                                <span>Run Progress</span>
+                                <span>{progress}%</span>
+                            </div>
+                            <div className="h-2 overflow-hidden rounded-full bg-slate-700/70">
+                                <motion.div
+                                    animate={{ width: `${progress}%` }}
+                                    className="h-full bg-gradient-to-r from-cyan-500 to-blue-500"
+                                />
+                            </div>
+                        </div>
 
                         <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4 text-center">
                             <div className="rounded-xl border border-white/10 bg-white/5 p-3">
@@ -232,6 +317,16 @@ export default function DijkstraPage() {
                             <div className="rounded-xl border border-white/10 bg-white/5 p-3">
                                 <p className="text-[11px] uppercase tracking-wider text-slate-400">Complexity</p>
                                 <p className="mt-1 text-sm font-semibold text-cyan-200">O(E + V log V)</p>
+                            </div>
+                            <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+                                <p className="text-[11px] uppercase tracking-wider text-slate-400">Visited</p>
+                                <p className="mt-1 text-sm font-semibold text-emerald-200">{visitedCount}/{graph.nodes.length}</p>
+                            </div>
+                            <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+                                <p className="text-[11px] uppercase tracking-wider text-slate-400">Step</p>
+                                <p className="mt-1 text-sm font-semibold text-blue-200">
+                                    {currentStepIndex >= 0 ? `${currentStepIndex + 1}/${Math.max(steps.length, 1)}` : "0/0"}
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -253,6 +348,16 @@ export default function DijkstraPage() {
                                 <p className="text-lg font-bold text-cyan-100">
                                     {processingNode !== null ? graph.nodes[processingNode]?.label : '-'}
                                 </p>
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="rounded-xl bg-white/5 p-3">
+                                    <p className="text-[11px] text-slate-400">Visited Nodes</p>
+                                    <p className="text-lg font-bold text-emerald-200">{visitedCount}</p>
+                                </div>
+                                <div className="rounded-xl bg-white/5 p-3">
+                                    <p className="text-[11px] text-slate-400">Delay</p>
+                                    <p className="text-lg font-bold text-cyan-100">{speed}ms</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -357,6 +462,7 @@ export default function DijkstraPage() {
                                 {isPaused ? 'Resume' : 'Pause'}
                             </button>
                         )}
+                        <HotkeysHint className="mt-1" />
                     </div>
                 </aside>
 
@@ -463,6 +569,16 @@ export default function DijkstraPage() {
                             );
                         })}
                     </svg>
+                    <div className="absolute bottom-4 right-4 rounded-xl border border-white/10 bg-slate-950/70 px-3 py-2 backdrop-blur">
+                        <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">Legend</p>
+                        <div className="space-y-1.5 text-[10px]">
+                            <div className="flex items-center gap-2 text-slate-300"><span className="h-2.5 w-2.5 rounded-full bg-sky-500" /> Start Node</div>
+                            <div className="flex items-center gap-2 text-slate-300"><span className="h-2.5 w-2.5 rounded-full bg-pink-600" /> Target Node</div>
+                            <div className="flex items-center gap-2 text-slate-300"><span className="h-2.5 w-2.5 rounded-full bg-amber-500" /> Processing</div>
+                            <div className="flex items-center gap-2 text-slate-300"><span className="h-2.5 w-2.5 rounded-full bg-emerald-500" /> Visited</div>
+                            <div className="flex items-center gap-2 text-slate-300"><span className="h-0.5 w-5 rounded bg-pink-400" /> Final Path</div>
+                        </div>
+                    </div>
                 </section>
             </div>
 

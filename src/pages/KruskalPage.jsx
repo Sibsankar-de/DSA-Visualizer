@@ -27,6 +27,8 @@ import {
 } from "../algorithms/kruskal";
 import { renderHighlightedCode } from "../utils/codeHighlight";
 import { useNavigate } from "react-router-dom";
+import HotkeysHint from "../components/HotkeysHint";
+import { shouldSkipHotkeyTarget, useStableHotkeys } from "../hooks/useStableHotkeys";
 
 const CANVAS_WIDTH = 800;
 const CANVAS_HEIGHT = 450;
@@ -90,6 +92,12 @@ const generateRandomGraph = (numNodes = 6) => {
   return { nodes, edges };
 };
 
+function formatElapsed(seconds) {
+  const mins = Math.floor(seconds / 60).toString().padStart(2, "0");
+  const secs = (seconds % 60).toString().padStart(2, "0");
+  return `${mins}:${secs}`;
+}
+
 export default function KruskalPage() {
   useDocumentTitle("Kruskal's Algorithm");
   const navigate = useNavigate();
@@ -100,6 +108,7 @@ export default function KruskalPage() {
   const [runStatus, setRunStatus] = useState("Idle");
   const [speed, setSpeed] = useState(1000);
   const [isPaused, setIsPaused] = useState(false);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [copyState, setCopyState] = useState("idle");
   const [selectedLanguage, setSelectedLanguage] = useState("C++");
 
@@ -124,6 +133,11 @@ export default function KruskalPage() {
 
   const mstEdges = currentStep ? currentStep.mstEdges : [];
   const evaluatingEdge = currentStep ? currentStep.evaluatingEdge : null;
+  const progress = useMemo(() => {
+    if (runStatus === "Completed") return 100;
+    const requiredEdges = Math.max(1, graph.nodes.length - 1);
+    return Math.min(99, Math.round((mstEdges.length / requiredEdges) * 100));
+  }, [runStatus, mstEdges.length, graph.nodes.length]);
 
   const handleGenerateNewGraph = (count = nodeCount) => {
     handleReset();
@@ -136,6 +150,7 @@ export default function KruskalPage() {
     setCurrentStepIndex(-1);
     setRunStatus("Idle");
     setIsPaused(false);
+    setElapsedSeconds(0);
   };
 
   const runAlgorithm = () => {
@@ -147,6 +162,7 @@ export default function KruskalPage() {
     setCurrentStepIndex(0);
     setRunStatus("Running");
     setIsPaused(false);
+    setElapsedSeconds(0);
   };
 
   const stopAnimation = () => {
@@ -169,6 +185,14 @@ export default function KruskalPage() {
     }
     return () => stopAnimation();
   }, [runStatus, isPaused, steps.length, speed]);
+
+  useEffect(() => {
+    if (runStatus !== "Running" || isPaused) return undefined;
+    const timer = setInterval(() => {
+      setElapsedSeconds((prev) => prev + 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [runStatus, isPaused]);
 
   // Copy/Download handlers
   const handleCopyCode = async () => {
@@ -197,6 +221,41 @@ export default function KruskalPage() {
     link.click();
     URL.revokeObjectURL(url);
   };
+
+  useStableHotkeys((e) => {
+    if (shouldSkipHotkeyTarget(e.target)) return;
+
+    const key = e.key?.toLowerCase();
+    const isHotkey = e.code === "Space" || key === "r" || key === "n";
+    if (!isHotkey) return;
+
+    if (e.repeat) {
+      e.preventDefault();
+      return;
+    }
+
+    if (e.code === "Space") {
+      e.preventDefault();
+      if (runStatus === "Idle" || runStatus === "Completed") {
+        if (runStatus === "Completed") handleReset();
+        setTimeout(runAlgorithm, 100);
+      } else {
+        setIsPaused((prev) => !prev);
+      }
+      return;
+    }
+
+    if (key === "r") {
+      e.preventDefault();
+      handleReset();
+      return;
+    }
+
+    if (key === "n") {
+      e.preventDefault();
+      if (runStatus === "Idle") handleGenerateNewGraph();
+    }
+  });
 
   return (
     <div className="font-body relative mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:py-12">
@@ -231,6 +290,15 @@ export default function KruskalPage() {
               >
                 {runStatus}
               </span>
+              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-slate-200">
+                {formatElapsed(elapsedSeconds)}
+              </span>
+              <span className="rounded-full border border-slate-400/25 bg-slate-500/10 px-3 py-1 text-xs font-semibold tracking-wider text-slate-300">
+                Time: <span className="text-orange-200 font-mono">O(E log E)</span>
+              </span>
+              <span className="rounded-full border border-slate-400/25 bg-slate-500/10 px-3 py-1 text-xs font-semibold tracking-wider text-slate-300">
+                Space: <span className="text-orange-200 font-mono">O(V)</span>
+              </span>
             </div>
             <h1 className="font-display text-3xl font-black text-white sm:text-4xl lg:text-5xl">
               Kruskal's Algorithm
@@ -239,6 +307,19 @@ export default function KruskalPage() {
               Finds a Minimum Spanning Tree (MST) for a connected weighted graph
               using a greedy approach.
             </p>
+
+            <div className="mt-5">
+              <div className="mb-2 flex items-center justify-between text-xs uppercase tracking-widest text-slate-400">
+                <span>MST Progress</span>
+                <span>{progress}%</span>
+              </div>
+              <div className="h-2 overflow-hidden rounded-full bg-slate-700/70">
+                <motion.div
+                  animate={{ width: `${progress}%` }}
+                  className="h-full bg-gradient-to-r from-orange-500 to-amber-500"
+                />
+              </div>
+            </div>
 
             <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4 text-center">
               <div className="rounded-xl border border-white/10 bg-white/5 p-3">
@@ -263,6 +344,22 @@ export default function KruskalPage() {
                 </p>
                 <p className="mt-1 text-sm font-semibold text-orange-200">
                   O(E log E)
+                </p>
+              </div>
+              <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+                <p className="text-[11px] uppercase tracking-wider text-slate-400">
+                  MST Edges
+                </p>
+                <p className="mt-1 text-sm font-semibold text-emerald-200">
+                  {mstEdges.length}/{Math.max(0, graph.nodes.length - 1)}
+                </p>
+              </div>
+              <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+                <p className="text-[11px] uppercase tracking-wider text-slate-400">
+                  Step
+                </p>
+                <p className="mt-1 text-sm font-semibold text-orange-100">
+                  {currentStepIndex >= 0 ? `${currentStepIndex + 1}/${Math.max(steps.length, 1)}` : "0/0"}
                 </p>
               </div>
             </div>
@@ -302,6 +399,18 @@ export default function KruskalPage() {
                       );
                       return acc + (originalEdge ? originalEdge.weight : 0);
                     }, 0)}
+                  </p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="rounded-xl bg-white/5 p-3">
+                  <p className="text-[11px] text-slate-400">Delay</p>
+                  <p className="text-lg font-bold text-orange-100">{speed}ms</p>
+                </div>
+                <div className="rounded-xl bg-white/5 p-3">
+                  <p className="text-[11px] text-slate-400">Evaluating</p>
+                  <p className="text-lg font-bold text-yellow-200">
+                    {evaluatingEdge ? `${graph.nodes[evaluatingEdge.source]?.label}-${graph.nodes[evaluatingEdge.target]?.label}` : "-"}
                   </p>
                 </div>
               </div>
@@ -402,6 +511,7 @@ export default function KruskalPage() {
                 {isPaused ? "Resume" : "Pause"}
               </button>
             )}
+            <HotkeysHint className="mt-1" />
           </div>
         </aside>
 
@@ -527,6 +637,14 @@ export default function KruskalPage() {
               );
             })}
           </svg>
+          <div className="absolute bottom-4 right-4 rounded-xl border border-white/10 bg-slate-950/70 px-3 py-2 backdrop-blur">
+            <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">Legend</p>
+            <div className="space-y-1.5 text-[10px]">
+              <div className="flex items-center gap-2 text-slate-300"><span className="h-2.5 w-2.5 rounded-full bg-amber-500" /> Evaluating Node/Edge</div>
+              <div className="flex items-center gap-2 text-slate-300"><span className="h-2.5 w-2.5 rounded-full bg-emerald-500" /> In MST</div>
+              <div className="flex items-center gap-2 text-slate-300"><span className="h-0.5 w-5 rounded bg-emerald-500" /> Accepted Edge</div>
+            </div>
+          </div>
         </section>
       </div>
 

@@ -24,6 +24,8 @@ import {
   generateHuffmanSteps,
 } from "../algorithms/huffmanCoding";
 import { renderHighlightedCode } from "../utils/codeHighlight";
+import HotkeysHint from "../components/HotkeysHint";
+import { shouldSkipHotkeyTarget, useStableHotkeys } from "../hooks/useStableHotkeys";
 
 const CANVAS_WIDTH = 800;
 const CANVAS_HEIGHT = 450;
@@ -197,6 +199,57 @@ export default function HuffmanCodingPage() {
     link.click();
     URL.revokeObjectURL(url);
   };
+
+  const handleGenerateNewInput = () => {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const length = Math.floor(Math.random() * 8) + 6;
+    let generated = "";
+
+    for (let i = 0; i < length; i++) {
+      if (i > 0 && Math.random() < 0.18) generated += " ";
+      generated += chars[Math.floor(Math.random() * chars.length)];
+    }
+
+    const normalized = generated.replace(/\s+/g, " ").trim();
+    setInputText(normalized || "DATA");
+    handleReset();
+  };
+
+  useStableHotkeys((e) => {
+    if (shouldSkipHotkeyTarget(e.target)) return;
+
+    const key = e.key?.toLowerCase();
+    const isHotkey = e.code === "Space" || key === "r" || key === "n";
+    if (!isHotkey) return;
+
+    if (e.repeat) {
+      e.preventDefault();
+      return;
+    }
+
+    if (e.code === "Space") {
+      e.preventDefault();
+      if (runStatus === "Idle" || runStatus === "Completed") {
+        if (!inputText.trim()) return;
+        if (runStatus === "Completed") handleReset();
+        setTimeout(runAlgorithm, 100);
+      } else {
+        setIsPaused((prev) => !prev);
+      }
+      return;
+    }
+
+    if (key === "r") {
+      e.preventDefault();
+      handleReset();
+      return;
+    }
+
+    if (key === "n") {
+      e.preventDefault();
+      handleGenerateNewInput();
+    }
+  });
 
   return (
     <div className="font-body relative mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:py-12">
@@ -402,6 +455,7 @@ export default function HuffmanCodingPage() {
                 </button>
               )}
             </div>
+            <HotkeysHint />
           </div>
         </aside>
 
