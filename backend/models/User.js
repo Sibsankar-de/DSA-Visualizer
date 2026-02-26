@@ -24,13 +24,21 @@ const userSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now
+    },
+    verifyOtp: {
+        type: String,
+        default: null
+    },
+    verifyOtpExpiry: {
+        type: Date,
+        default: null
     }
 });
 
 // Encrypt password using bcrypt
-userSchema.pre('save', async function (next) {
+userSchema.pre('save', async function () {
     if (!this.isModified('password')) {
-        next();
+        return;
     }
 
     const salt = await bcrypt.genSalt(10);

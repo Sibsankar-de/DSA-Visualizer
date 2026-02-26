@@ -14,7 +14,6 @@ import {
   Radar,
   Sparkles,
   Download,
-  Keyboard,
   ArrowLeft,
   RotateCcw,
   Play,
@@ -39,7 +38,8 @@ import { selectionSort } from "../algorithms/selectionSort";
 import { mergeSort } from "../algorithms/mergeSort";
 import CustomInputModal from "../components/CustomInputModal";
 import AlgorithmExplanationPanel from "../components/AlgorithmExplanationPanel";
-import StepController from "../components/StepController";
+import HotkeysHint from "../components/HotkeysHint";
+import { shouldSkipHotkeyTarget, useStableHotkeys } from "../hooks/useStableHotkeys";
 
 
 const algorithmMap = {
@@ -321,30 +321,6 @@ export default function VisualizerPage({
     [algorithm?.category, themeColors],
   );
 
-  // HOTKEYS
-  useEffect(() => {
-    const handleHotkeys = (e) => {
-      const tag = e.target?.tagName?.toLowerCase();
-      if (tag === "input" || tag === "textarea") return;
-      if (e.code === "Space") {
-        e.preventDefault();
-        if (!isSorting) handleStart();
-        else if (isPaused) handleResume();
-        else handlePause();
-      }
-      if (e.key.toLowerCase() === "r") {
-        e.preventDefault();
-        handleResetHighlights();
-      }
-      if (e.key.toLowerCase() === "n") {
-        e.preventDefault();
-        handleGenerateNew();
-      }
-    };
-    window.addEventListener("keydown", handleHotkeys);
-    return () => window.removeEventListener("keydown", handleHotkeys);
-  }, [isSorting, isPaused]);
-
   useEffect(() => {
     handleGenerateNew(arraySize);
   }, [name]);
@@ -357,57 +333,6 @@ export default function VisualizerPage({
     );
     return () => clearInterval(timer);
   }, [isSorting, isPaused]);
-
-  // HOTKEYS LOGIC
-  useEffect(() => {
-    const handleHotkeys = (e) => {
-      const tag = e.target?.tagName?.toLowerCase();
-      if (tag === "input" || tag === "textarea" || tag === "select") return;
-      if (e.code === "Space") {
-        e.preventDefault();
-        if (!isSorting) handleStart();
-        else if (isPaused) handleResume();
-        else handlePause();
-      }
-      if (e.key.toLowerCase() === "r") {
-        e.preventDefault();
-        handleResetHighlights();
-      }
-      if (e.key.toLowerCase() === "n") {
-        e.preventDefault();
-        handleGenerateNew();
-      }
-      if (e.key.toLowerCase() === "v") {
-        e.preventDefault();
-        !isTooLargeForValues && setShowValues((v) => !v);
-      }
-      if (e.key.toLowerCase() === "g") {
-        e.preventDefault();
-        setShowGrid((g) => !g);
-      }
-      if (e.key.toLowerCase() === "c") {
-        e.preventDefault();
-        const keys = Object.keys(colorThemes);
-        setColorTheme(keys[(keys.indexOf(colorTheme) + 1) % keys.length]);
-      }
-      // Step navigation shortcuts
-      if (e.key === "ArrowLeft") {
-        e.preventDefault();
-        stepBackward();
-      }
-      if (e.key === "ArrowRight") {
-        e.preventDefault();
-        stepForward();
-      }
-      if (e.key.toLowerCase() === "s") {
-        e.preventDefault();
-        toggleStepMode();
-      }
-    };
-    window.addEventListener("keydown", handleHotkeys);
-    return () => window.removeEventListener("keydown", handleHotkeys);
-  }, [isSorting, isPaused, colorTheme, array.length, stepForward, stepBackward, toggleStepMode]);
-
 
   const handleGenerateNew = (nextSize = arraySize) => {
     stopSignal.current = true;
@@ -503,6 +428,63 @@ export default function VisualizerPage({
     link.download = `${name.replace(/\s+/g, "")}${ext}`;
     link.click();
   };
+
+  useStableHotkeys((e) => {
+    if (shouldSkipHotkeyTarget(e.target)) return;
+
+    const key = e.key?.toLowerCase();
+    const isHotkey =
+      e.code === "Space" ||
+      key === "r" ||
+      key === "n" ||
+      key === "v" ||
+      key === "g" ||
+      key === "c";
+    if (!isHotkey) return;
+
+    if (e.repeat) {
+      e.preventDefault();
+      return;
+    }
+
+    if (e.code === "Space") {
+      e.preventDefault();
+      if (!isSorting) handleStart();
+      else if (isPaused) handleResume();
+      else handlePause();
+      return;
+    }
+
+    if (key === "r") {
+      e.preventDefault();
+      handleResetHighlights();
+      return;
+    }
+
+    if (key === "n") {
+      e.preventDefault();
+      handleGenerateNew();
+      return;
+    }
+
+    if (key === "v") {
+      e.preventDefault();
+      if (!isTooLargeForValues) setShowValues((v) => !v);
+      return;
+    }
+
+    if (key === "g") {
+      e.preventDefault();
+      setShowGrid((g) => !g);
+      return;
+    }
+
+    if (key === "c") {
+      e.preventDefault();
+      const keys = Object.keys(colorThemes);
+      setColorTheme(keys[(keys.indexOf(colorTheme) + 1) % keys.length]);
+    }
+  });
 
   return (
     <div className="font-body relative mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:py-12">
@@ -717,14 +699,7 @@ export default function VisualizerPage({
                 {isPaused ? "Resume" : isSorting ? "Pause" : "Start"}
               </MotionButton>
             </div>
-            <div className="mt-5 p-3 rounded-2xl border border-white/10 bg-white/5 text-[11px] text-slate-400 space-y-1">
-              <p className="font-bold text-slate-200 uppercase mb-1 flex items-center gap-1">
-                <Keyboard size={12} /> Shortcuts
-              </p>
-              <p>Space: Start/Pause | R: Reset | N: New</p>
-              <p>←: Prev Step | →: Next Step | S: Step Mode</p>
-            </div>
-
+            <HotkeysHint className="mt-5" />
           </aside>
 
           {/* Algorithm Explanation Panel */}

@@ -1,5 +1,3 @@
-
-
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -14,12 +12,21 @@ import PrimsVisualizerPage from "./pages/PrimsVisualizerPage";
 import DijkstraPage from "./pages/DijkstraPage";
 import KruskalPage from "./pages/KruskalPage";
 import AStarPage from "./pages/AStarPage";
+import StackVisualizerPage from "./pages/StackVisualizerPage";
+import TrieVisualizerPage from './pages/TrieVisualizerPage';
 import SignIn from "./pages/SignIn";
 import TopologicalSortPage from "./pages/TopologicalSortPage";
 import SignUp from "./pages/SignUp";
 import HuffmanCodingPage from "./pages/HuffmanCodingPage";
+import ForgotPasswordEmail from "./pages/ForgotPasswordEmail";
+import ForgotPasswordOTP from "./pages/ForgotPasswordOTP";
+import BoyerMoorePage from "./pages/BoyerMoorePage";
+import ArrayTraversalPage from "./pages/ArrayTraversalPage";
+import OAuthSuccess from "./pages/OAuthSuccess";
 import FloydWarshallPage from "./pages/FloydWarshallPage";
 import ComparisonPage from "./pages/ComparisonPage";
+import ProtectedRoute from "./components/ProtectedRoute";
+import PublicRoute from "./components/PublicRoute";
 
 // UPDATED IMPORTS: Including both CPP and Java versions
 import {
@@ -106,13 +113,17 @@ export default function App() {
               <Route path="/" element={<Home />} />
               <Route path="/algorithms" element={<Algorithms />} />
               <Route path="/contact" element={<Contact />} />
-              <Route path="/signin" element={<SignIn />} />
-              <Route path="/signup" element={<SignUp />} />
+              <Route path="/signin" element={<PublicRoute><SignIn /></PublicRoute>} />
+              <Route path="/signup" element={<PublicRoute><SignUp /></PublicRoute>} />
+              <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordEmail /></PublicRoute>} />
+              <Route path="/forgot-password/otp" element={<PublicRoute><ForgotPasswordOTP /></PublicRoute>} />
+              <Route path="/oauth-success" element={<OAuthSuccess />} />
 
               {/* UPDATED ROUTES: Passing both cppSnippet, javaSnippet, and pythonSnippet */}
               <Route
                 path="/visualizer/bubble-sort"
                 element={
+
                   <VisualizerPage
                     name="Bubble Sort"
                     cppSnippet={bubbleSortCPP}
@@ -120,13 +131,20 @@ export default function App() {
                     pythonSnippet={bubbleSortPython}
                     jsSnippet={bubbleSortJS}
                   />
+
                 }
+              />
+              <Route
+                path="/visualizer/boyer-moore"
+                element={<BoyerMoorePage />}
               />
               <Route path="/visualizer/prims" element={<PrimsVisualizerPage />} />
               <Route path="/visualizer/astar" element={<AStarPage />} />
+              <Route path="/visualizer/array-traversal" element={<ArrayTraversalPage />} />
               <Route
                 path="/visualizer/selection-sort"
                 element={
+
                   <VisualizerPage
                     name="Selection Sort"
                     cppSnippet={selectionSortCPP}
@@ -134,11 +152,13 @@ export default function App() {
                     pythonSnippet={selectionSortPython}
                     jsSnippet={selectionSortJS}
                   />
+
                 }
               />
               <Route
                 path="/visualizer/quick-sort"
                 element={
+
                   <VisualizerPage
                     name="Quick Sort"
                     cppSnippet={quickSortCPP}
@@ -146,11 +166,13 @@ export default function App() {
                     pythonSnippet={quickSortPython}
                     jsSnippet={quickSortJS}
                   />
+
                 }
               />
               <Route
                 path="/visualizer/linear-search"
                 element={
+
                   <VisualizerPage
                     name="Linear Search"
                     cppSnippet={linearSearchCPP}
@@ -158,11 +180,13 @@ export default function App() {
                     pythonSnippet={linearSearchPython}
                     jsSnippet={linearSearchJS}
                   />
+
                 }
               />
               <Route
                 path="/visualizer/binary-search"
                 element={
+
                   <VisualizerPage
                     name="Binary Search"
                     cppSnippet={binarySearchCPP}
@@ -170,11 +194,13 @@ export default function App() {
                     pythonSnippet={binarySearchPython}
                     jsSnippet={binarySearchJS}
                   />
+
                 }
               />
               <Route
                 path="/visualizer/interpolation-search"
                 element={
+
                   <VisualizerPage
                     name="Interpolation Search"
                     cppSnippet={interpolationSearchCPP}
@@ -182,11 +208,13 @@ export default function App() {
                     pythonSnippet={interpolationSearchPython}
                     jsSnippet={interpolationSearchJS}
                   />
+
                 }
               />
               <Route
                 path="/visualizer/radix-sort"
                 element={
+
                   <VisualizerPage
                     name="Radix Sort"
                     cppSnippet={radixSortCPP}
@@ -194,11 +222,13 @@ export default function App() {
                     pythonSnippet={radixSortPython}
                     jsSnippet={radixSortJS}
                   />
+
                 }
               />
               <Route
                 path="/visualizer/heap-sort"
                 element={
+
                   <VisualizerPage
                     name="Heap Sort"
                     cppSnippet={heapSortCPP}
@@ -206,11 +236,13 @@ export default function App() {
                     pythonSnippet={heapSortPython}
                     jsSnippet={heapSortJS}
                   />
+
                 }
               />
               <Route
                 path="/visualizer/insertion-sort"
                 element={
+
                   <VisualizerPage
                     name="Insertion Sort"
                     cppSnippet={insertionSortCPP}
@@ -218,6 +250,7 @@ export default function App() {
                     pythonSnippet={insertionSortPython}
                     jsSnippet={insertionSortJS}
                   />
+
                 }
               />
               <Route
@@ -226,19 +259,28 @@ export default function App() {
               />
               <Route
                 path="/visualizer/merge-sort"
-                element={<VisualizerPage name="Merge Sort"
-                  cppSnippet={mergeSortCPP}
-                  javaSnippet={mergeSortJava}
-                  pythonSnippet={mergeSortPython}
-                  jsSnippet={mergeSortJS}
-                />}
+                element={
+
+                  <VisualizerPage name="Merge Sort"
+                    cppSnippet={mergeSortCPP}
+                    javaSnippet={mergeSortJava}
+                    pythonSnippet={mergeSortPython}
+                    jsSnippet={mergeSortJS}
+                  />
+
+                }
               />
               <Route path="/visualizer/dijkstra" element={<DijkstraPage />} />
               <Route path="/visualizer/kruskal" element={<KruskalPage />} />
               <Route path="/visualizer/dfs" element={<GraphVisualizerPage />} />
               <Route path="/visualizer/topological-sort" element={<TopologicalSortPage />} />
               <Route path="/visualizer/huffman-coding" element={<HuffmanCodingPage />} />
-<Route path="/visualizer/floyd-warshall" element={<FloydWarshallPage />} />
+              <Route path="/visualizer/floyd-warshall" element={<FloydWarshallPage />} />
+              <Route path="/visualizer/stack" element={<StackVisualizerPage />} />
+              <Route
+                path="/visualizer/trie"
+                element={<TrieVisualizerPage />}
+              />
               <Route path="/compare" element={<ComparisonPage />} />
             </Routes>
           </main>
