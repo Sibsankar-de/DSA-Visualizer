@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 
 export const useVisualizer = () => {
   const [array, setArray] = useState([]);
@@ -10,6 +10,18 @@ export const useVisualizer = () => {
   const [operation, setOperation] = useState('');
   const [variables, setVariables] = useState({});
 
+  // Step mode state (continuous vs step-by-step)
+  const [stepMode, setStepMode] = useState(false); // false = continuous, true = step-by-step
+  const [isStepPending, setIsStepPending] = useState(false); // true when waiting for step forward
+  
+  // History for step-back functionality
+  const [history, setHistory] = useState([]);
+  const historyIndexRef = useRef(-1);
+
+  // Precomputed steps for non-destructive navigation
+  const [precomputedSteps, setPrecomputedSteps] = useState([]);
+  const precomputedStepsRef = useRef([]);
+
   // Callback function to update step info - to be passed to algorithms
   const updateStepInfo = useCallback((stepInfo) => {
     if (stepInfo.currentStep !== undefined) setCurrentStep(stepInfo.currentStep);
@@ -19,6 +31,21 @@ export const useVisualizer = () => {
     if (stepInfo.variables !== undefined) setVariables(stepInfo.variables);
   }, []);
 
+  // Store step for history when in step mode
+  const storeStep = useCallback((currentArray, currentStep, currentExplanation, currentOperation, currentVariables) => {
+    const stepData = {
+      array: currentArray.map(item => ({ ...item })),
+      step: currentStep,
+      explanation: currentExplanation,
+      operation: currentOperation,
+      variables: { ...currentVariables }
+    };
+    
+    // Add to precomputed steps
+    precomputedStepsRef.current.push(stepData);
+    setPrecomputedSteps([...precomputedStepsRef.current]);
+  }, []);
+
   // Reset step info
   const resetStepInfo = useCallback(() => {
     setCurrentStep(0);
@@ -26,6 +53,75 @@ export const useVisualizer = () => {
     setExplanation('');
     setOperation('');
     setVariables({});
+    setHistory([]);
+    historyIndexRef.current = -1;
+    precomputedStepsRef.current = [];
+    setPrecomputedSteps([]);
+    setIsStepPending(false);
+  }, []);
+
+  // Step forward - execute one operation
+  const stepForward = useCallback(() => {
+    if (historyIndexRef.current < precomputedStepsRef.current.length - 1) {
+      historyIndexRef.current += 1;
+      const stepData = precomputedStepsRef.current[historyIndexRef.current];
+      
+      if (stepData) {
+        setArray(stepData.array);
+        setCurrentStep(stepData.step);
+        setExplanation(stepData.explanation);
+        setOperation(stepData.operation);
+        setVariables(stepData.variables);
+      }
+      return true;
+    }
+    return false;
+  }, []);
+
+  // Step backward - revert to previous state
+  const stepBackward = useCallback(() => {
+    if (historyIndexRef.current > 0) {
+      historyIndexRef.current -= 1;
+      const stepData = precomputedStepsRef.current[historyIndexRef.current];
+      
+      if (stepData) {
+        setArray(stepData.array);
+        setCurrentStep(stepData.step);
+        setExplanation(stepData.explanation);
+        setOperation(stepData.operation);
+        setVariables(stepData.variables);
+      }
+      return true;
+    }
+    return false;
+  }, []);
+
+  // Go to specific step
+  const goToStep = useCallback((step) => {
+    if (step >= 0 && step < precomputedStepsRef.current.length) {
+      historyIndexRef.current = step;
+      const stepData = precomputedStepsRef.current[step];
+      
+      if (stepData) {
+        setArray(stepData.array);
+        setCurrentStep(stepData.step);
+        setExplanation(stepData.explanation);
+        setOperation(stepData.operation);
+        setVariables(stepData.variables);
+      }
+      return true;
+    }
+    return false;
+  }, []);
+
+  // Toggle step mode
+  const toggleStepMode = useCallback(() => {
+    setStepMode(prev => !prev);
+  }, []);
+
+  // Set step mode
+  const setStepModeValue = useCallback((value) => {
+    setStepMode(value);
   }, []);
 
   const generateRandomArray = (size = 20) => {
@@ -169,6 +265,24 @@ export const useVisualizer = () => {
     operation,
     variables,
     updateStepInfo,
-    resetStepInfo
+    resetStepInfo,
+    // Step mode
+    stepMode,
+    setStepMode,
+    toggleStepMode,
+    setStepModeValue,
+    isStepPending,
+    setIsStepPending,
+    // Step navigation
+    stepForward,
+    stepBackward,
+    goToStep,
+    storeStep,
+    // History
+    history,
+    historyIndexRef,
+    // Precomputed steps
+    precomputedSteps,
+    precomputedStepsRef
   }; 
 };

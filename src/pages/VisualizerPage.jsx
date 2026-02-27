@@ -231,7 +231,16 @@ export default function VisualizerPage({
     operation,
     variables,
     updateStepInfo,
-    resetStepInfo
+    resetStepInfo,
+    // Step mode functions
+    stepMode,
+    setStepMode,
+    toggleStepMode,
+    stepForward,
+    stepBackward,
+    goToStep,
+    precomputedSteps,
+    precomputedStepsRef
   } = useVisualizer();
 
   const navigate = useNavigate();
@@ -696,6 +705,19 @@ export default function VisualizerPage({
             operation={operation}
             variables={variables}
             isRunning={isSorting || isPaused}
+          />
+
+          <StepController
+            currentStep={currentStep}
+            totalSteps={totalSteps}
+            stepMode={stepMode}
+            onToggleStepMode={toggleStepMode}
+            onStepForward={stepForward}
+            onStepBackward={stepBackward}
+            onGoToStep={goToStep}
+            isSorting={isSorting}
+            isPaused={isPaused}
+            precomputedSteps={precomputedSteps}
           />
         </div>
 
