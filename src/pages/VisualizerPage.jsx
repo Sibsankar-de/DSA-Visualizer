@@ -40,6 +40,7 @@ import CustomInputModal from "../components/CustomInputModal";
 import AlgorithmExplanationPanel from "../components/AlgorithmExplanationPanel";
 import HotkeysHint from "../components/HotkeysHint";
 import { shouldSkipHotkeyTarget, useStableHotkeys } from "../hooks/useStableHotkeys";
+import { useVisualizerTheme } from "../context/VisualizerThemeContext";
 
 
 const algorithmMap = {
@@ -242,7 +243,6 @@ export default function VisualizerPage({
   const [speed, setSpeed] = useState(30);
   const [showValues, setShowValues] = useState(false);
   const [showGrid, setShowGrid] = useState(true);
-  const [colorTheme, setColorTheme] = useState("ocean");
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [copyState, setCopyState] = useState("idle");
   const [selectedLanguage, setSelectedLanguage] = useState("C++");
@@ -251,6 +251,7 @@ export default function VisualizerPage({
   const stopSignal = useRef(false);
 
   const pauseSignal = useRef(false);
+  const { themeKey: colorTheme } = useVisualizerTheme();
   const MotionDiv = motion.div;
   const MotionButton = motion.button;
   const MotionBar = motion.div;
@@ -429,8 +430,7 @@ export default function VisualizerPage({
       key === "r" ||
       key === "n" ||
       key === "v" ||
-      key === "g" ||
-      key === "c";
+      key === "g";
     if (!isHotkey) return;
 
     if (e.repeat) {
@@ -470,16 +470,11 @@ export default function VisualizerPage({
       return;
     }
 
-    if (key === "c") {
-      e.preventDefault();
-      const keys = Object.keys(colorThemes);
-      setColorTheme(keys[(keys.indexOf(colorTheme) + 1) % keys.length]);
-    }
   });
 
   return (
-    <div className="font-body relative mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:py-12">
-      <div className="pointer-events-none absolute inset-0 -z-20 bg-[radial-gradient(circle_at_20%_0%,rgba(56,189,248,0.2),transparent_32%),radial-gradient(circle_at_82%_10%,rgba(59,130,246,0.18),transparent_36%),linear-gradient(to_bottom,rgba(15,23,42,0.95),rgba(15,23,42,0.6))]" />
+    <div className="visualizer-page font-body relative mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:py-12">
+      <div className="visualizer-ambient-layer pointer-events-none absolute inset-0 -z-20 bg-[radial-gradient(circle_at_20%_0%,rgba(56,189,248,0.2),transparent_32%),radial-gradient(circle_at_82%_10%,rgba(59,130,246,0.18),transparent_36%),linear-gradient(to_bottom,rgba(15,23,42,0.95),rgba(15,23,42,0.6))]" />
 
       <motion.section
         initial={{ opacity: 0, y: 18 }}

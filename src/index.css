@@ -5,12 +5,76 @@
   --color-brand: #3b82f6;
 }
 
+:root {
+  --viz-theme-accent: #22d3ee;
+  --viz-theme-pill: rgba(14, 116, 144, 0.45);
+  --viz-theme-radial-a: rgba(56, 189, 248, 0.2);
+  --viz-theme-radial-b: rgba(59, 130, 246, 0.16);
+  --viz-theme-surface-a: rgba(56, 189, 248, 0.1);
+  --viz-theme-surface-b: rgba(59, 130, 246, 0.06);
+  --viz-theme-orbit-a: rgba(34, 211, 238, 0.18);
+  --viz-theme-orbit-b: rgba(14, 165, 233, 0.14);
+  --viz-theme-glow: rgba(34, 211, 238, 0.45);
+}
+
+[data-visualizer-theme="sunrise"] {
+  --viz-theme-accent: #fb923c;
+  --viz-theme-pill: rgba(194, 65, 12, 0.45);
+  --viz-theme-radial-a: rgba(249, 115, 22, 0.22);
+  --viz-theme-radial-b: rgba(244, 63, 94, 0.16);
+  --viz-theme-surface-a: rgba(251, 146, 60, 0.12);
+  --viz-theme-surface-b: rgba(244, 63, 94, 0.08);
+  --viz-theme-orbit-a: rgba(251, 146, 60, 0.2);
+  --viz-theme-orbit-b: rgba(244, 63, 94, 0.14);
+  --viz-theme-glow: rgba(251, 146, 60, 0.5);
+}
+
+[data-visualizer-theme="aurora"] {
+  --viz-theme-accent: #34d399;
+  --viz-theme-pill: rgba(6, 95, 70, 0.45);
+  --viz-theme-radial-a: rgba(52, 211, 153, 0.22);
+  --viz-theme-radial-b: rgba(34, 211, 238, 0.15);
+  --viz-theme-surface-a: rgba(16, 185, 129, 0.12);
+  --viz-theme-surface-b: rgba(34, 197, 94, 0.08);
+  --viz-theme-orbit-a: rgba(52, 211, 153, 0.2);
+  --viz-theme-orbit-b: rgba(34, 211, 238, 0.14);
+  --viz-theme-glow: rgba(52, 211, 153, 0.5);
+}
+
+@keyframes vizDriftA {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(2%, -2%, 0) scale(1.04);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes vizDriftB {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-2%, 2%, 0) scale(1.03);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
 /* If you want to use @apply, it must be inside a layer */
 @layer base {
   body {
     @apply bg-slate-900 text-white;
     margin: 0;
     font-family: 'Manrope', 'Segoe UI', sans-serif;
+  }
+
+  body.viz-focus-mode {
+    overflow-x: hidden;
   }
 }
 
@@ -45,5 +109,75 @@
   .ll-scrollbar::-webkit-scrollbar-thumb {
     background: linear-gradient(90deg, rgba(59, 130, 246, 0.85), rgba(34, 211, 238, 0.85));
     border-radius: 9999px;
+  }
+
+  .visualizer-page {
+    isolation: isolate;
+  }
+
+  .visualizer-page::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: -19;
+    background:
+      radial-gradient(circle at 20% 0%, var(--viz-theme-radial-a), transparent 32%),
+      radial-gradient(circle at 82% 10%, var(--viz-theme-radial-b), transparent 34%);
+    animation: vizDriftA 16s ease-in-out infinite;
+  }
+
+  .visualizer-page::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: -18;
+    background:
+      radial-gradient(circle at 0% 45%, var(--viz-theme-surface-a), transparent 40%),
+      radial-gradient(circle at 100% 65%, var(--viz-theme-surface-b), transparent 42%),
+      radial-gradient(circle at 55% 100%, var(--viz-theme-orbit-a), transparent 26%),
+      radial-gradient(circle at -5% 75%, var(--viz-theme-orbit-b), transparent 24%);
+    animation: vizDriftB 20s ease-in-out infinite;
+  }
+
+  .visualizer-page > .visualizer-ambient-layer {
+    opacity: 0.4;
+    mix-blend-mode: screen;
+    filter: saturate(1.2);
+  }
+
+  .visualizer-control-hub {
+    box-shadow:
+      0 18px 70px rgba(2, 6, 23, 0.7),
+      0 0 0 1px rgba(148, 163, 184, 0.16),
+      0 0 28px var(--viz-theme-glow);
+  }
+
+  .viz-focus-active {
+    min-height: 100svh;
+  }
+
+  [data-visualizer-ambient="off"] .visualizer-page::before,
+  [data-visualizer-ambient="off"] .visualizer-page::after {
+    animation: none;
+  }
+
+  [data-visualizer-ambient="off"] .visualizer-page > .visualizer-ambient-layer {
+    opacity: 0.16;
+    filter: saturate(1);
+  }
+
+  [data-visualizer-ambient="off"] .visualizer-page::after {
+    opacity: 0.45;
+  }
+
+  @media (max-width: 640px) {
+    .visualizer-control-hub {
+      right: 0.75rem;
+      left: 0.75rem;
+      width: auto;
+      border-radius: 1rem;
+    }
   }
 }

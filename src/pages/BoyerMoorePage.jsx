@@ -155,8 +155,8 @@ export default function BoyerMoorePage() {
     };
 
     return (
-        <div className="font-body relative mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:py-12">
-            <div className="pointer-events-none absolute inset-0 -z-20 bg-[radial-gradient(circle_at_20%_0%,rgba(225,29,72,0.15),transparent_32%)]" />
+        <div className="visualizer-page font-body relative mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:py-12">
+            <div className="visualizer-ambient-layer pointer-events-none absolute inset-0 -z-20 bg-[radial-gradient(circle_at_20%_0%,rgba(225,29,72,0.15),transparent_32%)]" />
 
             {/* Header Section */}
             <motion.section initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} className="mb-6 overflow-hidden rounded-3xl border border-white/10 bg-slate-800/40 p-6 backdrop-blur shadow-2xl">

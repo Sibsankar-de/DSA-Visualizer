@@ -230,8 +230,8 @@ export default function AStarPage() {
     };
 
     return (
-        <div className="relative mx-auto w-full max-w-7xl px-4 py-8 sm:px-6">
-            <div className="pointer-events-none absolute inset-0 -z-20 bg-[radial-gradient(circle_at_20%_0%,rgba(59,130,246,0.15),transparent_32%)]" />
+        <div className="visualizer-page relative mx-auto w-full max-w-7xl px-4 py-8 sm:px-6">
+            <div className="visualizer-ambient-layer pointer-events-none absolute inset-0 -z-20 bg-[radial-gradient(circle_at_20%_0%,rgba(59,130,246,0.15),transparent_32%)]" />
 
             {/* Header / Efficiency Stat */}
             <motion.section initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="mb-6 overflow-hidden rounded-3xl border border-white/10 bg-slate-800/40 p-6 shadow-2xl backdrop-blur">

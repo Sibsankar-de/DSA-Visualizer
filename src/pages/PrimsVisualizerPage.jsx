@@ -253,9 +253,9 @@ export default function PrimsVisualizerPage() {
     });
 
     return (
-        <div className="font-body relative mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:py-12">
+        <div className="visualizer-page font-body relative mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:py-12">
             {/* Ambient Background */}
-            <div className="pointer-events-none absolute inset-0 -z-20 bg-[radial-gradient(circle_at_20%_0%,rgba(16,185,129,0.15),transparent_32%),radial-gradient(circle_at_82%_10%,rgba(59,130,246,0.12),transparent_34%),linear-gradient(to_bottom,rgba(15,23,42,0.95),rgba(15,23,42,0.6))]" />
+            <div className="visualizer-ambient-layer pointer-events-none absolute inset-0 -z-20 bg-[radial-gradient(circle_at_20%_0%,rgba(16,185,129,0.15),transparent_32%),radial-gradient(circle_at_82%_10%,rgba(59,130,246,0.12),transparent_34%),linear-gradient(to_bottom,rgba(15,23,42,0.95),rgba(15,23,42,0.6))]" />
 
             {/* Header / Info Section */}
             <motion.section 
