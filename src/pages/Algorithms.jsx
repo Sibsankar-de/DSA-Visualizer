@@ -220,6 +220,20 @@ const algorithmsCatalog = [
     accent: "text-violet-200",
   },
   {
+    id: "singly-linked-list-ops",
+    title: "SLL Insert & Delete",
+    description:
+      "Visualize Singly Linked List Insertion (Head, Tail, Position) and Deletion (Head, Tail, By Value) with animated step-by-step pointer manipulation.",
+    path: "/visualizer/singly-linked-list",
+    category: "linked-list",
+    type: "Pointers",
+    complexity: "O(n)",
+    level: "Beginner",
+    icon: Binary,
+    gradient: "from-emerald-500/25 via-cyan-500/15 to-transparent",
+    accent: "text-emerald-200",
+  },
+  {
     id: "prims",
     title: "Prim's Algorithm",
     description:
