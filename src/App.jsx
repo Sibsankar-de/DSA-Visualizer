@@ -27,6 +27,7 @@ import OAuthSuccess from "./pages/OAuthSuccess";
 import FloydWarshallPage from "./pages/FloydWarshallPage";
 import ComparisonPage from "./pages/ComparisonPage";
 import ProtectedRoute from "./components/ProtectedRoute";
+import SinglyLinkedListPage from "./pages/SinglyLinkedListPage";
 import PublicRoute from "./components/PublicRoute";
 import VisualizerThemeDock from "./components/VisualizerThemeDock";
 import {
@@ -114,9 +115,8 @@ function AppShell() {
 
   return (
     <div
-      className={`flex min-h-screen flex-col bg-slate-900 text-white selection:bg-blue-500/30 ${
-        hideChrome ? "viz-focus-active" : ""
-      }`}
+      className={`flex min-h-screen flex-col bg-slate-900 text-white selection:bg-blue-500/30 ${hideChrome ? "viz-focus-active" : ""
+        }`}
     >
       {!hideChrome && <Navbar />}
       <VisualizerThemeDock />
@@ -154,6 +154,7 @@ function AppShell() {
           <Route path="/visualizer/prims" element={<PrimsVisualizerPage />} />
           <Route path="/visualizer/astar" element={<AStarPage />} />
           <Route path="/visualizer/array-traversal" element={<ArrayTraversalPage />} />
+          <Route path="/visualizer/singly-linked-list" element={<SinglyLinkedListPage />} />
           <Route
             path="/visualizer/selection-sort"
             element={
