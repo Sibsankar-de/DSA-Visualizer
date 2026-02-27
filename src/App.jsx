@@ -99,6 +99,7 @@ import {
 import { dfsCPP, dfsJava } from "./algorithms/dfs";
 
 import { AuthProvider } from "./context/AuthContext";
+import { AnalyticsProvider } from "./context/AnalyticsContext";
 import { Toaster } from "react-hot-toast";
 
 function AppShell() {

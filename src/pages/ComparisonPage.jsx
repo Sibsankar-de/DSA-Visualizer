@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { useComparison, comparisonAlgorithms } from "../hooks/useComparison";
@@ -12,7 +12,10 @@ import {
   Check,
   Timer,
   Layers,
+  BarChart3,
 } from "lucide-react";
+import { AnalyticsDashboard } from "../components/analytics";
+
 
 const colorThemes = {
   ocean: {
@@ -42,6 +45,7 @@ function formatElapsed(seconds) {
 export default function ComparisonPage() {
   useDocumentTitle("Algorithm Comparison - DSA Visualizer");
   const navigate = useNavigate();
+  const [isAnalyticsOpen, setIsAnalyticsOpen] = useState(false);
   
   const {
     selectedAlgorithms,
@@ -52,15 +56,19 @@ export default function ComparisonPage() {
     arraySize,
     elapsedTime,
     algorithmStats,
+    realTimeData,
+    arrayType,
     setSelectedAlgorithms,
     generateRandomArray,
     runComparison,
     pauseComparison,
     resumeComparison,
     resetStats,
+    setArrayFromScenario,
     canCompare,
     isMaxSelected,
   } = useComparison();
+
 
   const themeConfig = colorThemes.ocean;
   const themeColors = themeConfig.colors;
@@ -115,11 +123,21 @@ export default function ComparisonPage() {
               Algorithm Comparison
             </h1>
           </div>
-          <div className="flex items-center gap-2 rounded-full border border-cyan-400/25 bg-cyan-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-cyan-200">
-            <Timer size={14} />
-            {formatElapsed(elapsedTime)}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setIsAnalyticsOpen(true)}
+              className="flex items-center gap-2 rounded-full border border-purple-400/25 bg-purple-500/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-widest text-purple-200 hover:bg-purple-500/20 transition-colors"
+            >
+              <BarChart3 size={14} />
+              Analytics
+            </button>
+            <div className="flex items-center gap-2 rounded-full border border-cyan-400/25 bg-cyan-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-cyan-200">
+              <Timer size={14} />
+              {formatElapsed(elapsedTime)}
+            </div>
           </div>
         </div>
+
         <p className="text-sm text-slate-300">
           Select 2-4 algorithms to compare their performance side-by-side on the same data.
         </p>
@@ -176,6 +194,33 @@ export default function ComparisonPage() {
 
           <div className="rounded-3xl border border-white/10 bg-slate-800/35 p-5 backdrop-blur">
             <div className="space-y-4">
+              {/* Scenario Selector */}
+              <div className="rounded-2xl bg-white/5 p-3">
+                <label className="text-xs text-slate-400 mb-2 uppercase block">
+                  Data Pattern
+                </label>
+                <select
+                  value={arrayType}
+                  disabled={isRunning}
+                  onChange={(e) => {
+                    const scenario = e.target.value;
+                    import('../utils/analyticsExport').then((module) => {
+                      const newArray = module.generateArrayByPattern(arraySize, scenario);
+                      setArrayFromScenario(scenario, newArray);
+                    });
+                  }}
+                  className="w-full bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-400/50"
+                >
+
+
+                  <option value="random">Random Data</option>
+                  <option value="sorted">Sorted (Ascending)</option>
+                  <option value="reverse">Reverse Sorted</option>
+                  <option value="nearly-sorted">Nearly Sorted</option>
+                  <option value="few-unique">Few Unique Values</option>
+                </select>
+              </div>
+
               <div className="rounded-2xl bg-white/5 p-3">
                 <label className="flex justify-between text-xs text-slate-400 mb-2 uppercase">
                   <span>Array Size</span> <span>{arraySize}</span>
@@ -193,6 +238,7 @@ export default function ComparisonPage() {
                   className="w-full accent-cyan-400"
                 />
               </div>
+
               
               <div className="rounded-2xl bg-white/5 p-3">
                 <label className="flex justify-between text-xs text-slate-400 mb-2 uppercase">
@@ -433,6 +479,19 @@ export default function ComparisonPage() {
           </div>
         </div>
       </div>
+
+      {/* Analytics Dashboard */}
+      <AnalyticsDashboard
+        isOpen={isAnalyticsOpen}
+        onClose={() => setIsAnalyticsOpen(false)}
+        algorithmStats={algorithmStats}
+        selectedAlgorithms={selectedAlgorithms}
+        arraySize={arraySize}
+        arrayType={arrayType}
+        elapsedTime={elapsedTime}
+        isRunning={isRunning}
+        realTimeData={realTimeData}
+      />
     </div>
   );
 }
