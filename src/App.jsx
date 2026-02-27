@@ -34,7 +34,6 @@ import {
   useVisualizerTheme,
 } from "./context/VisualizerThemeContext";
 
-// UPDATED IMPORTS: Including both CPP and Java versions
 import {
   bubbleSortCPP,
   bubbleSortJava,
