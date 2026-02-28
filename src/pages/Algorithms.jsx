@@ -205,11 +205,11 @@ const algorithmsCatalog = [
     gradient: "from-sky-500/25 via-indigo-500/15 to-transparent",
     accent: "text-sky-200",
   },
-  {
+   {
     id: "linked-list",
-    title: "Reverse Linked List",
+    title: "Linked List Algorithms",
     description:
-      "Visualize Reverse Linked List and Middle Node (slow/fast pointers) with step-by-step pointer movement.",
+      "Visualize Reverse Linked List, Middle Node (slow/fast pointers), and Floyd's Cycle Detection with step-by-step pointer movement and cycle injection.",
     path: "/visualizer/linked-list",
     category: "linked-list",
     type: "Pointers",
