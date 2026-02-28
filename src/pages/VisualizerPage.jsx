@@ -86,9 +86,9 @@ const algorithmMap = {
       "Linear Search scans each value from left to right until the target value is discovered.",
   },
   "Binary Search":{
-    run: binarysearch,//  function for animation
+    run: binarysearch,
     category: "Searching",
-    best: "O(1)",                // if the target is in the middle
+    best: "O(1)",
     average: "O(log n)",
     worst: "O(log n)",
     space: "O(1)",
@@ -155,7 +155,7 @@ const algorithmMap = {
   description:
     "Merge Sort is a divide-and-conquer algorithm that splits the array into halves, recursively sorts them, and merges the sorted halves.",
 },
-// Add your algorithm name and function to the run parameter.
+
 };
 
 const statusStyleMap = {

@@ -26,6 +26,20 @@ import {
 
 const algorithmsCatalog = [
   {
+    id: "knapsack",
+    title: "0/1 Knapsack",
+    description:
+      "A dynamic programming algorithm to find the maximum value subset with a given capacity.",
+    path: "/visualizer/knapsack",
+    category: "dynamic-programming",
+    type: "Dynamic Programming",
+    complexity: "O(n * W)",
+    level: "Advanced",
+    icon: Sparkles,
+    gradient: "from-purple-500/25 via-pink-500/15 to-transparent",
+    accent: "text-pink-200",
+  },
+  {
     id: "bubble-sort",
     title: "Bubble Sort",
     description:
@@ -192,11 +206,11 @@ const algorithmsCatalog = [
     gradient: "from-sky-500/25 via-indigo-500/15 to-transparent",
     accent: "text-sky-200",
   },
-  {
+   {
     id: "linked-list",
-    title: "Reverse Linked List",
+    title: "Linked List Algorithms",
     description:
-      "Visualize Reverse Linked List and Middle Node (slow/fast pointers) with step-by-step pointer movement.",
+      "Visualize Reverse Linked List, Middle Node (slow/fast pointers), and Floyd's Cycle Detection with step-by-step pointer movement and cycle injection.",
     path: "/visualizer/linked-list",
     category: "linked-list",
     type: "Pointers",
@@ -205,6 +219,20 @@ const algorithmsCatalog = [
     icon: Binary,
     gradient: "from-violet-500/25 via-blue-500/15 to-transparent",
     accent: "text-violet-200",
+  },
+  {
+    id: "singly-linked-list-ops",
+    title: "SLL Insert & Delete",
+    description:
+      "Visualize Singly Linked List Insertion (Head, Tail, Position) and Deletion (Head, Tail, By Value) with animated step-by-step pointer manipulation.",
+    path: "/visualizer/singly-linked-list",
+    category: "linked-list",
+    type: "Pointers",
+    complexity: "O(n)",
+    level: "Beginner",
+    icon: Binary,
+    gradient: "from-emerald-500/25 via-cyan-500/15 to-transparent",
+    accent: "text-emerald-200",
   },
   {
     id: "prims",
@@ -374,7 +402,6 @@ const filterTabs = [
   { id: "greedy", label: "Greedy Algorithms" },
   { id: "string-matching", label: "String Matching" },
   { id: "dynamic-programming", label: "Dynamic Programming" },
-  { id: "backtracking", label: "Backtracking" },
 ];
 
 const levelTabs = ["All", "Beginner", "Intermediate", "Advanced"];
