@@ -25,6 +25,7 @@ import BoyerMoorePage from "./pages/BoyerMoorePage";
 import OAuthSuccess from "./pages/OAuthSuccess";
 import FloydWarshallPage from "./pages/FloydWarshallPage";
 import ComparisonPage from "./pages/ComparisonPage";
+import Profile from "./pages/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 
@@ -114,6 +115,7 @@ export default function App() {
               <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordEmail /></PublicRoute>} />
               <Route path="/forgot-password/otp" element={<PublicRoute><ForgotPasswordOTP /></PublicRoute>} />
               <Route path="/oauth-success" element={<OAuthSuccess />} />
+              <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
 
               {/* UPDATED ROUTES: Passing both cppSnippet, javaSnippet, and pythonSnippet */}
               <Route
