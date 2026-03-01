@@ -37,6 +37,7 @@ import ComparisonPage from "./pages/ComparisonPage";
 import Profile from "./pages/Profile";
 import NQueensPage from "./pages/NQueensPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import CheatsheetPage from "./pages/CheatsheetPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import SinglyLinkedListPage from "./pages/SinglyLinkedListPage";
 import PublicRoute from "./components/PublicRoute";
@@ -132,17 +133,17 @@ function AppShell() {
       {!hideChrome && <Navbar />}
       <VisualizerThemeDock />
 
-          <main className="block">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/algorithms" element={<ProtectedRoute><Algorithms /></ProtectedRoute>} />
-              <Route path="/contact" element={<ProtectedRoute><Contact /></ProtectedRoute>} />
-              <Route path="/signin" element={<PublicRoute><SignIn /></PublicRoute>} />
-              <Route path="/signup" element={<PublicRoute><SignUp /></PublicRoute>} />
-              <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordEmail /></PublicRoute>} />
-              <Route path="/forgot-password/otp" element={<PublicRoute><ForgotPasswordOTP /></PublicRoute>} />
-              <Route path="/oauth-success" element={<OAuthSuccess />} />
-              <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+      <main className="block">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/algorithms" element={<ProtectedRoute><Algorithms /></ProtectedRoute>} />
+          <Route path="/contact" element={<ProtectedRoute><Contact /></ProtectedRoute>} />
+          <Route path="/signin" element={<PublicRoute><SignIn /></PublicRoute>} />
+          <Route path="/signup" element={<PublicRoute><SignUp /></PublicRoute>} />
+          <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordEmail /></PublicRoute>} />
+          <Route path="/forgot-password/otp" element={<PublicRoute><ForgotPasswordOTP /></PublicRoute>} />
+          <Route path="/oauth-success" element={<OAuthSuccess />} />
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
 
           {/* UPDATED ROUTES: Passing both cppSnippet, javaSnippet, and pythonSnippet */}
           <Route
@@ -302,6 +303,7 @@ function AppShell() {
           <Route path="/visualizer/knapsack" element={<KnapsackPage />} />
           <Route path="/visualizer/segment-tree" element={<SegmentTreeVisualizerPage />} />
           <Route path="/compare" element={<ComparisonPage />} />
+          <Route path="/cheatsheet" element={<CheatsheetPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>

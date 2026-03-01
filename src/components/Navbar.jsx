@@ -8,7 +8,7 @@ import { useVisualizerTheme } from '../context/VisualizerThemeContext';
 const navLinks = [
   { to: '/', label: 'Home' },
   { to: '/algorithms', label: 'Algorithms' },
-  { to: '/custom-algorithm', label: 'Custom Builder' },
+  { to: '/cheatsheet', label: 'Cheatsheet' },
   { to: '/contact', label: 'Contact Us' },
 ];
 
