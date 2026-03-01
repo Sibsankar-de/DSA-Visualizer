@@ -20,6 +20,7 @@ import DijkstraPage from "./pages/DijkstraPage";
 import KruskalPage from "./pages/KruskalPage";
 import AStarPage from "./pages/AStarPage";
 import StackVisualizerPage from "./pages/StackVisualizerPage";
+import QueueVisualizerPage from "./pages/QueueVisualizerPage";
 import TrieVisualizerPage from "./pages/TrieVisualizerPage";
 import SignIn from "./pages/SignIn";
 import TopologicalSortPage from "./pages/TopologicalSortPage";
@@ -294,6 +295,7 @@ function AppShell() {
             element={<FloydWarshallPage />}
           />
           <Route path="/visualizer/stack" element={<StackVisualizerPage />} />
+          <Route path="/visualizer/queue" element={<QueueVisualizerPage />} />
           <Route path="/visualizer/trie" element={<TrieVisualizerPage />} />
           <Route path="/visualizer/knapsack" element={<KnapsackPage />} />
           <Route path="/compare" element={<ComparisonPage />} />
