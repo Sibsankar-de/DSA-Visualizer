@@ -4,6 +4,7 @@ const STORAGE_THEME_KEY = "dsa-visualizer-theme";
 const STORAGE_FOCUS_KEY = "dsa-visualizer-focus";
 const STORAGE_AMBIENT_KEY = "dsa-visualizer-ambient";
 const STORAGE_COLOR_MODE_KEY = "dsa-visualizer-color-mode";
+const STORAGE_SOUND_KEY = "dsa-visualizer-sound";
 const DEFAULT_THEME_KEY = "ocean";
 
 export const VISUALIZER_THEMES = {
@@ -54,6 +55,9 @@ export function VisualizerThemeProvider({ children }) {
     resolveInitialBoolean(STORAGE_AMBIENT_KEY, true),
   );
   const [colorMode, setColorMode] = useState(resolveInitialColorMode);
+  const [soundEnabled, setSoundEnabled] = useState(() =>
+    resolveInitialBoolean(STORAGE_SOUND_KEY, false),
+  );
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -81,6 +85,11 @@ export function VisualizerThemeProvider({ children }) {
     document.documentElement.setAttribute("data-mode", colorMode);
   }, [colorMode]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem(STORAGE_SOUND_KEY, String(soundEnabled));
+  }, [soundEnabled]);
+
   const value = useMemo(() => {
     const setTheme = (nextThemeKey) => {
       if (!VISUALIZER_THEMES[nextThemeKey]) return;
@@ -106,6 +115,10 @@ export function VisualizerThemeProvider({ children }) {
       setColorMode((current) => (current === "dark" ? "light" : "dark"));
     };
 
+    const toggleSoundEffects = () => {
+      setSoundEnabled((current) => !current);
+    };
+
     return {
       themeKey,
       theme: VISUALIZER_THEMES[themeKey] ?? VISUALIZER_THEMES[DEFAULT_THEME_KEY],
@@ -113,6 +126,7 @@ export function VisualizerThemeProvider({ children }) {
       focusMode,
       ambientFx,
       colorMode,
+      soundEnabled,
       setTheme,
       cycleTheme,
       setFocusMode,
@@ -120,8 +134,9 @@ export function VisualizerThemeProvider({ children }) {
       setAmbientFx,
       toggleAmbientFx,
       toggleColorMode,
+      toggleSoundEffects,
     };
-  }, [ambientFx, colorMode, focusMode, themeKey]);
+  }, [ambientFx, colorMode, focusMode, soundEnabled, themeKey]);
 
   return (
     <VisualizerThemeContext.Provider value={value}>

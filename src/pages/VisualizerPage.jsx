@@ -50,6 +50,7 @@ import AlgorithmExplanationPanel from "../components/AlgorithmExplanationPanel";
 import HotkeysHint from "../components/HotkeysHint";
 import { shouldSkipHotkeyTarget, useStableHotkeys } from "../hooks/useStableHotkeys";
 import { useVisualizerTheme } from "../context/VisualizerThemeContext";
+import useSoundEffects from "../hooks/useSoundEffects";
 import StepController from '../components/StepController';
 
 
@@ -94,7 +95,7 @@ const algorithmMap = {
     description:
       "Linear Search scans each value from left to right until the target value is discovered.",
   },
-  "Binary Search":{
+  "Binary Search": {
     run: binarysearch,
     category: "Searching",
     best: "O(1)",
@@ -155,15 +156,15 @@ const algorithmMap = {
       "Depth First Search traversal on an implicit Binary Tree structure.",
   },
   'Merge Sort': {
-  run: mergeSort,
-  category: "Sorting",
-  best: "O(n log n)",
-  average: "O(n log n)",
-  worst: "O(n log n)",
-  space: "O(n)",
-  description:
-    "Merge Sort is a divide-and-conquer algorithm that splits the array into halves, recursively sorts them, and merges the sorted halves.",
-},
+    run: mergeSort,
+    category: "Sorting",
+    best: "O(n log n)",
+    average: "O(n log n)",
+    worst: "O(n log n)",
+    space: "O(n)",
+    description:
+      "Merge Sort is a divide-and-conquer algorithm that splits the array into halves, recursively sorts them, and merges the sorted halves.",
+  },
 
 };
 
@@ -228,12 +229,12 @@ export default function VisualizerPage({
   pythonSnippet,
   jsSnippet,
 }) {
-  const { 
-    array, 
-    setArray, 
-    generateRandomArray, 
-    setCustomArray, 
-    generatePresetArray, 
+  const {
+    array,
+    setArray,
+    generateRandomArray,
+    setCustomArray,
+    generatePresetArray,
     setArrayFromFile,
     currentStep,
     totalSteps,
@@ -274,6 +275,37 @@ export default function VisualizerPage({
   const MotionDiv = motion.div;
   const MotionButton = motion.button;
   const MotionBar = motion.div;
+
+  const { soundEnabled } = useVisualizerTheme();
+  const sound = useSoundEffects(soundEnabled);
+
+  // Keep sound enabled in sync with context
+  useEffect(() => {
+    sound.setEnabled(soundEnabled);
+  }, [soundEnabled, sound]);
+
+  // Play sounds on array status changes
+  const prevArrayRef = useRef([]);
+  useEffect(() => {
+    if (!soundEnabled || !isSorting) return;
+    const prev = prevArrayRef.current;
+    if (prev.length !== array.length) {
+      prevArrayRef.current = array.map((a) => a.status);
+      return;
+    }
+    let played = false;
+    for (let i = 0; i < array.length; i++) {
+      if (played) break;
+      const cur = array[i].status;
+      const old = prev[i];
+      if (cur !== old) {
+        if (cur === "swapping") { sound.playSwap(); played = true; }
+        else if (cur === "comparing") { sound.playCompare(); played = true; }
+        else if (cur === "sorted") { sound.playSorted(); played = true; }
+      }
+    }
+    prevArrayRef.current = array.map((a) => a.status);
+  }, [array, soundEnabled, isSorting, sound]);
 
   const algorithm = algorithmMap[name];
   const activeCode =
@@ -403,7 +435,10 @@ export default function VisualizerPage({
     setElapsedSeconds(0);
     // Pass updateStepInfo as 6th parameter to algorithm
     await algorithm.run(array, setArray, speed, stopSignal, pauseSignal, updateStepInfo);
-    if (!stopSignal.current) setRunStatus("Completed");
+    if (!stopSignal.current) {
+      setRunStatus("Completed");
+      sound.playComplete();
+    }
     setIsSorting(false);
   };
 
