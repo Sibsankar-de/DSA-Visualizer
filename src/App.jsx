@@ -14,6 +14,7 @@ import Contact from "./pages/Contact";
 import VisualizerPage from "./pages/VisualizerPage";
 import LinkedListVisualizerPage from "./pages/LinkedListVisualizerPage";
 import GraphVisualizerPage from "./pages/GraphVisualizerPage";
+import BFSVisualizerPage from "./pages/BFSVisualizerPage";
 import PrimsVisualizerPage from "./pages/PrimsVisualizerPage";
 import DijkstraPage from "./pages/DijkstraPage";
 import KruskalPage from "./pages/KruskalPage";
@@ -122,9 +123,8 @@ function AppShell() {
 
   return (
     <div
-      className={`flex min-h-screen flex-col bg-slate-900 text-white selection:bg-blue-500/30 ${
-        hideChrome ? "viz-focus-active" : ""
-      }`}
+      className={`flex min-h-screen flex-col bg-slate-900 text-white selection:bg-blue-500/30 ${hideChrome ? "viz-focus-active" : ""
+        }`}
     >
       {!hideChrome && <Navbar />}
       <VisualizerThemeDock />
@@ -280,6 +280,7 @@ function AppShell() {
           <Route path="/visualizer/dijkstra" element={<DijkstraPage />} />
           <Route path="/visualizer/kruskal" element={<KruskalPage />} />
           <Route path="/visualizer/dfs" element={<GraphVisualizerPage />} />
+          <Route path="/visualizer/bfs" element={<BFSVisualizerPage />} />
           <Route
             path="/visualizer/topological-sort"
             element={<TopologicalSortPage />}

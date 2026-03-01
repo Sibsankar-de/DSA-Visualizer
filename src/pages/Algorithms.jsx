@@ -206,7 +206,7 @@ const algorithmsCatalog = [
     gradient: "from-sky-500/25 via-indigo-500/15 to-transparent",
     accent: "text-sky-200",
   },
-   {
+  {
     id: "linked-list",
     title: "Linked List Algorithms",
     description:
@@ -261,6 +261,20 @@ const algorithmsCatalog = [
     icon: Binary,
     gradient: "from-violet-500/25 via-fuchsia-500/15 to-transparent",
     accent: "text-violet-200",
+  },
+  {
+    id: "breadth-first-search",
+    title: "Breadth First Search",
+    description:
+      "Traverse a graph level by level, visiting all neighbors at the current depth before moving deeper.",
+    path: "/visualizer/bfs",
+    category: "graph-searching",
+    type: "Traversal",
+    complexity: "O(V+E)",
+    level: "Intermediate",
+    icon: Network,
+    gradient: "from-blue-500/25 via-cyan-500/15 to-transparent",
+    accent: "text-blue-200",
   },
   {
     id: 'astar-search',
