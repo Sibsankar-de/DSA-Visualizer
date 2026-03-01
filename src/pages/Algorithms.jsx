@@ -206,7 +206,7 @@ const algorithmsCatalog = [
     gradient: "from-sky-500/25 via-indigo-500/15 to-transparent",
     accent: "text-sky-200",
   },
-   {
+  {
     id: "linked-list",
     title: "Linked List Algorithms",
     description:
@@ -359,6 +359,20 @@ const algorithmsCatalog = [
     accent: 'text-violet-200',
   },
   {
+    id: 'queue',
+    title: 'Queue Enqueue-Dequeue',
+    description:
+      'Visualize FIFO (First In, First Out) queue operations with animated enqueue and dequeue demonstrations.',
+    path: '/visualizer/queue',
+    category: 'queue',
+    type: 'FIFO',
+    complexity: 'O(1)',
+    level: 'Beginner',
+    icon: Layers2,
+    gradient: 'from-teal-500/25 via-cyan-500/15 to-transparent',
+    accent: 'text-teal-200',
+  },
+  {
     id: "trie",
     title: "Trie (Prefix Tree)",
     description:
@@ -397,6 +411,7 @@ const filterTabs = [
   { id: "graph-searching", label: "Graph Searching" },
   { id: "linked-list", label: "Linked List" },
   { id: "stack", label: "Stack Operations" },
+  { id: "queue", label: "Queue Operations" },
   { id: "pathfinding", label: "Pathfinding" },
   { id: "mst", label: "Minimum Spanning Tree" },
   { id: "greedy", label: "Greedy Algorithms" },
