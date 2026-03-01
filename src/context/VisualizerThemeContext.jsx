@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 const STORAGE_THEME_KEY = "dsa-visualizer-theme";
 const STORAGE_FOCUS_KEY = "dsa-visualizer-focus";
 const STORAGE_AMBIENT_KEY = "dsa-visualizer-ambient";
+const STORAGE_COLOR_MODE_KEY = "dsa-visualizer-color-mode";
 const DEFAULT_THEME_KEY = "ocean";
 
 export const VISUALIZER_THEMES = {
@@ -36,6 +37,14 @@ function resolveInitialBoolean(storageKey, fallback = false) {
   return saved === "true";
 }
 
+function resolveInitialColorMode() {
+  if (typeof window === "undefined") return "dark";
+  const saved = window.localStorage.getItem(STORAGE_COLOR_MODE_KEY);
+  if (saved === "light" || saved === "dark") return saved;
+  if (window.matchMedia?.("(prefers-color-scheme: light)").matches) return "light";
+  return "dark";
+}
+
 export function VisualizerThemeProvider({ children }) {
   const [themeKey, setThemeKey] = useState(resolveInitialTheme);
   const [focusMode, setFocusMode] = useState(() =>
@@ -44,6 +53,7 @@ export function VisualizerThemeProvider({ children }) {
   const [ambientFx, setAmbientFx] = useState(() =>
     resolveInitialBoolean(STORAGE_AMBIENT_KEY, true),
   );
+  const [colorMode, setColorMode] = useState(resolveInitialColorMode);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -64,6 +74,12 @@ export function VisualizerThemeProvider({ children }) {
       ambientFx ? "on" : "off",
     );
   }, [ambientFx]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem(STORAGE_COLOR_MODE_KEY, colorMode);
+    document.documentElement.setAttribute("data-mode", colorMode);
+  }, [colorMode]);
 
   const value = useMemo(() => {
     const setTheme = (nextThemeKey) => {
@@ -86,20 +102,26 @@ export function VisualizerThemeProvider({ children }) {
       setAmbientFx((current) => !current);
     };
 
+    const toggleColorMode = () => {
+      setColorMode((current) => (current === "dark" ? "light" : "dark"));
+    };
+
     return {
       themeKey,
       theme: VISUALIZER_THEMES[themeKey] ?? VISUALIZER_THEMES[DEFAULT_THEME_KEY],
       themes: VISUALIZER_THEMES,
       focusMode,
       ambientFx,
+      colorMode,
       setTheme,
       cycleTheme,
       setFocusMode,
       toggleFocusMode,
       setAmbientFx,
       toggleAmbientFx,
+      toggleColorMode,
     };
-  }, [ambientFx, focusMode, themeKey]);
+  }, [ambientFx, colorMode, focusMode, themeKey]);
 
   return (
     <VisualizerThemeContext.Provider value={value}>
