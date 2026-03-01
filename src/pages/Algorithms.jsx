@@ -332,6 +332,19 @@ const algorithmsCatalog = [
     accent: "text-emerald-200",
   },
   {
+    id: "bellman-ford",
+    title: "Bellman-Ford Algorithm",
+    description: "Computes the shortest paths from a single source vertex to all other vertices. Handles negative weights.",
+    path: "/visualizer/bellman-ford",
+    category: "pathfinding",
+    type: "Dynamic Programming",
+    complexity: "O(V * E)",
+    level: "Advanced",
+    icon: Waypoints,
+    gradient: "from-rose-500/25 via-red-500/15 to-transparent",
+    accent: "text-rose-200",
+  },
+  {
     id: "huffman-coding",
     title: "Huffman Coding",
     description:

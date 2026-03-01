@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const signin = async (userData) => {
-        const response = await fetch('https://dsa-visualizer-5pyp.onrender.com/api/auth/signin', {
+        const response = await fetch('http://localhost:5000/api/auth/signin', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

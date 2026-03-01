@@ -33,6 +33,7 @@ import BoyerMoorePage from "./pages/BoyerMoorePage";
 import ArrayTraversalPage from "./pages/ArrayTraversalPage";
 import OAuthSuccess from "./pages/OAuthSuccess";
 import FloydWarshallPage from "./pages/FloydWarshallPage";
+import BellmanFordPage from "./pages/BellmanFordPage";
 import ComparisonPage from "./pages/ComparisonPage";
 import Profile from "./pages/Profile";
 import NQueensPage from "./pages/NQueensPage";
@@ -132,17 +133,17 @@ function AppShell() {
       {!hideChrome && <Navbar />}
       <VisualizerThemeDock />
 
-          <main className="block">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/algorithms" element={<ProtectedRoute><Algorithms /></ProtectedRoute>} />
-              <Route path="/contact" element={<ProtectedRoute><Contact /></ProtectedRoute>} />
-              <Route path="/signin" element={<PublicRoute><SignIn /></PublicRoute>} />
-              <Route path="/signup" element={<PublicRoute><SignUp /></PublicRoute>} />
-              <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordEmail /></PublicRoute>} />
-              <Route path="/forgot-password/otp" element={<PublicRoute><ForgotPasswordOTP /></PublicRoute>} />
-              <Route path="/oauth-success" element={<OAuthSuccess />} />
-              <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+      <main className="block">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/algorithms" element={<ProtectedRoute><Algorithms /></ProtectedRoute>} />
+          <Route path="/contact" element={<ProtectedRoute><Contact /></ProtectedRoute>} />
+          <Route path="/signin" element={<PublicRoute><SignIn /></PublicRoute>} />
+          <Route path="/signup" element={<PublicRoute><SignUp /></PublicRoute>} />
+          <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordEmail /></PublicRoute>} />
+          <Route path="/forgot-password/otp" element={<PublicRoute><ForgotPasswordOTP /></PublicRoute>} />
+          <Route path="/oauth-success" element={<OAuthSuccess />} />
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
 
           {/* UPDATED ROUTES: Passing both cppSnippet, javaSnippet, and pythonSnippet */}
           <Route
@@ -295,6 +296,10 @@ function AppShell() {
           <Route
             path="/visualizer/floyd-warshall"
             element={<FloydWarshallPage />}
+          />
+          <Route
+            path="/visualizer/bellman-ford"
+            element={<BellmanFordPage />}
           />
           <Route path="/visualizer/stack" element={<StackVisualizerPage />} />
           <Route path="/visualizer/queue" element={<QueueVisualizerPage />} />
