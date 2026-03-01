@@ -17,8 +17,9 @@ import {
     ArrowLeft,
     Binary,
     Target,
+    Layers,
 } from 'lucide-react';
-import { dfsCPP, dfsJava, dfsPython, dfsJS } from '../algorithms/dfs';
+import { bfsCPP, bfsJava, bfsPython, bfsJS } from '../algorithms/bfs';
 import { renderHighlightedCode } from '../utils/codeHighlight';
 import HotkeysHint from "../components/HotkeysHint";
 
@@ -35,34 +36,28 @@ function generateRandomGraph(nodeCount, width, height) {
     const edges = [];
     const padding = 40;
 
-    // 1. Generate Nodes with random positions (keeping away from edges)
     for (let i = 0; i < nodeCount; i++) {
         nodes.push({
             id: i,
             value: Math.floor(Math.random() * 99) + 1,
             x: Math.random() * (width - 2 * padding) + padding,
             y: Math.random() * (height - 2 * padding) + padding,
-            status: 'default', // default, visited, current, processing
+            status: 'default',
         });
     }
 
-    // 2. Generate Edges (ensure connectivity - MST + random edges)
     const connected = new Set([0]);
     const uncommitted = new Set();
     for (let i = 1; i < nodeCount; i++) uncommitted.add(i);
 
-    // Initial Tree
     while (uncommitted.size > 0) {
         const u = Array.from(connected)[Math.floor(Math.random() * connected.size)];
         const v = Array.from(uncommitted)[Math.floor(Math.random() * uncommitted.size)];
-
         edges.push({ source: u, target: v, id: `e-${u}-${v}`, status: 'default' });
-
         uncommitted.delete(v);
         connected.add(v);
     }
 
-    // Add extra random edges (density)
     const extraEdges = Math.floor(nodeCount * 0.5);
     for (let i = 0; i < extraEdges; i++) {
         const u = Math.floor(Math.random() * nodeCount);
@@ -101,9 +96,9 @@ function getFileExtension(language) {
 }
 
 
-export default function GraphVisualizerPage() {
+export default function BFSVisualizerPage() {
     const navigate = useNavigate();
-    useDocumentTitle('Depth First Search');
+    useDocumentTitle('Breadth First Search');
     const [graph, setGraph] = useState({ nodes: [], edges: [] });
     const [nodeCount, setNodeCount] = useState(8);
     const [startNodeId, setStartNodeId] = useState(0);
@@ -117,16 +112,17 @@ export default function GraphVisualizerPage() {
     const [currentNodeId, setCurrentNodeId] = useState(null);
     const [traversalOrder, setTraversalOrder] = useState([]);
     const [elapsedSeconds, setElapsedSeconds] = useState(0);
+    const [currentLevel, setCurrentLevel] = useState(0);
+    const [queueContents, setQueueContents] = useState([]);
 
-    const activeCode = selectedLanguage === "C++" ? dfsCPP : (selectedLanguage === "Java" ? dfsJava : (selectedLanguage === "Python" ? dfsPython : dfsJS));
+    const activeCode = selectedLanguage === "C++" ? bfsCPP : (selectedLanguage === "Java" ? bfsJava : (selectedLanguage === "Python" ? bfsPython : bfsJS));
 
-    // Canvas Refs
     const containerRef = useRef(null);
     const stopSignal = useRef(false);
     const pauseSignal = useRef(false);
     const isRunningRef = useRef(false);
     const isPausedRef = useRef(false);
-    const runDFSRef = useRef(null);
+    const runBFSRef = useRef(null);
     const resetRef = useRef(null);
     const newGraphRef = useRef(null);
 
@@ -147,7 +143,6 @@ export default function GraphVisualizerPage() {
         [runStatus, graph.nodes.length, visitedCount],
     );
 
-    // Initial Generator
     useEffect(() => {
         handleNewGraph(nodeCount);
     }, []);
@@ -172,6 +167,8 @@ export default function GraphVisualizerPage() {
         setCurrentNodeId(null);
         setTraversalOrder([]);
         setElapsedSeconds(0);
+        setCurrentLevel(0);
+        setQueueContents([]);
     };
 
     const handleNewGraph = (count = nodeCount) => {
@@ -191,7 +188,6 @@ export default function GraphVisualizerPage() {
             const newGraph = generateRandomGraph(count, width || 600, height || 400);
             setGraph(newGraph);
         } else {
-            // Fallback dimensions if unmounted
             const newGraph = generateRandomGraph(count, 800, 450);
             setGraph(newGraph);
         }
@@ -227,7 +223,7 @@ export default function GraphVisualizerPage() {
         return !stopSignal.current;
     }
 
-    const runDFS = async () => {
+    const runBFS = async () => {
         if (isRunning || graph.nodes.length === 0) return;
 
         setIsRunning(true);
@@ -235,9 +231,11 @@ export default function GraphVisualizerPage() {
         setElapsedSeconds(0);
         setCurrentNodeId(null);
         setTraversalOrder([]);
+        setCurrentLevel(0);
+        setQueueContents([]);
         isRunningRef.current = true;
         isPausedRef.current = false;
-        setStatusMessage(`Starting DFS from Node ${startNodeId}.`);
+        setStatusMessage(`Starting BFS from Node ${startNodeId}.`);
         stopSignal.current = false;
         pauseSignal.current = false;
         setGraph(prev => ({
@@ -249,12 +247,11 @@ export default function GraphVisualizerPage() {
         const adj = Array.from({ length: graph.nodes.length }, () => []);
         graph.edges.forEach(e => {
             adj[e.source].push({ target: e.target, id: e.id });
-            adj[e.target].push({ target: e.source, id: e.id }); // Undirected
+            adj[e.target].push({ target: e.source, id: e.id });
         });
 
         const visited = new Array(graph.nodes.length).fill(false);
 
-        // Helper to update specific node/edge
         const updateNode = (id, status) => {
             setGraph(prev => ({
                 ...prev,
@@ -268,47 +265,61 @@ export default function GraphVisualizerPage() {
             }));
         };
 
-        // Recursive DFS wrapper for async
-        const dfsRecursive = async (curr, parent) => {
-            if (stopSignal.current) return;
+        // BFS using queue with level tracking
+        const queue = [{ node: startNodeId, level: 0 }];
+        visited[startNodeId] = true;
+        setQueueContents([startNodeId]);
 
-            visited[curr] = true;
+        updateNode(startNodeId, 'queued');
+        setStatusMessage(`Enqueued start Node ${startNodeId}.`);
+        if (!(await waitWithControl(speed / 2))) { setIsRunning(false); isRunningRef.current = false; return; }
+
+        while (queue.length > 0) {
+            if (stopSignal.current) break;
+
+            const { node: curr, level } = queue.shift();
+            setCurrentLevel(level);
             setCurrentNodeId(curr);
-            setTraversalOrder((prev) => [...prev, curr]);
-            updateNode(curr, 'processing'); // Highlight current
-            setStatusMessage(`Visiting Node ${curr}`);
+            setQueueContents(queue.map(q => q.node));
 
-            if (!(await waitWithControl(speed))) return;
+            // Highlight as processing
+            updateNode(curr, 'processing');
+            setStatusMessage(`Visiting Node ${curr} (Level ${level})`);
+            if (!(await waitWithControl(speed))) break;
 
-            // Mark as visited (fully in process)
+            // Mark visited
             updateNode(curr, 'visited');
+            setTraversalOrder(prev => [...prev, curr]);
 
             // Explore neighbors
             const neighbors = adj[curr];
-            for (let edge of neighbors) {
-                if (stopSignal.current) return;
-
-                if (edge.target === parent) continue; // Don't go back immediately
+            for (const edge of neighbors) {
+                if (stopSignal.current) break;
 
                 if (!visited[edge.target]) {
-                    // Highlight Edge
-                    updateEdge(edge.id, 'traversed');
-                    setStatusMessage(`Traversing edge ${curr} -> ${edge.target}`);
-                    if (!(await waitWithControl(speed / 2))) return;
+                    visited[edge.target] = true;
 
-                    await dfsRecursive(edge.target, curr);
-                    if (stopSignal.current) return;
-                    setCurrentNodeId(curr);
+                    // Highlight edge
+                    updateEdge(edge.id, 'traversed');
+                    setStatusMessage(`Traversing edge ${curr} → ${edge.target}`);
+                    if (!(await waitWithControl(speed / 2))) break;
+
+                    // Enqueue neighbor
+                    queue.push({ node: edge.target, level: level + 1 });
+                    setQueueContents(queue.map(q => q.node));
+                    updateNode(edge.target, 'queued');
+                    setStatusMessage(`Enqueued Node ${edge.target}`);
+                    if (!(await waitWithControl(speed / 3))) break;
                 }
             }
-        };
+        }
 
-        await dfsRecursive(startNodeId, -1);
         setCurrentNodeId(null);
+        setQueueContents([]);
 
         if (!stopSignal.current) {
             setRunStatus("Completed");
-            setStatusMessage("DFS Traversal Completed.");
+            setStatusMessage("BFS Traversal Completed.");
         }
         setIsRunning(false);
         isRunningRef.current = false;
@@ -324,7 +335,7 @@ export default function GraphVisualizerPage() {
 
     const handleDownloadCode = () => {
         const ext = getFileExtension(selectedLanguage);
-        const filename = `depth_first_search.${ext}`;
+        const filename = `breadth_first_search.${ext}`;
         const blob = new Blob([activeCode || ""], { type: "text/plain" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
@@ -336,10 +347,11 @@ export default function GraphVisualizerPage() {
         URL.revokeObjectURL(url);
     };
 
-    // Node Colors
+    // Node Colors — blue/cyan theme for BFS
     const getNodeColor = (status, nodeId) => {
         switch (status) {
             case 'processing': return 'bg-amber-500 border-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.5)] scale-110';
+            case 'queued': return 'bg-blue-600 border-blue-300 shadow-[0_0_12px_rgba(59,130,246,0.4)]';
             case 'visited': return 'bg-emerald-500 border-emerald-300';
             default:
                 if (nodeId === startNodeId) {
@@ -357,33 +369,28 @@ export default function GraphVisualizerPage() {
     };
 
     useEffect(() => {
-        runDFSRef.current = runDFS;
+        runBFSRef.current = runBFS;
         resetRef.current = handleReset;
         newGraphRef.current = handleNewGraph;
-    }, [runDFS, handleReset, handleNewGraph]);
+    }, [runBFS, handleReset, handleNewGraph]);
 
     useEffect(() => {
         const shouldSkipHotkeys = (target) => {
             if (!target) return false;
             if (target.isContentEditable) return true;
-
             const tag = target.tagName?.toLowerCase();
             if (tag === "textarea" || tag === "select") return true;
             if (tag !== "input") return false;
-
             const type = (target.type || "").toLowerCase();
-            // Keep hotkeys active for range sliders so controls + hotkeys can be used together.
             return type !== "range";
         };
 
         const handleHotkeys = (e) => {
             if (shouldSkipHotkeys(e.target)) return;
-
             const key = e.key?.toLowerCase();
             const isHotkey = e.code === "Space" || key === "r" || key === "n";
             if (!isHotkey) return;
 
-            // Avoid rapid repeat toggles while key is held down.
             if (e.repeat) {
                 e.preventDefault();
                 return;
@@ -398,7 +405,7 @@ export default function GraphVisualizerPage() {
                     setIsPaused(nextPaused);
                     setRunStatus(nextPaused ? "Paused" : "Running");
                 } else {
-                    runDFSRef.current?.();
+                    runBFSRef.current?.();
                 }
                 return;
             }
@@ -422,7 +429,7 @@ export default function GraphVisualizerPage() {
 
     return (
         <div className="visualizer-page font-body relative mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:py-12">
-            <div className="visualizer-ambient-layer pointer-events-none absolute inset-0 -z-20 bg-[radial-gradient(circle_at_20%_0%,rgba(168,85,247,0.2),transparent_32%),radial-gradient(circle_at_82%_10%,rgba(236,72,153,0.16),transparent_34%),linear-gradient(to_bottom,rgba(15,23,42,0.95),rgba(15,23,42,0.6))]" />
+            <div className="visualizer-ambient-layer pointer-events-none absolute inset-0 -z-20 bg-[radial-gradient(circle_at_20%_0%,rgba(59,130,246,0.2),transparent_32%),radial-gradient(circle_at_82%_10%,rgba(6,182,212,0.16),transparent_34%),linear-gradient(to_bottom,rgba(15,23,42,0.95),rgba(15,23,42,0.6))]" />
 
             <motion.section initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} className="overflow-hidden rounded-3xl border border-white/10 bg-slate-800/40 p-5 shadow-2xl backdrop-blur sm:p-7">
                 <div className="flex flex-col md:flex-row gap-6 items-start justify-between">
@@ -440,14 +447,14 @@ export default function GraphVisualizerPage() {
                             </button>
                         </div>
                         <div className="mb-4 flex flex-wrap items-center gap-2">
-                            <span className="rounded-full border border-purple-400/25 bg-purple-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-purple-200">Graph</span>
+                            <span className="rounded-full border border-blue-400/25 bg-blue-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-blue-200">Graph</span>
                             <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${runStatusStyleMap[runStatus]}`}>{runStatus}</span>
                             <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-slate-200">{formatElapsed(elapsedSeconds)}</span>
-                            <span className="rounded-full border border-slate-400/25 bg-slate-500/10 px-3 py-1 text-xs font-semibold tracking-wider text-slate-300">Time: <span className="text-purple-300 font-mono">O(V + E)</span></span>
-                            <span className="rounded-full border border-slate-400/25 bg-slate-500/10 px-3 py-1 text-xs font-semibold tracking-wider text-slate-300">Space: <span className="text-purple-300 font-mono">O(V)</span></span>
+                            <span className="rounded-full border border-slate-400/25 bg-slate-500/10 px-3 py-1 text-xs font-semibold tracking-wider text-slate-300">Time: <span className="text-blue-300 font-mono">O(V + E)</span></span>
+                            <span className="rounded-full border border-slate-400/25 bg-slate-500/10 px-3 py-1 text-xs font-semibold tracking-wider text-slate-300">Space: <span className="text-blue-300 font-mono">O(V)</span></span>
                         </div>
-                        <h1 className="font-display text-3xl font-black text-white sm:text-4xl lg:text-5xl">Depth First Search</h1>
-                        <p className="mt-3 text-sm text-slate-300 sm:text-base max-w-2xl">Traverse graphs by exploring as far as possible along each branch before backtracking.</p>
+                        <h1 className="font-display text-3xl font-black text-white sm:text-4xl lg:text-5xl">Breadth First Search</h1>
+                        <p className="mt-3 text-sm text-slate-300 sm:text-base max-w-2xl">Traverse graphs level by level, visiting all neighbors at the current depth before moving deeper.</p>
 
                         <div className="mt-5">
                             <div className="mb-2 flex items-center justify-between text-xs uppercase tracking-widest text-slate-400">
@@ -457,7 +464,7 @@ export default function GraphVisualizerPage() {
                             <div className="h-2 overflow-hidden rounded-full bg-slate-700/70">
                                 <motion.div
                                     animate={{ width: `${progress}%` }}
-                                    className="h-full bg-gradient-to-r from-purple-500 to-pink-500"
+                                    className="h-full bg-gradient-to-r from-blue-500 to-cyan-500"
                                 />
                             </div>
                         </div>
@@ -472,17 +479,17 @@ export default function GraphVisualizerPage() {
                             </div>
                             <div className="rounded-xl border border-white/10 bg-white/5 p-3">
                                 <p className="text-[11px] uppercase tracking-wider text-slate-400">Traversed Edges</p>
-                                <p className="mt-1 text-sm font-semibold text-purple-200">{traversedEdgesCount}</p>
+                                <p className="mt-1 text-sm font-semibold text-blue-200">{traversedEdgesCount}</p>
                             </div>
                             <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-                                <p className="text-[11px] uppercase tracking-wider text-slate-400">Start Node</p>
-                                <p className="mt-1 text-sm font-semibold text-sky-200">{startNodeId}</p>
+                                <p className="text-[11px] uppercase tracking-wider text-slate-400">Current Level</p>
+                                <p className="mt-1 text-sm font-semibold text-cyan-200">{currentLevel}</p>
                             </div>
                         </div>
                     </div>
 
                     <div className="rounded-2xl border border-white/10 bg-slate-900/55 p-5 min-w-[200px] w-full md:w-80">
-                        <p className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-300"><Activity size={14} className="text-purple-300" /> Live Diagnostics</p>
+                        <p className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-300"><Activity size={14} className="text-blue-300" /> Live Diagnostics</p>
                         <div className="mt-4 space-y-3">
                             <div className="rounded-xl bg-white/5 p-3">
                                 <p className="text-[11px] text-slate-400">Current Action</p>
@@ -495,7 +502,23 @@ export default function GraphVisualizerPage() {
                                 </div>
                                 <div className="rounded-xl bg-white/5 p-3">
                                     <p className="text-[11px] text-slate-400">Delay</p>
-                                    <p className="text-lg font-bold text-purple-100 inline-flex items-center gap-1"><Clock3 size={14} />{speed}ms</p>
+                                    <p className="text-lg font-bold text-blue-100 inline-flex items-center gap-1"><Clock3 size={14} />{speed}ms</p>
+                                </div>
+                            </div>
+                            <div className="rounded-xl bg-white/5 p-3">
+                                <p className="text-[11px] text-slate-400 mb-2 inline-flex items-center gap-1"><Layers size={12} /> Queue Contents</p>
+                                <div className="ll-scrollbar flex min-h-[34px] gap-2 overflow-x-auto overflow-y-hidden pb-1">
+                                    {queueContents.length === 0 && (
+                                        <span className="text-xs italic text-slate-500">Queue is empty</span>
+                                    )}
+                                    {queueContents.map((id, idx) => (
+                                        <span
+                                            key={`q-${id}-${idx}`}
+                                            className="inline-flex h-8 min-w-8 items-center justify-center rounded-full border border-blue-400/30 bg-blue-500/10 px-2 text-xs font-bold text-blue-100"
+                                        >
+                                            {id}
+                                        </span>
+                                    ))}
                                 </div>
                             </div>
                             <div className="rounded-xl bg-white/5 p-3">
@@ -507,7 +530,7 @@ export default function GraphVisualizerPage() {
                                     {traversalOrder.map((id, idx) => (
                                         <span
                                             key={`${id}-${idx}`}
-                                            className="inline-flex h-8 min-w-8 items-center justify-center rounded-full border border-purple-400/30 bg-purple-500/10 px-2 text-xs font-bold text-purple-100"
+                                            className="inline-flex h-8 min-w-8 items-center justify-center rounded-full border border-cyan-400/30 bg-cyan-500/10 px-2 text-xs font-bold text-cyan-100"
                                         >
                                             {id}
                                         </span>
@@ -522,12 +545,12 @@ export default function GraphVisualizerPage() {
             <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-[350px_1fr]">
                 {/* Controls */}
                 <aside className="rounded-3xl border border-white/10 bg-slate-800/35 p-5 backdrop-blur h-fit">
-                    <div className="mb-5 flex items-center gap-2"><Network size={18} className="text-purple-300" /><h2 className="text-sm font-bold uppercase tracking-widest text-white">Graph Controls</h2></div>
+                    <div className="mb-5 flex items-center gap-2"><Network size={18} className="text-blue-300" /><h2 className="text-sm font-bold uppercase tracking-widest text-white">Graph Controls</h2></div>
 
                     <div className="space-y-4">
                         <div className="rounded-2xl bg-white/5 p-3">
                             <label className="flex justify-between text-xs text-slate-400 mb-2 uppercase"><span>Nodes</span> <span>{nodeCount}</span></label>
-                            <input type="range" min="4" max="15" value={nodeCount} disabled={isRunning} onChange={(e) => { setNodeCount(+e.target.value); handleNewGraph(+e.target.value); }} className="w-full accent-purple-400" />
+                            <input type="range" min="4" max="15" value={nodeCount} disabled={isRunning} onChange={(e) => { setNodeCount(+e.target.value); handleNewGraph(+e.target.value); }} className="w-full accent-blue-400" />
                         </div>
                         <div className="rounded-2xl bg-white/5 p-3">
                             <label className="flex justify-between text-xs text-slate-400 mb-2 uppercase"><span className="inline-flex items-center gap-1"><Target size={13} />Start</span> <span>{startNodeId}</span></label>
@@ -543,19 +566,19 @@ export default function GraphVisualizerPage() {
                         </div>
                         <div className="rounded-2xl bg-white/5 p-3">
                             <label className="flex justify-between text-xs text-slate-400 mb-2 uppercase"><span>Speed</span> <span>{speed}ms</span></label>
-                            <input type="range" min="50" max="800" value={speed} onChange={(e) => setSpeed(+e.target.value)} className="w-full accent-purple-400" />
+                            <input type="range" min="50" max="800" value={speed} onChange={(e) => setSpeed(+e.target.value)} className="w-full accent-blue-400" />
                         </div>
                         <div className="grid grid-cols-2 gap-2">
                             <motion.button onClick={handleReset} className="flex items-center justify-center gap-2 rounded-xl bg-white/5 py-2.5 text-sm font-bold text-white border border-white/10 hover:bg-white/10"><RotateCcw size={16} /> Reset</motion.button>
-                            <motion.button onClick={() => handleNewGraph()} className="flex items-center justify-center gap-2 rounded-xl bg-purple-500/10 py-2.5 text-sm font-bold text-purple-100 border border-purple-400/20 hover:bg-purple-500/20"><Shuffle size={16} /> Re-Gen</motion.button>
+                            <motion.button onClick={() => handleNewGraph()} className="flex items-center justify-center gap-2 rounded-xl bg-blue-500/10 py-2.5 text-sm font-bold text-blue-100 border border-blue-400/20 hover:bg-blue-500/20"><Shuffle size={16} /> Re-Gen</motion.button>
                         </div>
 
                         <motion.button
-                            onClick={isRunning ? (isPaused ? () => { pauseSignal.current = false; setIsPaused(false); setRunStatus("Running") } : () => { pauseSignal.current = true; setIsPaused(true); setRunStatus("Paused") }) : runDFS}
-                            className={`w-full flex items-center justify-center gap-2 rounded-2xl py-3.5 font-bold text-white shadow-lg transition-all ${isPaused ? "bg-emerald-600" : (isRunning ? "bg-amber-500 text-slate-900" : "bg-gradient-to-r from-purple-600 to-pink-500")}`}
+                            onClick={isRunning ? (isPaused ? () => { pauseSignal.current = false; setIsPaused(false); setRunStatus("Running") } : () => { pauseSignal.current = true; setIsPaused(true); setRunStatus("Paused") }) : runBFS}
+                            className={`w-full flex items-center justify-center gap-2 rounded-2xl py-3.5 font-bold text-white shadow-lg transition-all ${isPaused ? "bg-emerald-600" : (isRunning ? "bg-amber-500 text-slate-900" : "bg-gradient-to-r from-blue-600 to-cyan-500")}`}
                         >
                             {isRunning ? (isPaused ? <Play size={18} fill="currentColor" /> : <Pause size={18} fill="currentColor" />) : <Play size={18} fill="currentColor" />}
-                            {isRunning ? (isPaused ? "Resume" : "Pause") : "Start DFS"}
+                            {isRunning ? (isPaused ? "Resume" : "Pause") : "Start BFS"}
                         </motion.button>
                         <HotkeysHint />
                     </div>
@@ -588,7 +611,7 @@ export default function GraphVisualizerPage() {
                         <motion.div
                             key={node.id}
                             initial={{ scale: 0 }}
-                            animate={{ scale: 1, x: node.x - 24, y: node.y - 24 }} // centering 48px node
+                            animate={{ scale: 1, x: node.x - 24, y: node.y - 24 }}
                             className={`absolute w-12 h-12 rounded-full border-2 flex items-center justify-center z-10 transition-all duration-500 ${getNodeColor(node.status, node.id)}`}
                         >
                             <span className="text-white font-bold text-sm pointer-events-none select-none">{node.id}</span>
@@ -599,6 +622,7 @@ export default function GraphVisualizerPage() {
                         <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 inline-flex items-center gap-1"><Binary size={12} /> Legend</p>
                         <div className="space-y-1.5 text-[10px]">
                             <div className="flex items-center gap-2 text-slate-300"><span className="h-2.5 w-2.5 rounded-full bg-sky-500" /> Start Node</div>
+                            <div className="flex items-center gap-2 text-slate-300"><span className="h-2.5 w-2.5 rounded-full bg-blue-600" /> In Queue</div>
                             <div className="flex items-center gap-2 text-slate-300"><span className="h-2.5 w-2.5 rounded-full bg-amber-500" /> Processing Node</div>
                             <div className="flex items-center gap-2 text-slate-300"><span className="h-2.5 w-2.5 rounded-full bg-emerald-500" /> Visited Node</div>
                             <div className="flex items-center gap-2 text-slate-300"><span className="h-0.5 w-5 rounded bg-emerald-400" /> Traversed Edge</div>
@@ -622,11 +646,11 @@ export default function GraphVisualizerPage() {
                             Back to Algorithms
                         </button>
                         <div className="h-6 w-px bg-slate-700 hidden sm:block" />
-                        <Code2 size={20} className="text-purple-400" />
+                        <Code2 size={20} className="text-blue-400" />
                         <span className="text-sm font-bold uppercase tracking-widest text-slate-200">{selectedLanguage} Source</span>
                         <div className="flex rounded-lg bg-white/5 p-1 border border-white/10">
                             {["C++", "Java", "Python", "JavaScript"].map((lang) => (
-                                <button key={lang} onClick={() => setSelectedLanguage(lang)} className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${selectedLanguage === lang ? "bg-purple-600 text-white" : "text-slate-400 hover:text-white"}`}>
+                                <button key={lang} onClick={() => setSelectedLanguage(lang)} className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${selectedLanguage === lang ? "bg-blue-600 text-white" : "text-slate-400 hover:text-white"}`}>
                                     {lang}
                                 </button>
                             ))}
@@ -638,7 +662,7 @@ export default function GraphVisualizerPage() {
                         </button>
                         <button
                             onClick={handleDownloadCode}
-                            className="flex items-center gap-2 rounded-lg bg-purple-500/10 px-4 py-2 text-xs font-bold text-purple-100 hover:bg-purple-500/20 transition-colors border border-purple-400/20"
+                            className="flex items-center gap-2 rounded-lg bg-blue-500/10 px-4 py-2 text-xs font-bold text-blue-100 hover:bg-blue-500/20 transition-colors border border-blue-400/20"
                         >
                             <Download size={14} /> Download
                         </button>

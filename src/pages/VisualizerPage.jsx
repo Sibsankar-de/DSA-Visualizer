@@ -14,7 +14,6 @@ import {
   Radar,
   Sparkles,
   Download,
-  Keyboard,
   ArrowLeft,
   RotateCcw,
   Play,
@@ -48,9 +47,10 @@ import { selectionSort } from "../algorithms/selectionSort";
 import { mergeSort } from "../algorithms/mergeSort";
 import CustomInputModal from "../components/CustomInputModal";
 import AlgorithmExplanationPanel from "../components/AlgorithmExplanationPanel";
-import StepController from "../components/StepController";
-import AITutorChat, { AITutorButton } from "../components/AITutorChat";
-import { useAITutor } from "../hooks/useAITutor";
+import HotkeysHint from "../components/HotkeysHint";
+import { shouldSkipHotkeyTarget, useStableHotkeys } from "../hooks/useStableHotkeys";
+import { useVisualizerTheme } from "../context/VisualizerThemeContext";
+import StepController from '../components/StepController';
 
 
 const algorithmMap = {
@@ -95,9 +95,9 @@ const algorithmMap = {
       "Linear Search scans each value from left to right until the target value is discovered.",
   },
   "Binary Search":{
-    run: binarysearch,//  function for animation
+    run: binarysearch,
     category: "Searching",
-    best: "O(1)",                // if the target is in the middle
+    best: "O(1)",
     average: "O(log n)",
     worst: "O(log n)",
     space: "O(1)",
@@ -164,7 +164,7 @@ const algorithmMap = {
   description:
     "Merge Sort is a divide-and-conquer algorithm that splits the array into halves, recursively sorts them, and merges the sorted halves.",
 },
-// Add your algorithm name and function to the run parameter.
+
 };
 
 const statusStyleMap = {
@@ -262,7 +262,6 @@ export default function VisualizerPage({
   const [speed, setSpeed] = useState(30);
   const [showValues, setShowValues] = useState(false);
   const [showGrid, setShowGrid] = useState(true);
-  const [colorTheme, setColorTheme] = useState("ocean");
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [copyState, setCopyState] = useState("idle");
   const [selectedLanguage, setSelectedLanguage] = useState("C++");
@@ -271,6 +270,7 @@ export default function VisualizerPage({
   const stopSignal = useRef(false);
 
   const pauseSignal = useRef(false);
+  const { themeKey: colorTheme } = useVisualizerTheme();
   const MotionDiv = motion.div;
   const MotionButton = motion.button;
   const MotionBar = motion.div;
@@ -332,30 +332,6 @@ export default function VisualizerPage({
     [algorithm?.category, themeColors],
   );
 
-  // HOTKEYS
-  useEffect(() => {
-    const handleHotkeys = (e) => {
-      const tag = e.target?.tagName?.toLowerCase();
-      if (tag === "input" || tag === "textarea") return;
-      if (e.code === "Space") {
-        e.preventDefault();
-        if (!isSorting) handleStart();
-        else if (isPaused) handleResume();
-        else handlePause();
-      }
-      if (e.key.toLowerCase() === "r") {
-        e.preventDefault();
-        handleResetHighlights();
-      }
-      if (e.key.toLowerCase() === "n") {
-        e.preventDefault();
-        handleGenerateNew();
-      }
-    };
-    window.addEventListener("keydown", handleHotkeys);
-    return () => window.removeEventListener("keydown", handleHotkeys);
-  }, [isSorting, isPaused]);
-
   useEffect(() => {
     handleGenerateNew(arraySize);
   }, [name]);
@@ -368,57 +344,6 @@ export default function VisualizerPage({
     );
     return () => clearInterval(timer);
   }, [isSorting, isPaused]);
-
-  // HOTKEYS LOGIC
-  useEffect(() => {
-    const handleHotkeys = (e) => {
-      const tag = e.target?.tagName?.toLowerCase();
-      if (tag === "input" || tag === "textarea" || tag === "select") return;
-      if (e.code === "Space") {
-        e.preventDefault();
-        if (!isSorting) handleStart();
-        else if (isPaused) handleResume();
-        else handlePause();
-      }
-      if (e.key.toLowerCase() === "r") {
-        e.preventDefault();
-        handleResetHighlights();
-      }
-      if (e.key.toLowerCase() === "n") {
-        e.preventDefault();
-        handleGenerateNew();
-      }
-      if (e.key.toLowerCase() === "v") {
-        e.preventDefault();
-        !isTooLargeForValues && setShowValues((v) => !v);
-      }
-      if (e.key.toLowerCase() === "g") {
-        e.preventDefault();
-        setShowGrid((g) => !g);
-      }
-      if (e.key.toLowerCase() === "c") {
-        e.preventDefault();
-        const keys = Object.keys(colorThemes);
-        setColorTheme(keys[(keys.indexOf(colorTheme) + 1) % keys.length]);
-      }
-      // Step navigation shortcuts
-      if (e.key === "ArrowLeft") {
-        e.preventDefault();
-        stepBackward();
-      }
-      if (e.key === "ArrowRight") {
-        e.preventDefault();
-        stepForward();
-      }
-      if (e.key.toLowerCase() === "s") {
-        e.preventDefault();
-        toggleStepMode();
-      }
-    };
-    window.addEventListener("keydown", handleHotkeys);
-    return () => window.removeEventListener("keydown", handleHotkeys);
-  }, [isSorting, isPaused, colorTheme, array.length, stepForward, stepBackward, toggleStepMode]);
-
 
   const handleGenerateNew = (nextSize = arraySize) => {
     stopSignal.current = true;
@@ -515,9 +440,60 @@ export default function VisualizerPage({
     link.click();
   };
 
+  useStableHotkeys((e) => {
+    if (shouldSkipHotkeyTarget(e.target)) return;
+
+    const key = e.key?.toLowerCase();
+    const isHotkey =
+      e.code === "Space" ||
+      key === "r" ||
+      key === "n" ||
+      key === "v" ||
+      key === "g";
+    if (!isHotkey) return;
+
+    if (e.repeat) {
+      e.preventDefault();
+      return;
+    }
+
+    if (e.code === "Space") {
+      e.preventDefault();
+      if (!isSorting) handleStart();
+      else if (isPaused) handleResume();
+      else handlePause();
+      return;
+    }
+
+    if (key === "r") {
+      e.preventDefault();
+      handleResetHighlights();
+      return;
+    }
+
+    if (key === "n") {
+      e.preventDefault();
+      handleGenerateNew();
+      return;
+    }
+
+    if (key === "v") {
+      e.preventDefault();
+      if (!isTooLargeForValues) setShowValues((v) => !v);
+      return;
+    }
+
+    if (key === "g") {
+      e.preventDefault();
+      setShowGrid((g) => !g);
+      return;
+    }
+
+  });
+
   return (
-    <div className="font-body relative mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:py-12">
-      <div className="pointer-events-none absolute inset-0 -z-20 bg-[radial-gradient(circle_at_20%_0%,rgba(56,189,248,0.2),transparent_32%),radial-gradient(circle_at_82%_10%,rgba(59,130,246,0.18),transparent_36%),linear-gradient(to_bottom,rgba(15,23,42,0.95),rgba(15,23,42,0.6))]" />
+    <div className="visualizer-page font-body relative mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:py-12">
+      <div className="visualizer-ambient-layer pointer-events-none absolute inset-0 -z-20 bg-[radial-gradient(circle_at_20%_0%,rgba(56,189,248,0.2),transparent_32%),radial-gradient(circle_at_82%_10%,rgba(59,130,246,0.18),transparent_36%),linear-gradient(to_bottom,rgba(15,23,42,0.95),rgba(15,23,42,0.6))]" />
 
       <motion.section
         initial={{ opacity: 0, y: 18 }}
@@ -728,14 +704,7 @@ export default function VisualizerPage({
                 {isPaused ? "Resume" : isSorting ? "Pause" : "Start"}
               </MotionButton>
             </div>
-            <div className="mt-5 p-3 rounded-2xl border border-white/10 bg-white/5 text-[11px] text-slate-400 space-y-1">
-              <p className="font-bold text-slate-200 uppercase mb-1 flex items-center gap-1">
-                <Keyboard size={12} /> Shortcuts
-              </p>
-              <p>Space: Start/Pause | R: Reset | N: New</p>
-              <p>←: Prev Step | →: Next Step | S: Step Mode</p>
-            </div>
-
+            <HotkeysHint className="mt-5" />
           </aside>
 
           {/* Algorithm Explanation Panel */}

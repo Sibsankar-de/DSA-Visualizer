@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Braces, User, LogOut, ChevronDown, Trophy, BookOpen, Heart, BarChart3 } from 'lucide-react';
+import { Menu, X, Braces, User, LogOut, ChevronDown, Trophy, BookOpen, Heart, BarChart3, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useVisualizerTheme } from '../context/VisualizerThemeContext';
 
 const navLinks = [
   { to: '/', label: 'Home' },
@@ -52,6 +53,7 @@ export default function Navbar() {
   const [profileOpen, setProfileOpen] = useState(false);
   const location = useLocation();
   const { user, logout } = useAuth();
+  const { colorMode, toggleColorMode } = useVisualizerTheme();
   const profileRef = useRef(null);
 
   useEffect(() => {
@@ -111,6 +113,39 @@ export default function Navbar() {
             </svg>
             Star
           </a>
+
+          {/* Dark/Light toggle */}
+          <button
+            onClick={toggleColorMode}
+            className="ml-1 flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/5 text-slate-300 transition-all duration-300 hover:border-blue-500/40 hover:bg-blue-500/10 hover:text-white"
+            aria-label="Toggle dark/light mode"
+            title={colorMode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            <AnimatePresence mode="wait">
+              {colorMode === 'dark' ? (
+                <MotionSpan
+                  key="sun"
+                  initial={{ rotate: -90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: 90, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="flex items-center justify-center"
+                >
+                  <Sun size={16} />
+                </MotionSpan>
+              ) : (
+                <MotionSpan
+                  key="moon"
+                  initial={{ rotate: 90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: -90, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Moon size={16} />
+                </MotionSpan>
+              )}
+            </AnimatePresence>
+          </button>
 
           {user ? (
             <div className="relative ml-4" ref={profileRef}>
@@ -315,6 +350,15 @@ export default function Navbar() {
                   </svg>
                   Star on GitHub
                 </a>
+
+                {/* Dark/Light toggle (mobile) */}
+                <button
+                  onClick={toggleColorMode}
+                  className="mt-2 flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-slate-400 transition-all hover:bg-white/10 hover:text-white"
+                >
+                  {colorMode === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+                  {colorMode === 'dark' ? 'Light Mode' : 'Dark Mode'}
+                </button>
               </MotionDiv>
             </div>
           </MotionDiv>

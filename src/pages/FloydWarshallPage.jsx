@@ -23,6 +23,8 @@ import {
   generateFloydWarshallSteps,
 } from "../algorithms/floydWarshall";
 import { renderHighlightedCode } from "../utils/codeHighlight";
+import HotkeysHint from "../components/HotkeysHint";
+import { shouldSkipHotkeyTarget, useStableHotkeys } from "../hooks/useStableHotkeys";
 
 const CANVAS_WIDTH = 550;
 const CANVAS_HEIGHT = 450;
@@ -83,6 +85,12 @@ const generateRandomGraph = (numNodes = 4) => {
   return { nodes, edges };
 };
 
+function formatElapsed(seconds) {
+  const mins = Math.floor(seconds / 60).toString().padStart(2, "0");
+  const secs = (seconds % 60).toString().padStart(2, "0");
+  return `${mins}:${secs}`;
+}
+
 export default function FloydWarshallPage() {
   const navigate = useNavigate();
   const [graph, setGraph] = useState(() => generateRandomGraph(5));
@@ -91,6 +99,7 @@ export default function FloydWarshallPage() {
   const [runStatus, setRunStatus] = useState("Idle");
   const [speed, setSpeed] = useState(500);
   const [isPaused, setIsPaused] = useState(false);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [copyState, setCopyState] = useState("idle");
   const [selectedLanguage, setSelectedLanguage] = useState("C++");
   const [mappingConfigs, setMappingConfigs] = useState(null);
@@ -117,6 +126,11 @@ export default function FloydWarshallPage() {
   const highlightK = currentStep ? currentStep.k : null;
   const highlightI = currentStep ? currentStep.i : null;
   const highlightJ = currentStep ? currentStep.j : null;
+  const progress = useMemo(() => {
+    if (runStatus === "Completed") return 100;
+    if (steps.length === 0 || currentStepIndex < 0) return 0;
+    return Math.min(Math.round(((currentStepIndex + 1) / steps.length) * 100), 100);
+  }, [runStatus, currentStepIndex, steps.length]);
 
   const handleGenerateNewGraph = () => {
     handleReset();
@@ -130,6 +144,7 @@ export default function FloydWarshallPage() {
     setCurrentStepIndex(-1);
     setRunStatus("Idle");
     setIsPaused(false);
+    setElapsedSeconds(0);
     setMappingConfigs(null);
   };
 
@@ -144,6 +159,7 @@ export default function FloydWarshallPage() {
     setCurrentStepIndex(0);
     setRunStatus("Running");
     setIsPaused(false);
+    setElapsedSeconds(0);
   };
 
   const stopAnimation = () => {
@@ -166,6 +182,14 @@ export default function FloydWarshallPage() {
     }
     return () => stopAnimation();
   }, [runStatus, isPaused, steps.length, speed]);
+
+  useEffect(() => {
+    if (runStatus !== "Running" || isPaused) return undefined;
+    const timer = setInterval(() => {
+      setElapsedSeconds((prev) => prev + 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [runStatus, isPaused]);
 
   const handleCopyCode = async () => {
     if (!navigator?.clipboard) return;
@@ -194,9 +218,44 @@ export default function FloydWarshallPage() {
     URL.revokeObjectURL(url);
   };
 
+  useStableHotkeys((e) => {
+    if (shouldSkipHotkeyTarget(e.target)) return;
+
+    const key = e.key?.toLowerCase();
+    const isHotkey = e.code === "Space" || key === "r" || key === "n";
+    if (!isHotkey) return;
+
+    if (e.repeat) {
+      e.preventDefault();
+      return;
+    }
+
+    if (e.code === "Space") {
+      e.preventDefault();
+      if (runStatus === "Idle" || runStatus === "Completed") {
+        if (runStatus === "Completed") handleReset();
+        setTimeout(runAlgorithm, 100);
+      } else {
+        setIsPaused((prev) => !prev);
+      }
+      return;
+    }
+
+    if (key === "r") {
+      e.preventDefault();
+      handleReset();
+      return;
+    }
+
+    if (key === "n") {
+      e.preventDefault();
+      if (runStatus === "Idle") handleGenerateNewGraph();
+    }
+  });
+
   return (
-    <div className="font-body relative mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:py-12">
-      <div className="pointer-events-none absolute inset-0 -z-20 bg-[radial-gradient(circle_at_20%_0%,rgba(225,29,72,0.15),transparent_32%),radial-gradient(circle_at_82%_10%,rgba(244,63,94,0.1),transparent_34%),linear-gradient(to_bottom,rgba(15,23,42,0.95),rgba(15,23,42,0.6))]" />
+    <div className="visualizer-page font-body relative mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:py-12">
+      <div className="visualizer-ambient-layer pointer-events-none absolute inset-0 -z-20 bg-[radial-gradient(circle_at_20%_0%,rgba(225,29,72,0.15),transparent_32%),radial-gradient(circle_at_82%_10%,rgba(244,63,94,0.1),transparent_34%),linear-gradient(to_bottom,rgba(15,23,42,0.95),rgba(15,23,42,0.6))]" />
 
       <motion.section
         initial={{ opacity: 0, y: 18 }}
@@ -226,6 +285,15 @@ export default function FloydWarshallPage() {
               >
                 {runStatus}
               </span>
+              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-slate-200">
+                {formatElapsed(elapsedSeconds)}
+              </span>
+              <span className="rounded-full border border-slate-400/25 bg-slate-500/10 px-3 py-1 text-xs font-semibold tracking-wider text-slate-300">
+                Time: <span className="text-rose-200 font-mono">O(V^3)</span>
+              </span>
+              <span className="rounded-full border border-slate-400/25 bg-slate-500/10 px-3 py-1 text-xs font-semibold tracking-wider text-slate-300">
+                Space: <span className="text-rose-200 font-mono">O(V^2)</span>
+              </span>
             </div>
             <h1 className="font-display text-3xl font-black text-white sm:text-4xl lg:text-5xl">
               Floyd Warshall
@@ -234,6 +302,20 @@ export default function FloydWarshallPage() {
               Computes the shortest paths between all pairs of nodes using
               Dynamic Programming.
             </p>
+            <div className="mt-6 w-full max-w-md">
+              <div className="mb-2 flex justify-between text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
+                <span>Computation Progress</span>
+                <span>{progress}%</span>
+              </div>
+              <div className="h-2 w-full overflow-hidden rounded-full bg-slate-700/50">
+                <motion.div
+                  className="h-full bg-gradient-to-r from-rose-500 to-orange-400 shadow-[0_0_10px_rgba(244,63,94,0.5)]"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progress}%` }}
+                  transition={{ duration: 0.35 }}
+                />
+              </div>
+            </div>
 
             <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4 text-center">
               <div className="rounded-xl border border-white/10 bg-white/5 p-3">
@@ -298,6 +380,28 @@ export default function FloydWarshallPage() {
                       ? graph.nodes.find((n) => n.id === highlightK)?.label
                       : "-"}
                   </p>
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                <div className="rounded-xl bg-white/5 p-3 text-center">
+                  <p className="text-[11px] text-slate-400 uppercase tracking-widest">
+                    Step
+                  </p>
+                  <p className="text-lg font-bold text-cyan-200">
+                    {steps.length > 0 ? `${Math.min(currentStepIndex + 1, steps.length)}/${steps.length}` : "-"}
+                  </p>
+                </div>
+                <div className="rounded-xl bg-white/5 p-3 text-center">
+                  <p className="text-[11px] text-slate-400 uppercase tracking-widest">
+                    Delay
+                  </p>
+                  <p className="text-lg font-bold text-cyan-100">{speed}ms</p>
+                </div>
+                <div className="rounded-xl bg-white/5 p-3 text-center">
+                  <p className="text-[11px] text-slate-400 uppercase tracking-widest">
+                    Nodes
+                  </p>
+                  <p className="text-lg font-bold text-rose-100">{graph.nodes.length}</p>
                 </div>
               </div>
             </div>
@@ -374,10 +478,32 @@ export default function FloydWarshallPage() {
                 {isPaused ? "Resume" : "Pause"}
               </button>
             )}
+            <HotkeysHint />
           </div>
         </aside>
 
         <section className="min-w-0 h-full rounded-3xl border border-white/10 bg-slate-800/35 p-4 shadow-2xl backdrop-blur relative flex flex-col items-center justify-center">
+          <div className="pointer-events-none absolute right-5 top-5 z-20 rounded-xl border border-white/10 bg-slate-900/85 px-3 py-2 backdrop-blur">
+            <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">Legend</p>
+            <div className="space-y-1.5 text-[10px] text-slate-300">
+              <div className="flex items-center gap-2">
+                <span className="h-2.5 w-2.5 rounded-full bg-sky-400" />
+                <span>i (Source)</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="h-2.5 w-2.5 rounded-full bg-pink-400" />
+                <span>j (Target)</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="h-2.5 w-2.5 rounded-full bg-yellow-300" />
+                <span>k (Intermediate)</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="h-2.5 w-2.5 rounded-full bg-amber-300" />
+                <span>Evaluated Edge Pair</span>
+              </div>
+            </div>
+          </div>
           <svg
             width="100%"
             height={CANVAS_HEIGHT}
