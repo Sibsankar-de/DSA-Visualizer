@@ -22,6 +22,7 @@ import ProgressDashboard from "./pages/ProgressDashboard";
 import AchievementsPage from "./pages/AchievementsPage";
 import LearningPathsPage from "./pages/LearningPathsPage";
 import FavoritesPage from "./pages/FavoritesPage";
+import CustomAlgorithmPage from "./pages/CustomAlgorithmPage";
 
 import {
   bubbleSortCPP,
@@ -244,6 +245,7 @@ export default function App() {
               <Route path="/visualizer/huffman-coding" element={<HuffmanCodingPage />} />
               <Route path="/visualizer/floyd-warshall" element={<FloydWarshallPage />} />
               <Route path="/compare" element={<ComparisonPage />} />
+              <Route path="/custom-algorithm" element={<CustomAlgorithmPage />} />
             </Routes>
           </main>
 

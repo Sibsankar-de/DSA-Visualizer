@@ -17,6 +17,7 @@ import {
   X,
   Zap,
   Waypoints,
+  Code2,
 } from "lucide-react";
 
 const algorithmsCatalog = [
@@ -283,6 +284,19 @@ const algorithmsCatalog = [
     icon: Waypoints,
     gradient: "from-rose-500/25 via-red-500/15 to-transparent",
     accent: "text-rose-200",
+  },
+  {
+    id: "custom-algorithm",
+    title: "Custom Algorithm Builder",
+    description: "Write your own sorting or searching algorithms and visualize them step-by-step in real-time.",
+    path: "/custom-algorithm",
+    category: "custom",
+    type: "Custom",
+    complexity: "Variable",
+    level: "Advanced",
+    icon: Code2,
+    gradient: "from-violet-500/25 via-purple-500/15 to-transparent",
+    accent: "text-violet-200",
   },
 ];
 
