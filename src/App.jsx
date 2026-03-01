@@ -32,6 +32,7 @@ import OAuthSuccess from "./pages/OAuthSuccess";
 import FloydWarshallPage from "./pages/FloydWarshallPage";
 import ComparisonPage from "./pages/ComparisonPage";
 import NQueensPage from "./pages/NQueensPage";
+import NotFoundPage from "./pages/NotFoundPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import SinglyLinkedListPage from "./pages/SinglyLinkedListPage";
 import PublicRoute from "./components/PublicRoute";
@@ -121,9 +122,8 @@ function AppShell() {
 
   return (
     <div
-      className={`flex min-h-screen flex-col bg-slate-900 text-white selection:bg-blue-500/30 ${
-        hideChrome ? "viz-focus-active" : ""
-      }`}
+      className={`flex min-h-screen flex-col bg-slate-900 text-white selection:bg-blue-500/30 ${hideChrome ? "viz-focus-active" : ""
+        }`}
     >
       {!hideChrome && <Navbar />}
       <VisualizerThemeDock />
@@ -322,6 +322,7 @@ function AppShell() {
           <Route path="/visualizer/trie" element={<TrieVisualizerPage />} />
           <Route path="/visualizer/knapsack" element={<KnapsackPage />} />
           <Route path="/compare" element={<ComparisonPage />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>
 
