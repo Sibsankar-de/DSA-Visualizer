@@ -49,6 +49,8 @@ import { mergeSort } from "../algorithms/mergeSort";
 import CustomInputModal from "../components/CustomInputModal";
 import AlgorithmExplanationPanel from "../components/AlgorithmExplanationPanel";
 import StepController from "../components/StepController";
+import AITutorChat, { AITutorButton } from "../components/AITutorChat";
+import { useAITutor } from "../hooks/useAITutor";
 
 
 const algorithmMap = {
