@@ -22,6 +22,7 @@ import AStarPage from "./pages/AStarPage";
 import StackVisualizerPage from "./pages/StackVisualizerPage";
 import QueueVisualizerPage from "./pages/QueueVisualizerPage";
 import TrieVisualizerPage from "./pages/TrieVisualizerPage";
+import SegmentTreeVisualizerPage from './pages/SegmentTreeVisualizerPage';
 import SignIn from "./pages/SignIn";
 import TopologicalSortPage from "./pages/TopologicalSortPage";
 import SignUp from "./pages/SignUp";
@@ -299,6 +300,7 @@ function AppShell() {
           <Route path="/visualizer/queue" element={<QueueVisualizerPage />} />
           <Route path="/visualizer/trie" element={<TrieVisualizerPage />} />
           <Route path="/visualizer/knapsack" element={<KnapsackPage />} />
+          <Route path="/visualizer/segment-tree" element={<SegmentTreeVisualizerPage />} />
           <Route path="/compare" element={<ComparisonPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>

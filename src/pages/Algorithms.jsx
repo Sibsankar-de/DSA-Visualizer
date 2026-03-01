@@ -414,6 +414,20 @@ const algorithmsCatalog = [
     gradient: "from-amber-500/25 via-orange-500/15 to-transparent",
     accent: "text-amber-200",
   },
+  {
+    id: "segment-tree",
+    title: "Segment Tree",
+    description:
+      "A versatile data structure used for storing information about intervals, or segments, allowing fast range queries and updates.",
+    path: "/visualizer/segment-tree",
+    category: "range-queries",
+    type: "Tree",
+    complexity: "O(log N)",
+    level: "Advanced",
+    icon: Network,
+    gradient: "from-blue-500/25 via-indigo-500/15 to-transparent",
+    accent: "text-blue-200",
+  },
 ];
 
 const filterTabs = [
@@ -431,6 +445,7 @@ const filterTabs = [
   { id: "greedy", label: "Greedy Algorithms" },
   { id: "string-matching", label: "String Matching" },
   { id: "dynamic-programming", label: "Dynamic Programming" },
+  { id: "range-queries", label: "Range Queries" },
 ];
 
 const levelTabs = ["All", "Beginner", "Intermediate", "Advanced"];
