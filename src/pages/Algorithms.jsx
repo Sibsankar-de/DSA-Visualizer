@@ -235,6 +235,34 @@ const algorithmsCatalog = [
     accent: "text-emerald-200",
   },
   {
+    id: "doubly-linked-list-ops",
+    title: "DLL Insert & Delete",
+    description:
+      "Visualize Doubly Linked List Insertion (Head, Tail, Position) and Deletion (Head, Tail, By Value) with bidirectional pointer animation. Includes backward traversal and DLL vs SLL comparisons.",
+    path: "/visualizer/doubly-linked-list",
+    category: "linked-list",
+    type: "Pointers",
+    complexity: "O(n)",
+    level: "Intermediate",
+    icon: Binary,
+    gradient: "from-purple-500/25 via-blue-500/15 to-transparent",
+    accent: "text-purple-200",
+  },
+  {
+    id: "dll-bst-conversion",
+    title: "DLL ↔ BST Conversion",
+    description:
+      "Visualize converting a sorted Doubly Linked List to a height-balanced Binary Search Tree and back, with step-by-step in-order traversal animation and pointer rewiring.",
+    path: "/visualizer/dll-to-bst",
+    category: "linked-list",
+    type: "Conversion",
+    complexity: "O(n)",
+    level: "Intermediate",
+    icon: Binary,
+    gradient: "from-purple-500/25 via-indigo-500/15 to-transparent",
+    accent: "text-purple-200",
+  },
+  {
     id: "prims",
     title: "Prim's Algorithm",
     description:

@@ -1,14 +1,48 @@
-import React from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
 import {
     User, Mail, Award, Clock, Activity,
     Code, BookOpen, Star, Zap, TrendingUp,
-    Map, Layout, Database, CheckCircle, Calendar
+    Map, Layout, Database, CheckCircle, Calendar,
+    Camera, Loader2
 } from 'lucide-react';
 
 export default function Profile() {
-    const { user } = useAuth();
+    const { user, updateUser } = useAuth();
+    const [isUploading, setIsUploading] = useState(false);
+
+    const handleImageChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        setIsUploading(true);
+        const formData = new FormData();
+        formData.append('image', file);
+
+        try {
+            const res = await fetch('http://localhost:5000/api/user/profile-image', {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${user.token}`
+                },
+                body: formData
+            });
+
+            const data = await res.json();
+            if (res.ok) {
+                updateUser({ profileImage: data.profileImage });
+                toast.success('Profile image updated!');
+            } else {
+                toast.error(data.message || 'Failed to upload image');
+            }
+        } catch (error) {
+            toast.error('Error uploading image');
+        } finally {
+            setIsUploading(false);
+        }
+    };
 
     const studentInfo = {
         name: user?.name || "Student Developer",
@@ -79,12 +113,23 @@ export default function Profile() {
                     <div className="px-6 pb-6">
                         <div className="relative flex justify-between items-end -mt-12 mb-4">
                             <div className="flex items-end space-x-5">
-                                <div className="relative h-24 w-24 rounded-full border-4 border-slate-900 bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center shadow-xl">
-                                    <span className="text-4xl font-bold text-white uppercase shadow-sm">
-                                        {studentInfo.name.charAt(0)}
-                                    </span>
-                                    <div className="absolute bottom-0 right-0 h-5 w-5 rounded-full bg-emerald-500 border-2 border-slate-900" title="Online" />
-                                </div>
+                                <label className="relative h-24 w-24 rounded-full border-4 border-slate-900 bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center shadow-xl cursor-pointer group overflow-hidden">
+                                    <input type="file" className="hidden" accept="image/*" onChange={handleImageChange} disabled={isUploading} />
+                                    {isUploading ? (
+                                        <Loader2 className="w-8 h-8 text-white animate-spin" />
+                                    ) : user?.profileImage ? (
+                                        <img src={user.profileImage} alt="Profile" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <span className="text-4xl font-bold text-white uppercase shadow-sm">
+                                            {studentInfo.name.charAt(0)}
+                                        </span>
+                                    )}
+                                    <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <Camera className="w-6 h-6 text-white mb-1" />
+                                        <span className="text-[10px] text-white font-medium uppercase">Change</span>
+                                    </div>
+                                    <div className="absolute bottom-0 right-0 h-5 w-5 rounded-full bg-emerald-500 border-2 border-slate-900 z-10" title="Online" />
+                                </label>
                                 <div className="pb-2">
                                     <h1 className="text-3xl font-bold text-white tracking-tight">{studentInfo.name}</h1>
                                     <p className="text-slate-400 flex items-center gap-2 mt-1">

@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const signup = async (userData) => {
-        const response = await fetch('https://dsa-visualizer-5pyp.onrender.com/api/auth/signup', {
+        const response = await fetch('http://localhost:5000/api/auth/signup', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -65,8 +65,16 @@ export const AuthProvider = ({ children }) => {
         return { success: true };
     }, []);
 
+    const updateUser = useCallback((updatedFields) => {
+        setUser((prevUser) => {
+            const newUser = { ...prevUser, ...updatedFields };
+            localStorage.setItem('user', JSON.stringify(newUser));
+            return newUser;
+        });
+    }, []);
+
     return (
-        <AuthContext.Provider value={{ user, isLoading, signup, signin, logout, oauthLogin }}>
+        <AuthContext.Provider value={{ user, isLoading, signup, signin, logout, oauthLogin, updateUser }}>
             {children}
         </AuthContext.Provider>
     );

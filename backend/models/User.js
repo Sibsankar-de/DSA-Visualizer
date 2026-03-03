@@ -116,6 +116,10 @@ const userSchema = new mongoose.Schema({
             'Please add a valid email'
         ]
     },
+    profileImage: {
+        type: String,
+        default: ''
+    },
     password: {
         type: String,
         required: [true, 'Please add a password'],

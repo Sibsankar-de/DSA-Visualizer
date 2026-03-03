@@ -188,8 +188,12 @@ export default function Navbar() {
                 onClick={() => setProfileOpen(!profileOpen)}
                 className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 pl-2 pr-3 py-1 text-sm font-medium text-slate-300 transition-all hover:bg-white/10 hover:text-white focus:outline-none"
               >
-                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 text-white font-bold text-xs shadow-lg shadow-blue-500/25 uppercase">
-                  {user?.name ? user.name.charAt(0) : user?.email ? user.email.charAt(0) : 'U'}
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 text-white font-bold text-xs shadow-lg shadow-blue-500/25 uppercase overflow-hidden">
+                  {user?.profileImage ? (
+                    <img src={user.profileImage} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    user?.name ? user.name.charAt(0) : user?.email ? user.email.charAt(0) : 'U'
+                  )}
                 </div>
                 <ChevronDown size={14} className={`transition-transform duration-200 ${profileOpen ? 'rotate-180' : ''}`} />
               </button>

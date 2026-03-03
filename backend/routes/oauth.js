@@ -104,7 +104,7 @@ router.get('/callback/google', async (req, res) => {
         const token = generateToken(user._id);
 
         // Redirect to frontend with token
-        res.redirect(`${process.env.FRONTEND_URL}/oauth-success?token=${token}&userId=${user._id}&name=${encodeURIComponent(user.name)}&email=${encodeURIComponent(user.email)}`);
+        res.redirect(`${process.env.FRONTEND_URL}/oauth-success?token=${token}&userId=${user._id}&name=${encodeURIComponent(user.name)}&email=${encodeURIComponent(user.email)}&profileImage=${encodeURIComponent(user.profileImage || '')}`);
 
     } catch (error) {
         console.error('OAuth Callback Error:', error);

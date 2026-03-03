@@ -15,6 +15,7 @@ export default function OAuthSuccess() {
         const name = searchParams.get('name');
         const email = searchParams.get('email');
         const error = searchParams.get('error');
+        const profileImage = searchParams.get('profileImage');
 
         if (error) {
             toast.error(error);
@@ -27,7 +28,8 @@ export default function OAuthSuccess() {
                 _id: userId,
                 name: name || 'Google User',
                 email: email,
-                token: token
+                token: token,
+                profileImage: profileImage || ''
             };
 
             oauthLogin(userData);
