@@ -627,9 +627,9 @@ export default function VisualizerPage({
       </motion.section>
 
       <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-[340px_1fr]">
-        <div className="space-y-6">
+        <div className="space-y-6 xl:sticky xl:top-24 xl:self-start">
           {/* Controls Sidebar */}
-          <aside className="rounded-3xl border border-white/10 bg-slate-800/35 p-5 backdrop-blur xl:sticky xl:top-24">
+          <aside className="rounded-3xl border border-white/10 bg-slate-800/35 p-5 backdrop-blur">
             <div className="mb-5 flex items-center gap-2">
               <SlidersHorizontal size={18} className="text-cyan-300" />
               <h2 className="text-sm font-bold uppercase tracking-widest text-white">
