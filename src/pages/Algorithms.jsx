@@ -496,6 +496,19 @@ const algorithmsCatalog = [
     gradient: "from-amber-500/25 via-orange-500/15 to-transparent",
     accent: "text-amber-200",
   },
+  {
+    id: "rabin-karp",
+    title: "Rabin-Karp Algorithm",
+    description: "A string-searching algorithm that uses rolling hashes to efficiently find pattern matches in a text.",
+    path: "/visualizer/rabin-karp",
+    category: "string-matching",
+    type: "Hashing",
+    complexity: "O(n+m)",
+    level: "Intermediate",
+    icon: TextSearch,
+    gradient: "from-pink-500/25 via-rose-500/15 to-transparent",
+    accent: "text-rose-200",
+  },
 ];
 
 const filterTabs = [
