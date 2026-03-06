@@ -21,6 +21,8 @@ import {
   Zap,
   Waypoints,
   TextSearch,
+  Bookmark,
+  BookmarkCheck,
   Crown,
 } from "lucide-react";
 
@@ -500,6 +502,7 @@ const algorithmsCatalog = [
 
 const filterTabs = [
   { id: "all", label: "All" },
+  { id: "bookmarked", label: "★ Bookmarked" },
   { id: "1d-array-sorting", label: "Sorting (1D Array)" },
   { id: "2d-array", label: "2D Array" },
   { id: "graph-sorting", label: "Graph Sorting" },
@@ -539,6 +542,10 @@ export default function Algorithms() {
   const [searchText, setSearchText] = useState("");
   const [sortBy, setSortBy] = useState("featured");
   const [activeLevel, setActiveLevel] = useState("All");
+  const [bookmarks, setBookmarks] = useState(() => {
+    const saved = localStorage.getItem("algo_bookmarks");
+    return saved ? JSON.parse(saved) : [];
+  });
   const [spotlightId, setSpotlightId] = useState(algorithmsCatalog[0].id);
   const prefersReducedMotion = useReducedMotion();
 
@@ -554,12 +561,14 @@ export default function Algorithms() {
         activeFilter === "all" || algorithm.category === activeFilter;
       const matchesLevel =
         activeLevel === "All" || algorithm.level === activeLevel;
+      const matchesBookmark =
+        activeFilter !== "bookmarked" || bookmarks.includes(algorithm.id);
       const matchesSearch =
         normalizedQuery.length === 0 ||
         algorithm.title.toLowerCase().includes(normalizedQuery) ||
         algorithm.description.toLowerCase().includes(normalizedQuery) ||
         algorithm.type.toLowerCase().includes(normalizedQuery);
-      return matchesFilter && matchesSearch && matchesLevel;
+      return matchesFilter && matchesSearch && matchesLevel && matchesBookmark;
     });
 
     if (sortBy === "name") {
@@ -623,6 +632,14 @@ export default function Algorithms() {
     setActiveLevel("All");
     setSearchText("");
     setSortBy("featured");
+  };
+
+  const toggleBookmark = (id) => {
+    const newBookmarks = bookmarks.includes(id)
+      ? bookmarks.filter((b) => b !== id)
+      : [...bookmarks, id];
+    setBookmarks(newBookmarks);
+    localStorage.setItem("algo_bookmarks", JSON.stringify(newBookmarks));
   };
 
   const handleRandomSpotlight = () => {
@@ -960,8 +977,28 @@ export default function Algorithms() {
                         className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${algorithm.gradient} opacity-0 transition-opacity duration-300 group-hover:opacity-100`}
                       />
                       <div className="relative z-10">
-                        <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl border border-blue-400/25 bg-blue-500/15 text-blue-200">
-                          <Icon size={22} />
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-blue-400/25 bg-blue-500/15 text-blue-200">
+                            <Icon size={22} />
+                          </div>
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              toggleBookmark(algorithm.id);
+                            }}
+                            className={`group/bookmark p-2 rounded-xl border transition-all ${bookmarks.includes(algorithm.id)
+                              ? "border-pink-400/50 bg-pink-500/20 text-pink-300"
+                              : "border-white/10 bg-white/5 text-slate-400 hover:border-pink-400/30 hover:text-pink-300"
+                              }`}
+                            title={bookmarks.includes(algorithm.id) ? "Remove from bookmarks" : "Add to bookmarks"}
+                          >
+                            {bookmarks.includes(algorithm.id) ? (
+                              <BookmarkCheck size={20} className="fill-current" />
+                            ) : (
+                              <Bookmark size={20} className="group-hover/bookmark:fill-pink-500/20" />
+                            )}
+                          </button>
                         </div>
 
                         <div className="mb-4 flex flex-wrap gap-2">
