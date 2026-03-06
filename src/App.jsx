@@ -53,6 +53,7 @@ import {
   useVisualizerTheme,
 } from "./context/VisualizerThemeContext";
 import DLLToBSTPage from "./pages/DLLToBSTPage";
+import ShuntingYardPage from "./pages/ShuntingYardPage";
 import {
   bubbleSortCPP,
   bubbleSortJava,
@@ -212,6 +213,7 @@ function AppShell() {
           <Route path="/visualizer/trie" element={<TrieVisualizerPage />} />
           <Route path="/visualizer/segment-tree" element={<SegmentTreeVisualizerPage />} />
           <Route path="/visualizer/kadane" element={<KadanePage />} />
+          <Route path="/visualizer/shunting-yard" element={<ShuntingYardPage />} />
           <Route path="/compare" element={<ComparisonPage />} />
           <Route path="/cheatsheet" element={<CheatsheetPage />} />
           <Route path="*" element={<NotFoundPage />} />

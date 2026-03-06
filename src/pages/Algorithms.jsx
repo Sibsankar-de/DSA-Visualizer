@@ -320,6 +320,20 @@ const algorithmsCatalog = [
     accent: 'text-cyan-200',
   },
   {
+    id: "shunting-yard",
+    title: "Infix to Postfix (Shunting Yard)",
+    description:
+      "Convert infix expressions to postfix (RPN) using Dijkstra's Shunting Yard algorithm. Visualize the operator stack, output queue, and precedence rules step-by-step.",
+    path: "/visualizer/shunting-yard",
+    category: "stack",
+    type: "Expression Parsing",
+    complexity: "O(n)",
+    level: "Intermediate",
+    icon: Layers,
+    gradient: "from-cyan-500/25 via-amber-500/15 to-transparent",
+    accent: "text-amber-200",
+  },
+  {
     id: "dijkstra",
     title: "Dijkstra's Algorithm",
     description:
