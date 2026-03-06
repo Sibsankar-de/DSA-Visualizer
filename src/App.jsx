@@ -45,6 +45,7 @@ import SinglyLinkedListPage from "./pages/SinglyLinkedListPage";
 import KadanePage from "./pages/KadanePage";
 import DoublyLinkedListPage from "./pages/DoublyLinkedListPage";
 import KnapsackPage from "./pages/KnapsackPage";
+import RabinKarpPage from "./pages/RabinKarpPage";
 import PublicRoute from "./components/PublicRoute";
 import VisualizerThemeDock from "./components/VisualizerThemeDock";
 import {
@@ -163,6 +164,7 @@ function AppShell() {
           <Route path="/visualizer/binary-search" element={<VisualizerPage name="Binary Search" cppSnippet={binarySearchCPP} javaSnippet={binarySearchJava} pythonSnippet={binarySearchPython} jsSnippet={binarySearchJS} />} />
           <Route path="/visualizer/interpolation-search" element={<VisualizerPage name="Interpolation Search" cppSnippet={interpolationSearchCPP} javaSnippet={interpolationSearchJava} pythonSnippet={interpolationSearchPython} jsSnippet={interpolationSearchJS} />} />
           <Route path="/visualizer/boyer-moore" element={<BoyerMoorePage />} />
+          <Route path="/visualizer/rabin-karp" element={<RabinKarpPage />} />
 
           {/* Array visualizers */}
           <Route path="/visualizer/array-traversal" element={<ArrayTraversalPage />} />
