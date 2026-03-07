@@ -48,6 +48,7 @@ import KnapsackPage from "./pages/KnapsackPage";
 import RabinKarpPage from "./pages/RabinKarpPage";
 import PublicRoute from "./components/PublicRoute";
 import VisualizerThemeDock from "./components/VisualizerThemeDock";
+import HashTablePage from "./pages/HashTablePage";
 import {
   VisualizerThemeProvider,
   useVisualizerTheme,
@@ -214,6 +215,7 @@ function AppShell() {
           <Route path="/visualizer/segment-tree" element={<SegmentTreeVisualizerPage />} />
           <Route path="/visualizer/kadane" element={<KadanePage />} />
           <Route path="/visualizer/shunting-yard" element={<ShuntingYardPage />} />
+          <Route path="/visualizer/hash-table" element={<HashTablePage />} />
           <Route path="/compare" element={<ComparisonPage />} />
           <Route path="/cheatsheet" element={<CheatsheetPage />} />
           <Route path="*" element={<NotFoundPage />} />

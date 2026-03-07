@@ -19,6 +19,7 @@ import {
   TimerReset,
   X,
   Zap,
+  Hash,
   Waypoints,
   TextSearch,
   Bookmark,
@@ -525,6 +526,20 @@ const algorithmsCatalog = [
     gradient: "from-pink-500/25 via-rose-500/15 to-transparent",
     accent: "text-rose-200",
   },
+  {
+    id: "hash-table",
+    title: "Hash Table",
+    description:
+      "Visualize Insert, Search, and Delete with Separate Chaining, Linear Probing, Quadratic Probing, and Double Hashing collision strategies.",
+    path: "/visualizer/hash-table",
+    category: "hash-table",
+    type: "Hashing",
+    complexity: "O(1) avg",
+    level: "Intermediate",
+    icon: Hash,
+    gradient: "from-violet-500/25 via-fuchsia-500/15 to-transparent",
+    accent: "text-violet-200",
+  },
 ];
 
 const filterTabs = [
@@ -544,6 +559,7 @@ const filterTabs = [
   { id: "string-matching", label: "String Matching" },
   { id: "dynamic-programming", label: "Dynamic Programming" },
   { id: "range-queries", label: "Range Queries" },
+  { id: "hash-table", label: "Hash Table" },
 ];
 
 const levelTabs = ["All", "Beginner", "Intermediate", "Advanced"];
@@ -647,6 +663,9 @@ export default function Algorithms() {
   ).length;
   const stringMatchingCount = algorithmsCatalog.filter(
     (algorithm) => algorithm.category === "string-matching",
+  ).length;
+  const hashTableCount = algorithmsCatalog.filter(
+    (algorithm) => algorithm.category === "hash-table",
   ).length;
   const hasActiveFilters =
     activeFilter !== "all" ||
@@ -782,6 +801,14 @@ export default function Algorithms() {
                 </p>
                 <p className="mt-1 text-2xl font-bold text-emerald-200">
                   {graphSearchingCount}
+                </p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                <p className="text-[10px] lg:text-xs uppercase tracking-wider text-slate-400 truncate">
+                  Hash Table
+                </p>
+                <p className="mt-1 text-2xl font-bold text-violet-200">
+                  {hashTableCount}
                 </p>
               </div>
               <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
